@@ -1,0 +1,17 @@
+// Modules and Variables
+@import "modules/variables";
+
+// Partials
+@import "partials/reset"; // reset
+@import "partials/skeleton"; // global styles
+@import "partials/header-footer"; // header and footer
+@import "partials/modal"; // modals
+@import "partials/cart"; // cart widget
+@import "partials/fancyfy-fields"; // forms
+
+// Page Layouts
+@import "layouts/shop"; // marketplace home page
+@import "layouts/category-detail"; // detail page of business type
+@import "layouts/product-info"; // product information page
+@import "layouts/checkout"; // checkout screens
+/* @import "layouts/signup"; // merchant applicationa and online merchant agreement */
