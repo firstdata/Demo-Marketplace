@@ -156,21 +156,19 @@
 
         <!-- INCLUDES -->
 				<section id="product-includes">
+
+
+
+
 					<div class="container">
 						<h3>Includes</h3>
-						<div>
-							<a class="product-include column-2" data-toggle="modal" data-target="#include-clovermini">
-								<img src="../../../assets/img/products/clover-mini.jpg" />
-								<p>Clover Mini 3G/WiFi</p>
-							</a>
-							<a class="product-include column-2">
-								<img src="../../../assets/img/products/fraud.jpg" />
-								<p>Clover Terminal Software</p>
-							</a>
-							<a class="product-include column-2">
-								<img src="../../../assets/img/products/fraud.jpg" />
-								<p>TransArmor Solution</p>
-							</a>
+						<div ng-repeat="item in productIncludes.data">
+							<div>
+								<a class="product-include column-2" data-toggle="modal" data-target="#include-clovermini" href="#/products/{{item.productId}}">
+									<img src="{{item.imageUrls[0]}}" />
+									<p>{{item.productShortDescription}}</p>
+								</a>
+							</div>
 						</div>
 					</div>
 				</section>
@@ -179,65 +177,13 @@
 				<section id="product-specifications">
 					<div class="container">
 						<h3>Hardware Specifications</h3>
-						<table>
-							<tr>
-								<th>Materials</th>
-								<td>
-									<p>Body: Brushed aluminum with white glass accents</p>
-									<p>Display: Antimicrobial Corning® Gorilla® Glass</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Overall Dimensions</th>
-								<td>
-									<p>H: 6.47"</p>
-									<p>W: 8.0"</p>
-									<p>D: 3.73"</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Weight</th>
-								<td>
-									<p>device: 2.3 lbs</p>
-									<p>device + hub: 2.5 lbs</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Internet Connectivity</th>
-								<td>
-									<p>Ethernet</p>
-									<p>Wi-Fi (802.11a/b/g/n wireless)</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Screen Size</th>
-								<td>
-									<p>7", 1280px x 800px</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Power Source</th>
-								<td>
-									<p>External power adapter with DC input</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Payments</th>
-								<td>
-									<p>EMV chip card reader</p>
-									<p>NFC reader (EMV compliant)</p>
-									<p>3-Track Magstripe reader</p>
-								</td>
-							</tr>
-							<tr>
-								<th>Hub</th>
-								<td>
-									<p>Charging port</p>
-									<p>Type B USB port</p>
-									<p>Ethernet</p>
-									<p>4 Type A USB ports</p>
-								</td>
-							</tr>
+						<table ng-repeat="(key, data) in productSpecs.data">
+								<tr>
+									<th>{{key}}</th>
+									<td>
+										<p ng-repeat="item in data">{{item}}</p>
+									</td>
+								</tr>
 						</table>
 
 					</div>
@@ -247,25 +193,10 @@
 				<section id="product-recommended">
 					<div class="container">
 						<h3>Customers have also purchased these products</h3>
-						<div class="product-recommended column-2">
-							<a><img src="https://www.clover.com/assets/images/public-site/accessories/weight_scale_1.jpg"></a>
-							<p>Weight Scale</p>
-							<a class="link-bold">Add to Cart</a>
-						</div>
-						<div class="product-recommended column-2">
-							<a><img src="https://www.clover.com/assets/images/public-site/accessories/kitchen_printer_1.jpg"></a>
-							<p>Kitchen Printer</p>
-							<a class="link-bold">Add to Cart</a>
-						</div>
-						<div class="product-recommended column-2">
-							<a><img src="https://www.clover.com/assets/images/public-site/accessories/cash_drawer.jpg"></a>
-							<p>Cash Drawer</p>
-							<a class="link-bold">Add to Cart</a>
-						</div>
-						<div class="product-recommended column-2">
-							<a><img src="https://www.clover.com/assets/images/public-site/accessories/barcode_scanner_1.jpg"></a>
-							<p>Barcode Scanner</p>
-							<a class="link-bold">Add to Cart</a>
+						<div class="product-recommended column-2" ng-repeat="item in productRecommended.data">
+							<a><img src="{{item.imageUrls[0]}}"></a>
+							<p>{{item.productName}}</p>
+							<a href="#/products/{{item.productId}}" class="link-bold">Add to Cart</a>
 						</div>
 					</div>
 				</section>
@@ -274,39 +205,13 @@
 				<section id="faq">
 					<div class="container">
 						<h3>Commonly Asked Questions</h3>
-						<div class="faq-question">
-							<i class="fa fa-info-circle"></i>
-							<a href="https://help.clover.com/faq/what-are-some-differences-between-clover-station-and-clover-mobile-mini/" target="_blank">What are some differences between Clover Station and Clover Mobile / Clover Mini?</a>
-							<p>Barcode Scanner / Camera In order to activate the barcode scanner / camera on Clover Station and Clover Mini, tap the barcode icon on the bottom left of the screen within any app. For Clover Station, the camera is back-facing and located on the left and for Clover Mini, the camera is front-facing and on the…</p>
-						</div>
 
-						<div class="faq-question">
-							<i class="fa fa-info-circle"></i>
-							<a href="https://help.clover.com/faq/does-the-clover-mobile-and-clover-mini-connect-to-a-kitchen-printer/" target="_blank">Does the Clover Mobile and Clover Mini connect to a kitchen printer?</a>
-							<p>Yes. Just like Clover Station, a Clover Mobile and Clover Mini can connect to a Kitchen Printer as long as the devices are all on the same LAN (local area network). Note If you are on the FD2000 Plan, you will not have any orders to send to a Kitchen Printer (or any Order printer) because…</p>
-						</div>
-
-						<div class="faq-question">
-							<i class="fa fa-info-circle"></i>
-							<a href="https://help.clover.com/faq/is-an-internet-connection-required-to-use-a-clover-device/" target="_blank">Is an internet connection required to use a Clover device?</a>
-							<p>Important You can only process card transactions offline for seven (7) consecutive days. After seven (7) consecutive days offline, your Clover device will disallow card transactions. You will need to be connected to the internet in order to activate your Clover device. After activation, your Clover device will be able to function and take transactions…</p>
-						</div>
-
-						<div class="faq-question">
-							<i class="fa fa-info-circle"></i>
-							<a href="https://help.clover.com/faq/which-weight-scales-are-supported-by-clover/" target="_blank">Which weight scales are supported by Clover?</a>
-							<p>Clover supports the CAS SW-20 Weight Scale. In order to connect the scale to your Clover Station or Clover Mini, you will need a custom cable that comes bundled with the scale when purchased from your Clover provider.</p>
-						</div>
-
-						<div class="faq-question">
-							<i class="fa fa-info-circle"></i>
-							<a href="https://help.clover.com/faq/which-external-scanners-are-compatible-with-clover-devices/" target="_blank">Which external scanners are compatible with Clover devices?</a>
-							<p>The following scanners are compatible and supported by your Clover Station and Clover Mini: Motorola LI2208 Scanner – Clover-customized version (Recommended) Motorola DS9208 IDTECH IDBA-4244MRB (this is the only one we sell through TASQ) IDTECH IDBA-4244SR Honeywell MS7580 Unitech MS180 ECOSCAN2.</p>
-						</div>
-
-						<div class="faq-question">
-							<i class="fa fa-ellipsis-h"></i>
-							<a>More</a>
+						<div ng-repeat="item in productFAQ.data">
+								<div class="faq-question">
+									<i class="fa fa-info-circle"></i>
+									<a href="{{item.url}}" target="_blank">{{item.header}}</a>
+									<p>{{item.shortAnswer}}</p>
+								</div>
 						</div>
 					</div>
 				</section>
