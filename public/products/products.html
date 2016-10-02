@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
-		<title>Clover Mini 3G/WiFi | Demo Marketplace</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="../../stylesheets/main.css" media="screen" />
-	</head>
 
-	</head>
-	<body id="product-info">
 		<div id="full_body">
 
 			<header>
@@ -38,8 +28,8 @@
             <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Clover Mini 3G/WiFi</span></a>
           </div>
           <ul>
-            <li><a class="link" href="../../index.html">Shop</a></li>
-            <li><a>Clover Mini 3G/WiFi</a></li>
+            <li><a class="link" href="#/store/">Shop</a></li>
+            <li><a>{{product.data.productName}}</a></li>
           </ul>
         </div>
       </div>
@@ -51,18 +41,16 @@
 					<div class="container">
 						<div class="column-12">
 							<div class="column-3">
-								<img src="../../img/products/clover-mini.jpg"/>
+								<img src="{{product.data.imageUrls[0]}}"/>
 								<div id="product-images">
-									<a class="selected"><img src="../../img/products/clover-mini.jpg"/></a>
-									<a><img src="../../img/products/clover-mini-2.jpg"/></a>
-									<a><img src="../../img/products/clover-mini-3.jpg"/></a>
-									<a><img src="../../img/products/clover-mini-4.jpg"/></a>
-									<a><img src="../../img/products/clover-mini-5.jpg"/></a>
+									<div ng-repeat="item in product.data.imageUrls">
+											<a><img src="{{item}}"/></a>
+									</div>
 								</div>
 							</div>
 							<div class="column-9">
-								<h1>Clover Mini 3G/WiFi <span class="price">$599</span></h1>
-								<p>Clover Mini 3G/WiFi is the one of the most advanced payment terminal on the market. Accept a wide variety of payment types, add applications to manage employees and keep track of customers.</p>
+								<h1>{{product.data.productName}}<span class="price">  ${{product.data.price}}</span></h1>
+								<p>{{product.data.productShortDescription}}</p>
 								<div class="product-actions">
 									<a class="link-bold block" id="add-to-cart">Add to Cart</a>
 								</div>
@@ -159,10 +147,9 @@
 					<div class="container">
 						<h3>Features</h3>
 						<ul>
-              <li>Accept most payment types: cash, EMV&reg; chip cards, mobile wallets like Apple Pay&trade;, plus checks with Clover Check Acceptance</li>
-              <li>Track customers by name, email and phone number</li>
-              <li>Our TransArmor&reg; solution protect you and your customers</li>
-              <li>Apps that can help manage employees, reporting and cash flow, plus centralized dashboard features to help you manage at-a-glance</li>
+							<div ng-repeat="item in productFeatures.data">
+								<li>{{item}}</li>
+							</div>
 						</ul>
 					</div>
 				</section>
@@ -370,14 +357,3 @@
         </div>
       </div>
     </div>
-
-		<!-- scripts -->
-		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-	  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../../scripts/fancyfy-fields.js"></script>
-    <script type="text/javascript" src="../../scripts/modal.js"></script>
-    <script type="text/javascript" src="../../scripts/sticky.js"></script>
-    <script type="text/javascript" src="../../scripts/marketplace-demo.js"></script>
-
-	</body>
-</html>
