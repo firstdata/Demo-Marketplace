@@ -6,7 +6,8 @@ angular.module('shoppingCart', [
     'store',
     'solutions',
     'products',
-    'shipping'
+    'shipping',
+    'confirmation'
 ]).
 
 factory('myService', function() {
@@ -15,23 +16,13 @@ factory('myService', function() {
  }
  function set(data) {
    savedData.items.push(data);
-   for (var i = 0; i < savedData.items.length; i++) {
-//     if (savedData.items[i] != data) {
-
-  //   }
-   }
-
-   console.log(savedData.items);
-
  }
  function get() {
   return savedData.items;
  }
-
-function remove(index) {
-  savedData.items.splice(index, 1);
-  console.log(savedData);
-}
+  function remove(index) {
+    savedData.items.splice(index, 1);
+  }
 
  return {
   set: set,

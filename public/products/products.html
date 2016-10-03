@@ -4,7 +4,7 @@
 			<header>
 				<div id="top">
 					<nav class="container">
-						<a id="logo" href="#"><img src="../../img/logo.svg" /></a>
+						<a id="logo" href="#/store/"><img src="../../img/logo.svg" /></a>
             <a style="display:none;" id="cart-icon" href="../../checkout/shipping/"><img src="../../img/cart.svg"/><span>1</span></a>
 						<ul id="main-menu" class="">
 							<li><a class="nav-main-item" href="#">Home</a></li>
@@ -156,10 +156,6 @@
 
         <!-- INCLUDES -->
 				<section id="product-includes">
-
-
-
-
 					<div class="container">
 						<h3>Includes</h3>
 						<div ng-repeat="item in productIncludes.data">
@@ -177,15 +173,14 @@
 				<section id="product-specifications">
 					<div class="container">
 						<h3>Hardware Specifications</h3>
-						<table ng-repeat="(key, data) in productSpecs.data">
-								<tr>
+						<table>
+								<tr ng-repeat="(key, data) in productSpecs.data">
 									<th>{{key}}</th>
 									<td>
 										<p ng-repeat="item in data">{{item}}</p>
 									</td>
 								</tr>
 						</table>
-
 					</div>
 				</section>
 

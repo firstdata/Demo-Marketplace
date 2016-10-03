@@ -297,15 +297,31 @@
 
 								<h2 style="margin-top: 25pt;">Shipping Options</h2>
 								<div class="form-group">
-									<div class="form-element">
+									<div class="form-element" ng-init="shippingPrice=0">
 										<p>Please select a shipping option</p>
 										<br>
-										<div><input type="radio" style="margin:10px;" name="shipping-option" checked="true" /><label>FREE Standard Shipping (4-5 business days)</label></div>
-										<div><input type="radio" style="margin:10px;" name="shipping-option" /><label>$11.97 Two-Day Shipping</label></div>
-										<div><input type="radio" style="margin:10px;" name="shipping-option" /><label>$30.09 One-Day Shipping</label></div>
+										<div><input type="radio" style="margin:10px;" name="shipping-option" checked="true" ng-model="shippingPrice" value="0" /><label>FREE Standard Shipping (4-5 business days)</label></div>
+										<div><input type="radio" style="margin:10px;" name="shipping-option" ng-model="shippingPrice" value="11.97" /><label>$11.97 Two-Day Shipping</label></div>
+										<div><input type="radio" style="margin:10px;" name="shipping-option" ng-model="shippingPrice" value="30.09" /><label>$30.09 One-Day Shipping</label></div>
 									</div>
 								</div>
 							</form>
+							<div class="column-8 checkout-form">
+								<h1>
+									<span class="fa-stack" style="color: green; font-size: 55%;">
+										<i class="fa fa-circle-thin fa-stack-2x"></i>
+										<i class="fa fa-exclamation fa-stack-1x"></i>
+									</span>
+									Almost done...
+								</h1>
+								<h3 class="margin-top">Your order is<strong> PENDING</strong>.</h3>
+								<p>A Processing Plan is required. You will not receive your order until you have completed the signup process. Payment information will be captured as part of the sign up process.</p>
+								<div>
+										<a class="button margin-top" href="../../signup/">Sign Up Now</a>
+										<a class="link-bold block margin-top" href="../../">Back to our Home Page</a>
+								</div>
+							</div>
+
 						</div>
 
             <!-- CART -->
@@ -314,7 +330,6 @@
 								<h2>Order Summary</h2>
 								<p class="sub">One Time Cost</p>
 								<table id="cart-one-time" class="cart-items" ng-repeat="item in products">
-									<h1>{{item}}</h1>
 									<tr>
 										<td>
 											<p><a class="link">{{item.name}}</a></p>
@@ -341,11 +356,11 @@
 								<table id="order-summary">
 									<tr>
 										<td>Total before tax</td>
-										<td class="align-right">$599</p>
+										<td class="align-right">${{total}}</p>
 									</tr>
 									<tr>
 										<td>Shipping &amp; handling</td>
-										<td class="align-right">Free</td>
+										<td class="align-right">{{shippingPrice}}</td>
 									</tr>
 									<tr>
 										<td>Tax</td>
@@ -353,7 +368,7 @@
 									</tr>
 									<tr class="order-summary-total">
 										<td>One-Time Total</td>
-										<td class="align-right">$599</p>
+										<td class="align-right">${{total}}</p>
 									</tr>
 								</table>
 								<p class="sub cart-table-toggle">Recurring Fee <i class="fa fa-chevron-down"></i><span>$19.95/mo</span></p>
@@ -386,7 +401,7 @@
 								</table>
 								<div id="cart-actions">
 									<a class="link-bold align-center" href="#/store/">Continue Shopping</a>
-									<a class="button" href="../confirmation/">Place Order</a>
+									<a class="button" href="/#/confirmation/">Place Order</a>
 									<p class="small">Please note that the transaction fees offered apply only if you complete this application online process and your application is approved.</p>
 								</div>
 							</div>
@@ -407,8 +422,9 @@
       </footer>
 
 		</div><!-- end .wrapper -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+	  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../scripts/fancyfy-fields.js"></script>
 		<script type="text/javascript">
 			$(document).on('click','.add-address',function(){
         $('#address-2').show();

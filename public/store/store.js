@@ -17,9 +17,8 @@ angular.module('store', ['ngRoute'])
   $scope.categories = [];
   $scope.products = [];
 
-if (myService.get().length > 0) {
-  console.log('items in cart');
-}
+  if (myService.get().length > 0) {}
+
   $http({
     method: 'GET',
     url: 'https://stage.services.firstdata.com//v1/categories'
