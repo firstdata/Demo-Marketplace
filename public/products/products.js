@@ -9,13 +9,17 @@ angular.module('products', ['ngRoute', 'ui.router'])
   });
 }])
 
-.controller('productsCtrl', ['$routeParams', '$scope', '$http', function($routeParams, $scope, $http) {
-$scope.product = '';
-$scope.productIncludes = '';
-$scope.productFeatures = '';
-$scope.productFAQ = '';
-$scope.productSpecs = '';
-$scope.productRecommended = '';
+.factory("shoppingcart", [function() {
+    return {};
+}])
+
+.controller('productsCtrl', ['$routeParams', '$scope', '$http', 'myService', function($routeParams, $scope, $http, myService) {
+  $scope.product = '';
+  $scope.productIncludes = '';
+  $scope.productFeatures = '';
+  $scope.productFAQ = '';
+  $scope.productSpecs = '';
+  $scope.productRecommended = '';
 
   $http({
     method: 'GET',
@@ -45,19 +49,35 @@ $scope.productRecommended = '';
     $scope.productFAQ = response;
     }, function errorCallback(response) { });
 
-    $http({
-      method: 'GET',
-      url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/specs/'
-    }).then(function successCallback(response) {
-      $scope.productSpecs = response;
-      }, function errorCallback(response) { });
+  $http({
+    method: 'GET',
+    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/specs/'
+  }).then(function successCallback(response) {
+    $scope.productSpecs = response;
+    }, function errorCallback(response) { });
 
-    $http({
-      method: 'GET',
-      url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/recommended/'
-    }).then(function successCallback(response) {
-      console.log(response);
-      $scope.productRecommended = response;
-      }, function errorCallback(response) { });
+  $http({
+    method: 'GET',
+    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/recommended/'
+  }).then(function successCallback(response) {
+    console.log(response);
+    $scope.productRecommended = response;
+    }, function errorCallback(response) { });
+
+    $scope.addCart = function(id, qty, price, name) {
+      myService.set({
+        id: id,
+        qty: qty,
+        price: price,
+        name: name
+      });
+
+      // $scope.shoppingcart.items.push({
+	    //             color: "red",
+	    //             qty: 1,
+	    //             description: "Are you a Red Sox fan but don't want to pay for an offical hat? Then this one is for you!",
+	    //             cost: 5
+	    //         });
+    };
 
 }]);

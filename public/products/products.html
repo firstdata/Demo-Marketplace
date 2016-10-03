@@ -52,7 +52,7 @@
 								<h1>{{product.data.productName}}<span class="price">  ${{product.data.price}}</span></h1>
 								<p>{{product.data.productShortDescription}}</p>
 								<div class="product-actions">
-									<a class="link-bold block" id="add-to-cart">Add to Cart</a>
+										<a class="link-bold block" id="add-to-cart" ng-click="addCart(product.data.productId, 1, product.data.price, product.data.productName)" href="#/shipping/">Add to Cart</a>
 								</div>
 							</div>
 						</div>
@@ -193,11 +193,13 @@
 				<section id="product-recommended">
 					<div class="container">
 						<h3>Customers have also purchased these products</h3>
+
 						<div class="product-recommended column-2" ng-repeat="item in productRecommended.data">
 							<a><img src="{{item.imageUrls[0]}}"></a>
 							<p>{{item.productName}}</p>
 							<a href="#/products/{{item.productId}}" class="link-bold">Add to Cart</a>
 						</div>
+
 					</div>
 				</section>
 

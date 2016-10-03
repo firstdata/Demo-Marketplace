@@ -9,17 +9,10 @@ angular.module('store', ['ngRoute'])
   });
 }])
 
-.factory("shoppingcart", [function() {
-    return {};
-}])
-
-.controller('storeCtrl', ["$scope","$http", "myService", function ($scope, $http, myService) {
+.controller('storeCtrl', ["$scope","$http", function ($scope, $http) {
   $scope.categories = [];
   $scope.products = [];
 
-if (myService.get().length > 0) {
-  console.log('items in cart');
-}
   $http({
     method: 'GET',
     url: 'https://stage.services.firstdata.com//v1/categories'
@@ -38,7 +31,7 @@ if (myService.get().length > 0) {
     }).then(function successCallback(response) {
       //console.log('%o', response);
         for (var i = 0; i < response.data.length; i++) {
-          //console.log(response.data[i]);
+          console.log(response.data[i]);
           $scope.products.push(response.data[i]);
         }
       }, function errorCallback(response) {
