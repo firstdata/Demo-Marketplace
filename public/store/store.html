@@ -44,7 +44,7 @@
 							<p class="subhead">Ready-to-go bundles that are perfectly suited for your type of business.</p>
 							<div ng-repeat="item in categories">
 								<div class="business-type column-3" id="restaurant-counter">
-									<a href="#/solutions/{{item.name}}">{{item.name}}<span>{{item.description}}</span></a>
+									<a style="background:url({{item.imageURL}})" href="#/solutions/{{item.name}}"><span>{{item.description}}</span></a>
 								</div>
 						</div>
 				</section>
