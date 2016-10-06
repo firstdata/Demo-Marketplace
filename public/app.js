@@ -13,14 +13,15 @@ angular.module('shoppingCart', [
 factory('myService', function() {
   var category = '';
   var savedData = {
-   items: []
- }
- function set(data) {
+    items: []
+  }
+
+  function set(data) {
    savedData.items.push(data);
- }
- function get() {
+  }
+  function get() {
   return savedData.items;
- }
+  }
   function remove(index) {
     savedData.items.splice(index, 1);
   }
