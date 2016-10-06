@@ -30,7 +30,7 @@
           </div>
           <ul>
             <li><a class="link" href="#/store">Shop</a></li>
-            <li><a>Restaurants (Pay at the Counter)</a></li>
+            <li><a>{{category}}</a></li>
           </ul>
         </div>
       </div>
@@ -39,64 +39,26 @@
 
 				<div class="hero">
 					<div class="container align-center">
-						<h1>Complete solutions for<br> Restaurants (Pay at the Counter).</h1>
+						<h1>Complete solutions for<br> {{category}}.</h1>
 					</div>
 				</div>
 
 				<section id="product-list-products" class="align-center">
 				  <div class="container">
-						<div class="product column-6">
+
+						<div class="product column-6" ng-repeat="item in products">
 							<div>
 								<h4 class="product-name align-left">
-								  Clover Station with Clover Mini WiFi
-								  <span class="product-price">$1,899</span>
+								  {{item.productName}}
+								  <span class="product-price">$500</span>
 								</h4>
-								<img src="../../img/products/bundle-1.jpg" />
+								<img src="{{item.imageUrls[0]}}" />
 								<div class="product-actions">
-									<a class="link-bold inline-block" href="#">View Details</a>
+									<a class="link-bold inline-block" href="/#/products/{{item.productId}}">View Details</a>
 								</div>
 								<p class="product-short-description small">Extend the Clover experience to your customers with a Clover Mini.</p>
 							</div>
 						</div>
-  					<div class="product column-6">
-  						<div>
-  							<h4 class="product-name align-left">
-  							  <span>Quick Service Bundle</span>
-                  <span class="product-price">$2,049</span>
-  							</h4>
-  							<img src="../../img/products/bundle-2.jpg" />
-  							<div class="product-actions">
-  								<a class="link-bold inline-block" href="#">View Details</a>
-  							</div>
-								<p class="product-short-description small">A payments system that supports the speed of service</p>
-  						</div>
-  					</div>
-  					<div class="product column-6">
-  						<div>
-  							<h4 class="product-name align-left">
-  							  <span>Clover Mobile Bundle</span>
-                  <span class="product-price">$999</span>
-                </h4>
-  							<img src="../../img/products/bundle-3.jpg" />
-  							<div class="product-actions">
-  								<a class="link-bold inline-block" href="#">View Details</a>
-  							</div>
-								<p class="product-short-description small">Carry your business management system with you wherever you go</p>
-  						</div>
-  					</div>
-  					<div class="product column-6">
-  						<div>
-  							<h4 class="product-name align-left">
-  							  <span>Food Stand Bundle</span>
-                  <span class="product-price">$1,699</span>
-  							</h4>
-  							<img src="../../img/products/bundle-4.jpg" />
-  							<div class="product-actions">
-  								<a class="link-bold inline-block" href="#">View Details</a>
-  							</div>
-								<p class="product-short-description small">All the essentials to take payments at the counter and much more</p>
-  						</div>
-  					</div>
 				  </div>
 				</section>
 

@@ -11,7 +11,8 @@ angular.module('shoppingCart', [
 ]).
 
 factory('myService', function() {
- var savedData = {
+  var category = '';
+  var savedData = {
    items: []
  }
  function set(data) {
@@ -23,13 +24,20 @@ factory('myService', function() {
   function remove(index) {
     savedData.items.splice(index, 1);
   }
+  function getCategory() {
+    return category;
+  }
+  function setCategory(cat) {
+    category = cat;
+  }
 
  return {
   set: set,
   get: get,
-  remove: remove
+  remove: remove,
+  getCategory: getCategory,
+  setCategory: setCategory
  }
-
 }).
 
 config(['$routeProvider', function($routeProvider) {

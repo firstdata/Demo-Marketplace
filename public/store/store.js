@@ -17,7 +17,10 @@ angular.module('store', ['ngRoute'])
   $scope.categories = [];
   $scope.products = [];
 
-  if (myService.get().length > 0) {}
+
+  $scope.setCat = function(cat) {
+    myService.setCategory(cat);
+  }
 
   $http({
     method: 'GET',
