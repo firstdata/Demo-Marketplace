@@ -44,7 +44,7 @@
 								<img src="{{product.data.imageUrls[0]}}"/>
 								<div id="product-images">
 									<div ng-repeat="item in product.data.imageUrls">
-											<a><img src="{{item}}"/></a>
+											<a ng-click="updateImg(item)"><img src="{{item}}"/></a>
 									</div>
 								</div>
 							</div>

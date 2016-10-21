@@ -17,14 +17,13 @@ angular.module('store', ['ngRoute'])
   $scope.categories = [];
   $scope.products = [];
 
-
   $scope.setCat = function(cat) {
     myService.setCategory(cat);
   }
 
   $http({
     method: 'GET',
-    url: 'https://stage.services.firstdata.com//v1/categories'
+    url: '/categories'
   }).then(function successCallback(response) {
       for (var i = 0; i < response.data.length; i++) {
         //console.log(response.data[i]);
@@ -36,15 +35,12 @@ angular.module('store', ['ngRoute'])
 
     $http({
       method: 'GET',
-      url: 'https://dev.services.firstdata.com/v1/products/386/company/'
+      url: '/products'
     }).then(function successCallback(response) {
-      //console.log('%o', response);
         for (var i = 0; i < response.data.length; i++) {
           //console.log(response.data[i]);
           $scope.products.push(response.data[i]);
         }
       }, function errorCallback(response) {
-        //alert('1 error occurred. Please refresh the page');
       });
-
 }]);

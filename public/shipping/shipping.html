@@ -290,10 +290,10 @@
 									</div>
 								<br>
 								</div>
-								<div>
+								<!-- <div>
 								  <a class="link add-address"><strong><i class="fa fa-plus"></i> Add another address</strong></a>
 								  <p class="small">When shipping items to different locations additional shipping charges may apply.</p>
-                </div>
+                </div> -->
 
 								<h2 style="margin-top: 25pt;">Shipping Options</h2>
 								<div class="form-group">
@@ -306,22 +306,6 @@
 									</div>
 								</div>
 							</form>
-							<div class="column-8 checkout-form">
-								<h1>
-									<span class="fa-stack" style="color: green; font-size: 55%;">
-										<i class="fa fa-circle-thin fa-stack-2x"></i>
-										<i class="fa fa-exclamation fa-stack-1x"></i>
-									</span>
-									Almost done...
-								</h1>
-								<h3 class="margin-top">Your order is<strong> PENDING</strong>.</h3>
-								<p>A Processing Plan is required. You will not receive your order until you have completed the signup process. Payment information will be captured as part of the sign up process.</p>
-								<div>
-										<a class="button margin-top" href="../../signup/">Sign Up Now</a>
-										<a class="link-bold block margin-top" href="../../">Back to our Home Page</a>
-								</div>
-							</div>
-
 						</div>
 
             <!-- CART -->
@@ -371,14 +355,14 @@
 										<td class="align-right">${{total}}</p>
 									</tr>
 								</table>
-								<p class="sub cart-table-toggle">Recurring Fee <i class="fa fa-chevron-down"></i><span>$19.95/mo</span></p>
+								<!-- <p class="sub cart-table-toggle">Recurring Fee <i class="fa fa-chevron-down"></i><span>$19.95/mo</span></p> -->
 								<table id="cart-recurring" class="cart-items" style="display:none;">
-									<tr>
+									<!-- <tr>
 										<td>
 											<p>Clover Terminal Software</p>
 										</td>
 										<td class="align-right">$0.00/mo</td>
-									</tr>
+									</tr> -->
 									<tr>
 										<td>
 											<p>TransArmor Solution</p>
@@ -390,7 +374,7 @@
 										<td class="align-right">$19.95/mo</td>
 									</tr>
 								</table>
-								<p class="sub cart-table-toggle">Transaction Fee <i class="fa fa-chevron-down"></i><span>2.16% + $0.29</span></p>
+								<p class="sub cart-table-toggle">Transaction Fee<span>2.16% + $0.29</span></p>
 								<table id="cart-fees" class="cart-items" style="display:none;">
 									<tr>
 										<td>
@@ -401,7 +385,7 @@
 								</table>
 								<div id="cart-actions">
 									<a class="link-bold align-center" href="#/store/">Continue Shopping</a>
-									<a class="button" href="/#/confirmation/">Place Order</a>
+									<a class="button" href="/#/confirmation/" ng-click="placeOrder()">Place Order</a>
 									<p class="small">Please note that the transaction fees offered apply only if you complete this application online process and your application is approved.</p>
 								</div>
 							</div>

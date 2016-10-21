@@ -12,10 +12,10 @@ angular.module('solutions', ['ngRoute', 'ui.router'])
 .controller('solutionsCtrl', ['$routeParams', '$scope', '$http', 'myService', function($routeParams, $scope, $http, myService) {
   $scope.products = [];
   $scope.category = myService.getCategory();
-  
+
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/products/386/company/'
+    url: '/products'
   }).then(function successCallback(response) {
       for (var i = 0; i < response.data.length; i++) {
         if (response.data[i].categoryIds.includes(parseInt($routeParams.category))) {

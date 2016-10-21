@@ -20,47 +20,48 @@ angular.module('products', ['ngRoute', 'ui.router'])
   $scope.productFAQ = '';
   $scope.productSpecs = '';
   $scope.productRecommended = '';
+  $scope.defaultImg = '';
 
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/details/'
+    url: '/products/' + $routeParams.id + '/details'
   }).then(function successCallback(response) {
       $scope.product = response;
+      $scope.defaultImg = response.data.imageUrls[0];
   }, function errorCallback(response) { });
 
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/includes/'
+    url: '/products/' + $routeParams.id + '/includes'
   }).then(function successCallback(response) {
       $scope.productIncludes = response;
   }, function errorCallback(response) { });
 
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/features/'
+    url: '/products/' + $routeParams.id + '/features'
   }).then(function successCallback(response) {
     $scope.productFeatures = response;
     }, function errorCallback(response) { });
 
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/faq/' + $routeParams.id
+    url: '/products/' + $routeParams.id + '/faq'
   }).then(function successCallback(response) {
     $scope.productFAQ = response;
     }, function errorCallback(response) { });
 
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/specs/'
+    url: '/products/' + $routeParams.id + '/specs'
   }).then(function successCallback(response) {
     $scope.productSpecs = response;
     }, function errorCallback(response) { });
 
   $http({
     method: 'GET',
-    url: 'https://dev.services.firstdata.com/v1/products/' + $routeParams.id + '/recommended/'
+    url: '/products/' + $routeParams.id + '/recommended'
   }).then(function successCallback(response) {
-    console.log(response);
     $scope.productRecommended = response;
     }, function errorCallback(response) { });
 
@@ -72,12 +73,10 @@ angular.module('products', ['ngRoute', 'ui.router'])
         name: name
       });
 
-      // $scope.shoppingcart.items.push({
-	    //             color: "red",
-	    //             qty: 1,
-	    //             description: "Are you a Red Sox fan but don't want to pay for an offical hat? Then this one is for you!",
-	    //             cost: 5
-	    //         });
+      $scope.updateImg = function(url) {
+        $scope.defaultImg = url;
+      };
+
     };
 
 }]);

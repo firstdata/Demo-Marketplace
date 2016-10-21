@@ -47,7 +47,7 @@
 							<p>A Processing Plan is required. You will not receive your order until you have completed the signup process. Payment information will be captured as part of the sign up process.</p>
 							<div>
 									<a class="button margin-top" href="../../signup/">Sign Up Now</a>
-									<a class="link-bold block margin-top" href="../../">Back to our Home Page</a>
+									<a class="link-bold block margin-top" href="/#/">Back to our Home Page</a>
 							</div>
 						</div>
 
@@ -75,17 +75,17 @@
 												</select>
 											</div>
 										</td>
-										<td class="align-right">$599</td>
+										<td class="align-right">${{item.price}}</td>
 									</tr>
 								</table>
 								<table id="order-summary">
 									<tr>
 										<td>Total before tax</td>
-										<td class="align-right">$599</p>
+										<td class="align-right">${{total}}</p>
 									</tr>
 									<tr>
 										<td>Shipping &amp; handling</td>
-										<td class="align-right">Free</td>
+										<td class="align-right">{{shippingPrice}}</td>
 									</tr>
 									<tr>
 										<td>Tax</td>
@@ -93,17 +93,17 @@
 									</tr>
 									<tr class="order-summary-total">
 										<td>One-Time Total</td>
-										<td class="align-right">$599</p>
+										<td class="align-right">${{total}}</p>
 									</tr>
 								</table>
-								<p class="sub cart-table-toggle">Recurring Fee <i class="fa fa-chevron-up"></i><span>$19.95/mo</span></p>
+								<!-- <p class="sub cart-table-toggle">Recurring Fee<span>$19.95/mo</span></p> -->
 								<table id="cart-recurring" class="cart-items">
-									<tr>
+									<!-- <tr>
 										<td>
 											<p>Clover Terminal Software</p>
 										</td>
 										<td class="align-right">$0.00/mo</td>
-									</tr>
+									</tr> -->
 									<tr>
 										<td>
 											<p>TransArmor Solution</p>

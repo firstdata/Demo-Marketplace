@@ -7,7 +7,8 @@ angular.module('shoppingCart', [
     'solutions',
     'products',
     'shipping',
-    'confirmation'
+    'confirmation',
+    'ngCors'
 ]).
 
 factory('myService', function() {
