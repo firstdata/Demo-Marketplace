@@ -8,10 +8,10 @@ angular.module('shoppingCart', [
     'products',
     'shipping',
     'confirmation',
-    'ngCors'
+    'application'
 ]).
 
-factory('myService', function() {
+factory('FDService', function() {
   var category = '';
   var savedData = {
     items: []

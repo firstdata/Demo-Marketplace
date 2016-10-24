@@ -9,9 +9,9 @@ angular.module('shipping', ['ngRoute' ])
   });
 }])
 
-.controller('shippingCtrl', ["$scope","$http", "myService", function ($scope, $http, myService) {
+.controller('shippingCtrl', ["$scope","$http", "FDService", function ($scope, $http, FDService) {
   $scope.categories = [];
-  $scope.products = myService.get();
+  $scope.products = FDService.get();
   $scope.total = 0;
 
 var product = $scope.products;
@@ -134,9 +134,9 @@ $scope.placeOrder = function() {
   };
 
   $scope.removeItem = function(index) {
-    myService.remove(index);
+    FDService.remove(index);
 
-    if (myService.get().length == 0) {
+    if (FDService.get().length == 0) {
       alert('Your Cart is Empty. Please select an item.')
     }
   }

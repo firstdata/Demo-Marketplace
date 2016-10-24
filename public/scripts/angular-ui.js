@@ -2606,8 +2606,8 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
    * <pre>controller: "MyRegisteredController"</pre>
    * <pre>controller:
    *     "MyRegisteredController as fooCtrl"}</pre>
-   * <pre>controller: function($scope, MyService) {
-   *     $scope.data = MyService.getData(); }</pre>
+   * <pre>controller: function($scope, FDService) {
+   *     $scope.data = FDService.getData(); }</pre>
    *
    * @param {function=} stateConfig.controllerProvider
    * <a id='controllerProvider'></a>
@@ -2729,8 +2729,8 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
    * If minifying your scripts, make sure to explicitly annotate this function,
    * because it won't be automatically annotated by your build tools.
    *
-   * <pre>onEnter: function(MyService, $stateParams) {
-   *     MyService.foo($stateParams.myParam);
+   * <pre>onEnter: function(FDService, $stateParams) {
+   *     FDService.foo($stateParams.myParam);
    * }</pre>
    *
    * @param {function=} stateConfig.onExit
@@ -2741,8 +2741,8 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
    * If minifying your scripts, make sure to explicitly annotate this function,
    * because it won't be automatically annotated by your build tools.
    *
-   * <pre>onExit: function(MyService, $stateParams) {
-   *     MyService.cleanup($stateParams.myParam);
+   * <pre>onExit: function(FDService, $stateParams) {
+   *     FDService.cleanup($stateParams.myParam);
    * }</pre>
    *
    * @param {boolean=} [stateConfig.reloadOnSearch=true]

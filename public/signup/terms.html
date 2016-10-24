@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html class="fullscreen" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+  <head>
+	  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
+    <title>Merchant Agreement | Demo Marketplace</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../stylesheets/main.css" media="screen" />
+    <link rel="stylesheet" href="../../stylesheets/terms-conditions/terms-screen.css" media="screen" />
+    <link rel="stylesheet" href="../../stylesheets/terms-conditions/terms-print.css" media="print" />
+  </head>
+	<body>
+		<div id="full_body">
+    	<header>
+    		<div id="top">
+    			<nav class="container">
+    				<a id="logo" href="#"><img src="../../img/logo.svg" /></a>
+    				<a style="display:none;" id="cart-icon" href="#"><img src="../img/cart.svg"/><span>0</span></a>
+    				<ul id="main-menu" class="">
+    					<li><a class="nav-main-item" href="#">Home</a></li>
+    					<li><a class="nav-main-item" href="#">About</a></li>
+    					<li><a class="nav-main-item" href="#">Contact</a></li>
+    				</ul>
+    				<a id="mobile-menu-toggle"><i class="fa fa-bars"></i></a>
+    			</nav>
+    			<ul id="mobile-menu" style="display:none;">
+    				<li><a class="nav-main-item" href="#">Home</a></li>
+    				<li><a class="nav-main-item" href="#">About</a></li>
+    				<li><a class="nav-main-item" href="#">Contact</a></li>
+    			</ul>
+    		</div>
+    	</header>
+
+    	<div id="breadcrumb-anchor"></div>
+    	<div id="breadcrumb">
+    		<div class="breadcrumb-inner container">
+    			<div class="breadcrumb-mobile">
+    				<a id="mobile-breadcrumb-toggle" class="current"><i class="fa fa-chevron-down"></i> <span>Merchant Agreement</span></a>
+    			</div>
+    			<ul>
+    				<li><a>Merchant Application</a></li>
+    				<li><a>Verify Identity</a></li>
+    				<li><a class="current">Merchant Agreement</a></li>
+    				<li><a style="color:#aaa;">Finish</a></li>
+    			</ul>
+    		</div>
+    	</div>
+
+			<div class="main-content">
+				<div class="container" id="terms">
+          <table border="0" cellpadding="2" cellspacing="0">
+            <thead>
+              <tr>
+                <th></th>
+                <th style="vertical-align: middle; font-size: 14pt; text-align: center !important; line-height:24px;" colspan="3">MERCHANT PROCESSING APPLICATION AND AGREEMENT</th>
+                <th align="right" style="vertical-align:middle;" class="print">(Page 1 of 3)</th>
+                <th style="background: white !important;"><img src="https://s3-us-west-2.amazonaws.com/fdmarketplace/res/img/Banks/743/743.jpg" style="max-width:100%; max-height:30px;"/></th>
+              </tr>
+              <tr>
+                <td style="min-height:10px; height:10px;"></td>
+              </tr>
+              <tr>
+                <th style="text-align: left !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">RSAWTGTDS(SNAP)1905</th>
+                <th style="text-align: center !important; border: 1px solid black;" colspan="3">COMPLETE SECTIONS (1-9)</th>
+                <th style="text-align: right !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">RSAWTGTDS(SNAP)1908</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="width-5" colspan="3">
+                  Merchant #: <span class="dottedLine"></span></td>
+                <td class="align-right width-5" colspan="2">
+                  Loc.<span class="dottedLine align-center ">1</span> of <span class="dottedLine align-center ">1</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <hr>
+          <!-- (1) TELL US ABOUT YOUR BUSINESS -->
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <th>(1) TELL US ABOUT YOUR BUSINESS</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="width-8" colspan="5">
+                    <label>Legal Name:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.legalDbaName}}</span>
+                  </td>
+                  <td class="width-2" colspan="1">
+                    <label>Store #:</label>
+                    <span class="user-input">N/A</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="width-1" colspan="3">
+                    <label>DBA/Outlet Name:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.dbaName}}</span>
+                  </td>
+                  <td colspan="3">
+                    <label>First/Last Contact Name:</label>
+                    <span class="user-input">{{merchantBean.firstName}} {{merchantBean.middleName}} {{merchantBean.lastName}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="width-2" colspan="2">
+                    <label>Address:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.businessAddress}}</span>
+                  </td>
+                  <td colspan="1">
+                    <label>Suite #:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.businessAptSuite || 'N/A'}}</span>
+                  </td>
+                  <td colspan="1">
+                    <label>City:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.businessCity}}</span>
+                  </td>
+                  <td colspan="1">
+                    <label>State:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.businessState}}</span>
+                  </td>
+                  <td colspan="1">
+                    <label>Zip:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.businessZipcode}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3">
+                    <label>Business Phone:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.businessPhoneNumber}}</span>
+                  </td>
+                  <td colspan="3">
+                    <label>Customer Service Phone:</label>
+                    <span class="user-input">N/A</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3">
+                    <label>Fax Phone:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.fax || 'N/A'}}</span>
+                  </td>
+                  <td colspan="3">
+                    <label>Cell Phone:</label>
+                    <span class="user-input">N/A</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3">
+                    <label>E-mail Address:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.emailAddress}}</span>
+                  </td>
+                  <td colspan="3">
+                    <label>Website URL Address:</label>
+                    <span class="user-input">{{merchantBean.merchantBusinessBean.url}}</span>
+                  </td>
+                </tr>
+                <tr>
+                 <td colspan="3">
+                    <label>TIN Type:</label>
+                    &#9744; EIN (Fed Tax ID #)&nbsp;&nbsp;
+                    &#9744; SSN
+                  </td>
+                 <td colspan="3">
+                    <label>Retrieval Requests:</label>
+                    &#9744; Dedicated 24 Hour Fax&nbsp;&nbsp;
+                    &#9744; No fax; mail&nbsp;&nbsp;
+                    &#9744; Dispute Manager
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <br/>
+            <table class="border" style="background: #eee;">
+              <tr>
+                <td colspan="3"><strong>NOTE:</strong> Failure to provide accurate information may require us to withhold income tax from your funding per IRS regulations.</td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <label>Name <span style="font-style: italic">(as it appears on your income tax return)</span></label><br>
+                  <span class="user-input">MMIS TEST 8105</span>
+                </td>
+                <td align="center">
+                  <label>&#9744; Federal Tax ID # <span style="font-style: italic">(as it appears on your income tax return)</span></label><br>
+                  <span class="user-input">XXXXX8989</span>
+                </td>
+                <td>
+                  <label>&#9744; I certify that I am a foreign entity/nonresident alien.</label><br>
+                  <span style="font-style: italic">(If checked, please attach IRS Form W-8.)</span>
+                </td>
+              </tr>
+            </table>
+            <br/>
+            <table class="border-bottom">
+              <tbody>
+                <tr>
+                  <td colspan="2">
+                    <label>Product/Services you sell:</label>
+                    <span class="user-input">${merchantBean.merchantBusinessBean.mccDescription}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <label>Time frame from transaction to delivery:</label>
+                    <strong>% of orders delivered in:</strong>
+                    0-7 days <span class="user-input dottedLine"></span>% <strong>+</strong>
+                    8-14 days <span class="user-input dottedLine"></span>% <strong>+</strong>
+                    15-30 days <span class="user-input dottedLine"></span>% <strong>+</strong>
+                    over 30 days <span class="user-input dottedLine"></span>% <strong>= 100%</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <label>Who performs product/service fulfillement?</label>
+                    Direct <span class="user-input dottedLine"></span>
+                    Vendor <span class="user-input dottedLine"></span> If Vendor, add name, address, phone.
+                    &#9744; Other: <span style="font-style: italic">(specify)</span> <span class="user-input">N/A</span>
+                  </td>
+                </tr>
+                <tr>
+                 <td>
+                    <label>Do you use any third party to store, process or transmit cardholder data? </label>
+                    &#9744; Yes&nbsp;&nbsp;
+                    &#9744; No&nbsp;&nbsp;
+                  </td>
+                  <td>
+                    <label>If yes, give name/address:</label>
+                    <span class="user-input">N/A</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <label>Please identify any Software used for storing, transmitting, or processing card transactions or authorization requests.</label>
+                    <span class="user-input">N/A</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <hr>
+          <!-- ( 2 ) OWNERSHIP -->
+          <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+              <th>(2) OWNERSHIP</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+              <tr>
+                <td colspan="1">
+                  <label>State Organized:</label>
+                  <span class="user-input">${merchantBean.merchantBusinessBean.stateOfOrganization}</span>
+                </td>
+                <td colspan="1">
+                  <label>Month/Year Started:</label>
+                  <span class="user-input">${merchantBean.merchantBusinessBean.businessYearStarted}</span>
+                </td>
+                <td colspan="4">
+                  <span class="user-input">
+                    <c:choose>
+      <!--
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'SOLE OWNERSHIP'}"> &#9746;</c:when>
+      -->
+                      <c:otherwise>&#9744;</c:otherwise>
+                    </c:choose>
+                  </span> Sole Ownership
+                  <span class="user-input">
+                    <c:choose>
+      <!--
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'PARTNERSHIP'}"> &#9746;</c:when>
+      -->
+                      <c:otherwise>&#9744;</c:otherwise>
+                    </c:choose>
+                  </span> Partnership
+                  <span class="user-input">
+                    <c:choose>
+      <!--
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'NON PROFIT / TAX EXEMPT'}"> &#9746;</c:when>
+      -->
+                      <c:otherwise>&#9744;</c:otherwise>
+                    </c:choose>
+                  </span> Non Profit/Tax Exempt
+                  <span class="user-input">
+                    <c:choose>
+      <!--
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'PUBLIC CORPORATION'}"> &#9746;</c:when>
+      -->
+                      <c:otherwise>&#9744;</c:otherwise>
+                    </c:choose>
+                  </span> Public Corp.
+                  <span class="user-input">
+                    <c:choose>
+      <!--
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'PRIVATE CORPORATION'}"> &#9746;</c:when>
+      -->
+                      <c:otherwise>&#9744;</c:otherwise>
+                    </c:choose>
+                  </span> Private Corp.
+                  <span class="user-input">
+                    <c:choose>
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'LIMITED LIABILITY CORPORATION (LLC)'}"> &#9746;</c:when>
+      <!--
+                      <c:otherwise>&#9744;</c:otherwise>
+      -->
+                    </c:choose>
+                  </span>  L.L.C
+                  <span class="user-input">
+                    <c:choose>
+      <!--
+                      <c:when test="${merchantBean.merchantBusinessBean.organizationType == 'GOVERNMENT'}"> &#9746;</c:when>
+      -->
+                      <c:otherwise>&#9744;</c:otherwise>
+                    </c:choose>
+                  </span> Govt.
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <label>Owner/Partner/Officer Name:</label>
+                  <span class="user-input">${merchantBean.firstName}</span><span class="user-input">${merchantBean.middleName}</span><span class="user-input">${merchantBean.lastName}</span>
+                </td>
+                <td colspan="2">
+                  <label>D.O.B.:</label>
+                  <span class="user-input">${merchantBean.dateOfBirth}</span>
+                </td>
+                <td>
+                  <label>Social Security #:</label>
+                  <span class="user-input">${merchantBean.socialSecurityNumber}</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <label>Home Phone</label>
+                  <span class="user-input">${merchantBean.phoneNumber}</span>
+                </td>
+                <td colspan="3">
+                  <label>Ownership %:</label>
+                  <span class="user-input">100</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <label>Home Address:</label>
+                  <span class="user-input">${merchantBean.homeAddress}</span>
+                </td>
+                <td>
+                  <label>City:</label>
+                  <span class="user-input">${merchantBean.city}</span>
+                </td>
+                <td>
+                  <label>State</label>
+                  <span class="user-input">${merchantBean.homeAddress}</span>
+                </td>
+                <td>
+                  <label>Zip:</label>
+                  <span class="user-input">${merchantBean.zipCode}</span>
+                </td>
+                <td>
+                  <label>Country</label>
+                  <span class="user-input">US</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <label>Owner/Partner/Officer Name:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td colspan="2">
+                  <label>D.O.B.:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td>
+                  <label>Social Security #:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <label>Home Phone</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td colspan="3">
+                  <label>Ownership %:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <label>Home Address:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td>
+                  <label>City:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td>
+                  <label>State</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td>
+                  <label>Zip:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td>
+                  <label>Country</label>
+                  <span class="user-input">N/A</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <hr>
+          <!-- ( 3 ) BUSINESS FINANCIAL DATA -->
+          <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+              <th>(3) BUSINESS FINANCIAL DATA</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table cellpadding="2" cellspacing="0">
+              <tr>
+                <td colspan="3" style="border-right: 1px solid #aaa;">
+                  <table>
+                    <tr>
+                      <td colspan="2">
+                        <table>
+                          <tr>
+                            <td><strong>Total Annual Volume</strong></td>
+                            <td class="align-right"><strong>This Location</strong></td>
+                            <td class="align-right"><strong>All Locations</strong></td>
+                          </tr>
+                          <tr>
+                            <td>MasterCard/ Visa</td>
+                            <td class="align-right">$<span class="user-input dottedLine">8100</span></td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                          </tr>
+                          <tr>
+                            <td>Discover/PayPal</td>
+                            <td class="align-right">$<span class="user-input dottedLine">400</span></td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                          </tr>
+                          <tr>
+                            <td>American Express OptBlue®</td>
+                            <td class="align-right">$<span class="user-input dottedLine">1500</span></td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                          </tr>
+                          <tr>
+                            <td>Voyager</td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                          </tr>
+                          <tr>
+                            <td>WEX</td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td>
+                        <table>
+                          <tr>
+                            <td colspan="2">&nbsp;</td>
+                          </tr>
+                          <tr>
+                            <td>Average Card Sale Amount</td>
+                            <td class="align-right">$<span class="user-input dottedLine">500</span></td>
+                          </tr>
+                          <tr>
+                            <td>Highest Sale Amount</td>
+                            <td class="align-right">$<span class="user-input dottedLine">1000</span></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td style="border-right: 1px solid #aaa;">
+                  <table>
+                    <tr>
+                      <td>
+                        <table>
+                          <tr>
+                            <td>Card Present</td>
+                            <td class="align-right"><span class="user-input dottedLine">30</span>%</td>
+                          </tr>
+                          <tr>
+                            <td>Internet</td>
+                            <td class="align-right"><span class="user-input dottedLine">N/A</span>%</td>
+                          </tr>
+                          <tr>
+                            <td>Mail Order / Direct Marketing</td>
+                            <td class="align-right"><span class="user-input dottedLine">N/A</span>%</td>
+                          </tr>
+                          <tr>
+                            <td>Phone Order</td>
+                            <td class="align-right"><span class="user-input dottedLine">70</span>%</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Total</strong></td>
+                            <td class="align-right"><span class="user-input">100%</span></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table>
+                    <tr>
+                      <td>
+                        <table>
+                          <tr>
+                            <td>Swiped</td>
+                            <td class="align-right"><span class="user-input dottedLine">30</span>%</td>
+                          </tr>
+                          <tr>
+                            <td>Keyed</td>
+                            <td class="align-right"><span class="user-input dottedLine">70</span>%</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Total</strong></td>
+                            <td class="align-right"><span class="user-input">100%</span></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <hr>
+          <!-- ( 4 ) BANKING AND FUNDING INFORMATION -->
+          <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+              <th>(4) BANKING AND FUNDING INFORMATION</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+              <tr>
+                <td>
+                  <label>ABA #:</label>
+                  <span class="user-input">XXXXX0021</span>
+                </td>
+                <td>
+                  <label>DDA #:</label>
+                  <span class="user-input">XXXXX8989</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label>ABA #:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+                <td>
+                  <label>DDA #:</label>
+                  <span class="user-input">N/A</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label>Deduct Fees:</label>
+                  &#9744; Daily <span style="font-style: italic">(excluding Flat Rate)</span>&nbsp;&nbsp;
+                  &#9744; Monthly <span style="font-style: italic">(fee will apply)</span>
+                </td>
+                <td>
+                  <label>Bank Will Fund:</label>
+                  &#9744; Outlet&nbsp;&nbsp;
+                  &#9744; Head Office
+                </td>
+              </tr>
+            </table>
+          </div>
+          <hr>
+          <!-- ( 5 ) ENTITLEMENTS-->
+          <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+              <th>(5) ENTITLEMENTS</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+              <tr>
+                <td colspan="2">
+                  <span class="user-input">&#9744;</span> American Express OptBlue&reg;
+                </td>
+                <td>
+                  <span class="user-input">&#9744;</span> Pin Debit
+                </td>
+                <td>
+                  <span class="user-input">&#9744;</span> EBT  SNAP/FNS#:
+                  <span class="user-input dottedLine"></span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <span class="user-input">&#9744;</span> Voyager Fleet&nbsp;&nbsp;&nbsp;
+                  <span style="font-style: italic !important;">(Participation in Voyager Tax Exempt Program):</span> <span class="user-input">&#9744;</span> Yes <span class="user-input">&#9744;</span> No
+                  <span style="font-style: italic !important;">(if yes, additional request form required)</span>
+                </td>
+                <td colspan="2">
+                  <span class="user-input">&#9744;</span> WEX Full Acquiring
+                  <span class="user-input">&#9744;</span> WEX (Non-Full Svc)
+                  <span class="user-input">&#9744;</span> MC Fleet
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <span class="user-input">&#9744;</span> American Express Pass Through SE (existing): <span class="user-input dottedLine"></span>
+                </td>
+                <td colspan="2">
+                  Pass Through:
+                  <span class="user-input">&#9744;</span> Split Dial
+                  <span class="user-input">&#9744;</span> EDC
+                </td>
+              </tr>
+            </table>
+          </div>
+          <hr>
+
+
+          <!-- ( 6 ) EQUIPMENT DETAILS -->
+          <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+              <th colspan="3">(6) EQUIPMENT DETAILS</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table class="border" cellpadding="2" cellspacing="0">
+              <tr class="align-center">
+                <td>
+                  Rental &#149; Purchase <br>
+                  Customer-Owned <br>
+                  <span style="vertical-align: super;font-size: smaller;">*</span>Lease</span>
+                </td>
+                <td>QTY</td>
+                <td>IP</td>
+                <td>Equipment Type <br> (i.e., Clover/Terminal/VAR)</td>
+                <td>Industry Type</td>
+                <td>Model Code and Name</td>
+                <td>Unit Price w/o Tax and S&H</td>
+                <td>Customer-Owned Equipment Track/Version/Serial #</td>
+              </tr>
+              <tr class="align-center">
+                <td><span class="user-input">Purchased</span></td>
+                <td><span class="user-input">1</span></td>
+                <td><span class="user-input">&#9744;</span></td>
+                <td><span class="user-input">IBUNDLE</span></td>
+                <td><span class="user-input">${merchantBean.merchantBusinessBean.businessType}</span></td>
+                <td><span class="user-input">Clover Mobile 3g/Wifi Package</span></td>
+                <td align="left" class="align-left">$ <span class="user-input">999.00</span></td>
+                <td><span class="user-input">N/A</span></td>
+              </tr>
+              <tr class="align-center">
+                <td><span class="user-input">Rental</span></td>
+                <td><span class="user-input">1</span></td>
+                <td><span class="user-input">&#9744;</span></td>
+                <td></td>
+                <td><span class="user-input">${merchantBean.merchantBusinessBean.businessType}</span></td>
+                <td><span class="user-input">FD MOBILE PAY MSR</span></td>
+                <td align="left" class="align-left">$ <span class="user-input">0</span></td>
+                <td><span class="user-input">N/A</span></td>
+              </tr>
+              <tr class="align-center">
+                <td><span class="user-input"></span></td>
+                <td><span class="user-input"></span></td>
+                <td><span class="user-input">&#9744;</span></td>
+                <td></td>
+                <td><span class="user-input"></span></td>
+                <td><span class="user-input"></span></td>
+                <td align="left" class="align-left">$ <span class="user-input"></span></td>
+                <td><span class="user-input"></span></td>
+              </tr>
+              <tr class="align-center">
+                <td><span class="user-input"></span></td>
+                <td><span class="user-input"></span></td>
+                <td><span class="user-input">&#9744;</span></td>
+                <td></td>
+                <td><span class="user-input"></span></td>
+                <td><span class="user-input"></span></td>
+                <td align="left" class="align-left">$ <span class="user-input"></span></td>
+                <td><span class="user-input"></span></td>
+              </tr>
+            </table>
+            <table>
+              <tr>
+                <td>
+                  <strong>Shipping and Handling:</strong>&nbsp;&nbsp;
+                  Standard $<span class="user-input dottedLine"></span>&nbsp;&nbsp;
+                  Overnight $<span class="user-input dottedLine"></span>
+                </td>
+                <td><span class="user-input">&#9744;</span> Enable EMV</td>
+              </tr>
+            </table>
+            <p><span style="vertical-align: super;font-size: smaller;">*</span>See Equipment Lease Agreement for the Terms and Conditions governing your Leased equipment.</p>
+          </div>
+          <hr class="page-break">
+          <table>
+            <tr>
+              <th class="print"></th>
+              <th colspan="3" class="print" style="vertical-align: middle; font-size: 16pt; text-align: center !important;" colspan="3">MERCHANT PROCESSING APPLICATION AND AGREEMENT</th>
+              <th class="print" align="right">(Page 2 of 3)</th>
+            </tr>
+            <tr>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="width-5 print" colspan="3">
+                Merchant #: <span class="dottedLine"></span></td>
+              <td class="align-right width-5 print" colspan="2">
+                Loc.<span class="dottedLine align-center ">1</span> of <span class="dottedLine align-center ">1</span>
+              </td>
+            </tr>
+          </table>
+          <!-- ( 7 ) FEE SCHEDULE -->
+          <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+              <th class="print" style="text-align: left !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">RSAWTGTDS(SNAP)1905</th>
+              <th colspan="3">(7) FEE SCHEDULE</th>
+              <th class="print" style="text-align: right !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">RSAWTGTDS(SNAP)1908</th>
+            </tr>
+          </table>
+          <div class="section">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="2" style="text-align: center !important;" class="small">Product Subscriptions (Monthly)</th>
+                    </tr>
+                    <tr>
+                      <td>Clover Services (Per Station)</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Insightics Solution</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Perka Solution</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>TransArmor Solution</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">TBD</span></td>
+                    </tr>
+                  </table>
+                  <br>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="2" style="text-align: center !important;" class="small">Compliance Fees</th>
+                    </tr>
+                    <tr>
+                      <td>Monthly Compliance Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">29.95</span></td>
+                    </tr>
+                    <tr>
+                      <td>Annual Compliance Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                  </table>
+                  <br>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="2" style="text-align: center !important;" class="small">Mobile Payments Solution (Clover Go)</th>
+                    </tr>
+                    <tr>
+                      <td>Mobile Payments Setup Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Mobile Payments Setup Fee (Per Terminal ID)</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                  </table>
+                  <br>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="2" style="text-align: center !important;" class="small">eCommerce/Wireless Solutions</th>
+                    </tr>
+                    <tr>
+                      <td>Payeezy Setup Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Payeezy Monthly Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Payeezy Webstore Solution</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Global ePricing MC/Visa Service Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                    <tr>
+                      <td>Internet Set-Up Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Internet Authorization Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Internet Service Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Wireless Access Fee (Per User)</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Other: <span class="user-input dottedLine"></span></td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                  </table>
+                  <br>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="4" style="text-align: center !important;" class="small">Petroleum Services</th>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Datawire Micronode
+                        <span class="user-input">&#9744;</span> Yes
+                        <span class="user-input">&#9744;</span> No
+                      </td>
+                      <td>Datawire Monthly Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Voyager</td>
+                      <td>Authorization Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td>Sales/Credit Discount</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">WEX</td>
+                      <td>Full Service Authorization Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td>Sales/Credit Discount</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td>Chargeback Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td>Retrieval Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td>Non-Full Service Authorization Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="2" style="text-align: center !important;" class="small">Start-Up Fees</th>
+                    </tr>
+                    <tr>
+                      <td>Application Fee (Non-Refundable)</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">149.00</span></td>
+                    </tr>
+                    <tr>
+                      <td>Reprogramming Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.00</span></td>
+                    </tr>
+                    <tr>
+                      <td>Debit Set-Up Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">50.00</span></td>
+                    </tr>
+                    <tr>
+                      <td>Miscellaneous Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.00</span></td>
+                    </tr>
+                    <tr>
+                      <td><span style="vertical-align: super;font-size: smaller;">*</span>Equipment Purchase</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">TBD</span></td>
+                    </tr>
+                    <tr>
+                      <td>Other: <span class="user-input dottedLine"></span></td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td>Total Amount:</td>
+                      <td class="align-right">$ <span class="user-input dottedLine"></span> w/o tax</td>
+                    </tr>
+                  </table>
+                  <table style="border:1px solid; border-top:0;">
+                    <tr>
+                      <td><span style="vertical-align: super;font-size: smaller;">*</span>Plus applicable State/City/Local sales tax.</td>
+                    </tr>
+                  </table>
+                  <br>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="4" style="text-align: center !important;" class="small">Debit Fees</th>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Bundled Debit <br>(Applies to MC/V/Disc Non-PIN and PIN Debit)</td>
+                      <td>Discount Rate</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td>Sales/Return Trans Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Unbundled Debit <br>(Applies to PIN Debit only)</td>
+                      <td>Transaction Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.39<span style="vertical-align: super;font-size: smaller;">*</span></span></td>
+                    </tr>
+                  </table>
+                  <table style="border:1px solid; border-top:0;">
+                    <tr>
+                      <td><span style="vertical-align: super;font-size: smaller;">*</span>Plus applicable PIN Debit Network fees.</td>
+                    </tr>
+                  </table>
+                  <br>
+                  <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                    <tr>
+                      <th colspan="3" style="text-align: center !important;" class="small">Miscellaneous Fees<span style="vertical-align: super;font-size: smaller;">*</span> (If Applicable)</th>
+                    </tr>
+                    <tr>
+                      <td colspan="2">TransArmor Data Protection Service (Tokenization & Encryption)</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">TBD</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Non-Receipt of PCI Validation</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">19.95</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Business Advantage Pkg</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">9.95</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Minimum Processing Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">25.00</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Paper Statement Fee (Default is free electronic statement)</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Chargeback Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">25.00</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">ACH Reject Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">25.00</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Batch Settlement Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.39</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Monthly Funding Advantage</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">AVS</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.10</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Voice Authorization</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.75</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Network Access Fee</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.03</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">MC License Volume Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">0.02</span> %</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">MC Cross Border Fee USD</td>
+                      <td class="align-right"><span class="user-input dottedLine">0.85</span> %</td>
+                    </tr>
+                    <tr>
+                      <td>Visa Int’l Service Fee</td>
+                      <td class="align-right">USD: <span class="user-input dottedLine">1.05</span> %</td>
+                      <td class="align-right">Non-USD: <span class="user-input dottedLine">1.45</span> %</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">American Express Pass Through</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">0.00</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">EBT</td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">Other: <span class="user-input dottedLine"></span></td>
+                      <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                    </tr>
+                  </table>
+                  <table style="border:1px solid; border-top:0;">
+                    <tr>
+                      <td><span style="vertical-align: super;font-size: smaller;">*</span>You may be charged, if applicable, additional Card/Payments Organization pass through fees and costs for your transactions as described in the Interchange Qualification Matrix and American Express OptBlue® Guide available at www.businesstrack.com.</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <table>
+            <table cellpadding="2" cellspacing="0" class="border">
+              <tr>
+                <td colspan="2">Pricing Method<span style="vertical-align: super;font-size: smaller;">(A)</span></td>
+                <td align="center">MC/VISA/Discover Ntwk/PayPal 2-Tier</td>
+                <td align="center">MC/VISA/Discover Ntwk/PayPal 3-Tier</td>
+                <td colspan="2" align="center">Transaction Fees<br> (Applies to MC/Visa/Discover Ntwk/PayPal 2-Tier <br><strong>and</strong><br> MC/Visa/Discover Ntwk/PayPal 3-Tier ONLY)</td>
+                <td align="center">MC / Visa /Discover Ntwk / PayPal / American Express OptBlue® Discount Rate</td>
+                <td align="center">IC Plus</td>
+              </tr>
+              <tr>
+                <td colspan="8" align="center" style="background:#eee;"><strong>Qualified Discount Rates</strong></td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/Visa/Discover Ntwk/PayPal Credit Discount Rate</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td colspan="2">
+                  <table>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Ntwk/PayPal Credit Trans Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right"><span class="user-input dottedLine">2.15</span> %</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/Visa/Discover Ntwk/PINless POS <span style="vertical-align: super;font-size: smaller;">*</span>Non-PIN (Signature) Debit Discount Rate</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td colspan="2">
+                  <table>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Ntwk/PINless POS Non-PIN (Signature) Debit Trans Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right"><span class="user-input dottedLine">2.10</span> %</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+              </tr>
+              <tr>
+                <td colspan="2">American Express OptBlue®</td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td colspan="2" style="background: #aaa;">
+                  <table>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="align-right"></td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+              </tr>
+              <tr>
+                <td colspan="8" align="center" style="background:#eee;"><strong>Mid-Qualified Discount Rates (Does not apply to MC / Visa / Discover/PayPal 2 Tier)</strong></td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/Visa/Discover Ntwk/PayPal Credit Discount Rate</td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td colspan="2">
+                  <table>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Ntwk/PayPal Credit Trans Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/Visa/Discover Ntwk <span style="vertical-align: super;font-size: smaller;">*</span>Non-PIN (Signature) Debit Discount Rate</td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td colspan="2">
+                  <table>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Ntwk Non-PIN (Signature) Debit Trans Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+              </tr>
+              <tr>
+                <td colspan="8" align="center" style="background:#eee;"><strong>Non-Qualified Discount Rates</strong></td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/Visa/Discover Ntwk/PayPal Credit Discount Rate</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td colspan="2">
+                  <table>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Ntwk/PayPal Credit Trans Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/Visa/Discover Ntwk <span style="vertical-align: super;font-size: smaller;">*</span>Non-PIN (Signature) Debit Discount Rate</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                <td colspan="2">
+                  <table>
+                    <tr>
+                      <td colspan="2">MC/V/Discover Ntwk Non-PIN (Signature) Debit Trans Fee</td>
+                      <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+              </tr>
+              <tr>
+                <td colspan="8" style="background:#eee;"><span style="vertical-align: super;font-size: smaller;">*</span>Fees do not apply if Bundled Debit is chosen</td>
+              </tr>
+              <tr>
+                <td colspan="2">MC/V/ Discover Ntwk/PINless POS Authorization & Return Transaction Fee</td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td colspan="2" style="background: #aaa;">
+                  <table>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="align-right"></td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right">$<span class="user-input dottedLine">0.29</span></td>
+                <td class="align-right">$ <span class="user-input dottedLine">N/A</span></td>
+              </tr>
+              <tr>
+                <td colspan="2">Non-Qual Surcharge Fee<br>
+                  (excluding Card/Payments Organization pass-through fees, and any interchange rate difference)<br>
+                  Applies to Non-Qualified MC, Visa, Discover Ntwk/ PayPal, and/or Non-PIN (Signature) Debit Transactions. Rewards Cards Surcharge Rate<
+                /td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td class="align-right" style="background: #aaa;"></td>
+                <td colspan="2" style="background: #aaa;">
+                  <table>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="align-right"></td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="align-right"><span class="user-input dottedLine">2.99</span> %<br><span class="user-input dottedLine">2.99</span> % </td>
+                <td class="align-right" style="background: #aaa;"></td>
+              </tr>
+            </table>
+            <p><span style="vertical-align: super;font-size: smaller;">(A)</span> Interchange Rates are variable and are determined by how your transactions clear. Please see your Interchange Rate Schedule, Interchange Qualification Matrix and American Express OptBlue® Guide for Interchange Rates & Dues/Assessments and qualification criteria as of the date of this Application. The Interchange Rates and Dues/Assessments are subject to change. American Express OptBlue® has Program Pricing which is not Interchange and which is subject to change.</p>
+            <br>
+            <table cellpadding="2" cellspacing="0" class="border">
+              <tr>
+                <td colspan="2" align="center">Swiped/Non-Swiped<br>(if selected, the discount rates below apply to all card types and brands accepted)</td>
+              </tr>
+              <tr>
+                <td>
+                  <table>
+                    <tr>
+                      <td>Swiped or Dipped Transactions</td>
+                      <td>
+                        <table>
+                          <tr>
+                            <td></td>
+                            <td colspan="5"><span class="user-input dottedLine space-left">N/A</span> % of gross transaction</td>
+                          </tr>
+                          <tr>
+                            <td>+</td>
+                            <td colspan="5">$ <span class="user-input dottedLine">N/A</span> per transaction </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table>
+                    <tr>
+                      <td>Non-Swiped and Non-Dipped Transactions</td>
+                      <td>
+                        <table>
+                          <tr>
+                            <td></td>
+                            <td colspan="5"><span class="user-input dottedLine space-left">N/A</span> % of gross transaction</td>
+                          </tr>
+                          <tr>
+                            <td>+</td>
+                            <td colspan="5">$ <span class="user-input dottedLine">N/A</span> per transaction </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <hr class="page-break">
+            <table>
+              <tr>
+                <th class="print"></th>
+                <th colspan="3" class="print" style="vertical-align: middle; font-size: 16pt; text-align: center !important;" colspan="3">MERCHANT PROCESSING APPLICATION AND AGREEMENT</th>
+                <th class="print" align="right">(Page 3 of 3)</th>
+              </tr>
+              <tr>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="width-5 print" colspan="3">
+                  Merchant #: <span class="dottedLine"></span></td>
+                <td class="align-right width-5 print" colspan="2">
+                  Loc.<span class="dottedLine align-center ">1</span> of <span class="dottedLine align-center ">1</span>
+                </td>
+              </tr>
+            </table>
+            <!--  ( 8 ) AGREEMENT APPROVAL -->
+          <table border="0" cellpadding="5" cellspacing="0">
+            <tr>
+              <th>(8) AGREEMENT APPROVAL</th>
+            </tr>
+            <tbody style="text-align:justify;">
+              <tr>
+                <td><strong>On behalf of myself as an individual, and the entity on whose behalf I am signing, (A) I authorize [Servicers], the applicable Card / Payments Organizations, and its and their Affiliates, third party subcontractors and/or agents:</strong> (i) to use, disclose, and exchange amongst them, the information in the Agreement and information about me personally, (including by requesting, personal and business consumer reports, bank references, and other information as necessary from time to time), for marketing and administrative purposes, verification purposes, purposes under the Merchant Processing Application and Agreement (“MPA”), if approved, and any other uses permitted by law; (ii) to inform me directly about the contents of requested consumer reports (including the name and address of the agency furnishing the report), and (ii) to receive any and all personal and business credit financial information from all references, including banks and consumer reporting agencies, which are hereby released to provide that information; and (B) I certify that: (i) The federal taxpayer identification number and corresponding filing name provided herein are correct; (ii) The statements made and agreed to in this MPA, to which I have not made any alterations or stricken out any language, are true, complete and accurate, and may be relied upon as current unless changed or updated per the Notice provisions of Agreement; (iii) I can read and understand the English language; (iv) I have received and read a copy of the (a) MPA (consisting of Sections 1-9), (b) General Terms and Conditions, (c) Confirmation Page (version [RSAWTGTDS(SNAP)1905]), and (d) Interchange rate Schedule. I understand that the Interchange Qualification Matrix and American Express OptBlue® Guide and Your Payments Acceptance Guide are available at www.businesstrack.com and the signature below is for the entire contents of the listed documents; v) I have authority to bind the entity on whose behalf I am signing below; I further acknowledge and agree that I will not use my merchant account and/or the Services for illegal transactions, for example, those prohibited by the Unlawful Internet Gambling Enforcement Act, 31 U.S.C. Section 5361 et seq, as may be amended from time to time or for processing and acceptance of transactions in certain jurisdictions pursuant to 31 CFr Part 500 et seq. and other laws enforced by the Office of Foreign Assets Control (OFAC).</td>
+              </tr>
+            </tbody>
+          </table>
+          <table border="0" cellpadding="2" cellspacing="0">
+            <tr>
+              <td>
+                <span class="bold">Merchant Business Principal:</span>
+                <div class="signature-box">
+                  <canvas id="signature1"></canvas>
+                  <span>Please sign in the box with mouse or finger.</span>
+                  <a class="button" style="display:none;">Clear Signature</a>
+                </div>
+                <p>Date: <span>07/12/2016</span></p>
+                <p>Print Name: <span class="user-input dottedLine">${merchantBean.firstName} ${merchantBean.middleName} ${merchantBean.lastName}</span></p>
+                <div>
+                  <span class="user-input">&#9744;</span> President
+                  <span class="user-input">&#9744;</span> Vice President
+                  <span class="user-input">&#9744;</span> Member L.L.C
+                  <span class="user-input">&#9744;</span> Owner
+                  <span class="user-input"> &#9746;</span> Partner
+                  <span class="user-input">&#9744;</span> Other <span class="user-input dottedLine"></span>
+                </div>
+              </td>
+              <td>
+                <table class="bold" style="background: #eee">
+                    <td colspan="1">(PROCESSOR):</td>
+                    <td colspan="2">Express Merchant Processing Solutions, (a division of First Data Merchant Services LLC), and Santander Bank</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">X Signature <span class="user-input dottedLine"></span></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="signature-box">
+                  <canvas id="signature2"></canvas>
+                  <span>Please sign in the box with mouse or finger.</span>
+                  <a class="button" style="display:none;">Clear Signature</a>
+                </div>
+                <p>Date: <span>07/12/2016</span></p>
+                <p>Print Name: <span class="user-input dottedLine"></span></p>
+                <div>
+                  <span class="user-input">&#9744;</span> President
+                  <span class="user-input">&#9744;</span> Vice President
+                  <span class="user-input">&#9744;</span> Member L.L.C
+                  <span class="user-input">&#9744;</span> Owner
+                  <span class="user-input"> &#9744;</span> Partner
+                  <span class="user-input">&#9744;</span> Other <span class="user-input dottedLine"></span>
+                </div>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+          <hr>
+          <hr>
+          <!--  ( 9 ) PERSONAL GUARANTY -->
+          <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+              <th class="print" style="text-align: left !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">RSAWTGTDS(SNAP)1905</th>
+              <th colspan="3">(9) PERSONAL GUARANTY</th>
+              <th class="print" style="text-align: right !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">RSAWTGTDS(SNAP)1908</th>
+            </tr>
+          </table>
+          <table  border="0" cellpadding="10" cellspacing="0">
+            <tr>
+              <td colspan="2" style="text-align: justify;">In exchange for Express Merchant Processing Solutions, (a division of First Data Merchant Services LLC), and Santander Bank, (the Guaranteed Parties) acceptance of the MPA and the General Terms and Conditions, the undersigned (“Guarantor”): (A) Unconditionally and irrevocably guarantees the full payment and performance of Merchant’s obligations (i) as they now exist or as modified under the foregoing agreements, (ii) with or without actual notice of changes, and (iii) during and after the term of the agreements; (B) Waives notice of Merchant’s default; (C) Shall indemnify the Guaranteed Parties for any and all amounts due from Merchant; (D) Warrants, with knowledge that Guaranteed Parties are acting in full reliance on the same, this Personal Guarantee of payment and not of collection; (E) Acknowledges that (i) the Guaranteed Parties may proceed in law directly against Guarantor and not Merchant, and (ii) this is a continuing personal guaranty and shall not be discharged or affected for any reason.</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="bold">Signature</span>:
+                <div class="signature-box">
+                  <canvas id="signature3"></canvas>
+                  <span>Please sign in the box with mouse or finger.</span>
+                  <a class="button" style="display:none;">Clear Signature</a>
+                </div>
+                <p class="align-right">,an individual</p>
+              </td>
+              <td>
+                <span class="bold">Signature</span>:
+                <div class="signature-box">
+                  <canvas id="signature4"></canvas>
+                  <span>Please sign in the box with mouse or finger.</span>
+                  <a class="button" style="display:none;">Clear Signature</a>
+                </div>
+                <p class="align-right">,an individual</p>
+              </td>
+            </tr>
+          </table>
+          <br>
+        </div>
+        <hr class="page-break">
+        <!-- CONFIRMATION -->
+        <div class="container" id="confirmation">
+          <table border="0" cellpadding="2" cellspacing="0">
+            <thead>
+            <tr>
+              <td colspan="3" class="align-center"><h1>CONFIRMATION</h1></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td class="width-5" colspan="1">
+                RSAWTGTDS(SNAP) 1905
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="section">
+            <table class="border" cellpadding="2" cellspacing="0">
+              <tr>
+                <td class="width-6" colspan="4">
+                  <label>Processor Name</label>
+                  <span class="user-input">First Data Merchant Services</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="width-2" colspan="2">
+                  <label>Processor Address:</label>
+                  <span class="user-input">4000 Coral Ridge Dr., Coral Springs, FL 33065</span>
+                </td>
+                <td colspan="1">
+                  <label>Processor URL:</label>
+                  <span class="user-input">www.firstdata.com</span>
+                </td>
+                <td colspan="1">
+                  <label>Processor Customer Service #:</label>
+                  <span class="user-input">1-877-273-8191</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <br>
+          <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+              <td style="text-align: justify;"><p><strong>Please read this entire <a class="link" target="_blank">Agreement</a>. It describes the terms on which we will provide merchant processing Services to you. This summary provides answers to commonly asked questions about your Agreement.</strong></p></td>
+            </tr>
+            <tr>
+              <td style="text-align: justify;">
+                <p><strong>1. Your Discount Rates and other fees</strong> are calculated based on transactions qualifying for certain program pricing and interchange rates levied by the applicable Card Organization. Transactions that fail to qualify for these rates will be charged an additional fee. Interchange and program pricing levied by the Card Organization is subject to change, (see Section 6 of the General Terms & Conditions).</p>
+                <p><strong>2. We may debit your bank account</strong> (also referred to as your Settlement Account) for amounts owed to us.</p>
+                <p><strong>3. You are liable for Chargebacks and there are many reasons why a Chargeback may occur.</strong> When they occur we will debit your Settlement Account. See Section 8 of the General Terms & Conditions.</p>
+                <p><strong>4. If you wish to dispute any charge or funding,</strong> you must notify us within 60 days of the date of the statement on which the charge or funding appears.</p>
+                <p><strong>5. This Agreement limits our liability to you.</strong> See Section 10 of the General Terms & Conditions for further details.</p>
+                <p><strong>6. We have assumed certain risks</strong> by agreeing to provide you with the Services. Accordingly, we may take certain actions to mitigate our risk, including termination of this Agreement, and holding monies otherwise payable to you (see Sections 16 and 17 of the General Terms & Conditions).</p>
+                <p><strong>7. By executing this Agreement with us</strong> you authorize us and our Affiliates to obtain and share financial and credit information regarding your business and the signers and guarantors of this Agreement until all your obligations to us and our Affiliates are satisfied.</p>
+                <p><strong>8. Arbitration:</strong> This Agreement contains a binding arbitration provision in Section 27 that affects your rights under this Agreement with respect to all Services.</p>
+              </td>
+            </tr>
+          </table>
+          <div class="section clearfix">
+            <br>
+            <table border="0" cellpadding="2" cellspacing="0" style="width: 45%; float:left; margin-right: 5%;">
+              <tr>
+                <td><p><strong>Information about Bank:</strong></p></td>
+              </tr>
+              <tr>
+                <td>
+                  <p>a) Your Bank, who is a Visa and MasterCard Member Bank, is Wells Fargo Bank, N.A. (<strong>Bank</strong>), 1200 Montego, Walnut Creek, CA 94598, (925)-746-4143.</p>
+                  <p>b) Bank is the entity approved to extend acceptance of Visa and MasterCard products directly to you and will be a party to the sections of this Agreement listed in Section 2.2.</p>
+                  <p>c) Bank works with Processor to provide the Services to you with respect to Visa Cards and to MasterCard Cards.</p>
+                  <p>d) Bank shall, either directly or through Processor, advise you of pertinent Card Organization Rules with which you must comply.</p>
+                  <p>e) Bank is responsible for and must provide settlement funds to you and will be responsible for all funds held in a reserve.</p>
+                </td>
+              </tr>
+            </table>
+            <table border="0" cellpadding="2" cellspacing="0" style="width: 45%; float:left; margin-right: 5%;">
+              <tr>
+                <td><p><strong>Your Responsibilities:</strong></p></td>
+              </tr>
+              <tr>
+                <td>
+                  <p>a) You must comply in full at all times with this Agreement (including the Your Payments Acceptance Guide), all Card Organization Rules and all Cardholder and customer data security and storage requirements.
+                  <p>b) You may view and download the Your Payments Acceptance Guide at https://www.businesstrack.com
+                  <p>c) You may view and download the Interchange Qualification Matrix and American Express OptBlue® Guide at
+                  <a class="link" href="https://www.businesstrack.com" target="_blank">https://www.businesstrack.com</a>
+                  <p>d) You may download the Visa and MasterCard rules at: https://usa.visa.com/support/merchant.html <a class="link" href="http://www.mastercard.com/us/merchant/support/rules.html" target="_blank">http://www.mastercard.com/us/merchant/support/rules.html</a>
+                  <p>e) For your account to stay operational, you must keep fraud and Chargeback levels below Card Organization thresholds.
+                  <p>f) Please retain a signed copy of your Agreement.
+                </td>
+              </tr>
+            </table>
+          </div>
+          <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+              <td>Print Merchant’s Business Legal Name: <span class="user-input">MSTS RETAIL2</span></td>
+            </tr>
+          </table>
+          <br>
+          <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+              <td colspan="2"><strong>By signing below, you:</strong></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <strong>
+                  <p>(i) confirm that you have received and read the Application, General Terms & Conditions [version EMPSW(SNAP)1905, consisting of 10 pages including this Confirmation Page], [Interchange Rate Schedule]; and</p>
+                  <p>(ii) agree to all terms in this Agreement in your capacity as a person authorized to sign on behalf of the business set out in the Application.</p>
+                  <p>(iii) acknowledge that you have executed the Agreement using an electronic signature process and that signature reflects your agreement to be bound to the General Terms and Conditions set forth in the Agreement.</p>
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2"><strong>NO SALES REPRESENTATIVE IS AUTHORIZED TO ACCEPT OR AGREE TO ANY ALTERATIONS TO THIS AGREEMENT.</strong></td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+                <span class="bold">Business Principal's Signature</span>:
+                <div class="signature-box">
+                  <canvas id="signature5"></canvas>
+                  <span>Please sign in the box with mouse or finger.</span>
+                  <a class="button" style="display:none;">Clear Signature</a>
+                </div>
+                <p>Date: <span>07/12/2016</span></p>
+                <p>Print Name: <span class="user-input dottedLine">Johnathan Smith</span></p>
+                <div>
+                  <span class="user-input">&#9744;</span> President
+                  <span class="user-input">&#9744;</span> Vice President
+                  <span class="user-input">&#9744;</span> Member L.L.C
+                  <span class="user-input">&#9746;</span> Owner
+                  <span class="user-input">&#9744;</span> Partner
+                  <span class="user-input">&#9744;</span> Other <span class="user-input dottedLine"></span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <hr>
+
+        <div class="container screen">
+          <div class="align-center">
+            <div><input type="checkbox"/> I have read and understood the entire Merchant Agreement and Confirmation.</div>
+        	  <a class="button margin-top" href="../thank-you">Submit</a>
+          </div>
+        </div>
+
+			</div><!-- end .content -->
+
+      <footer>
+        <div class="container">
+          <div class="copyright">
+            <p>©2009–2016&nbsp;First Data Corporation. All rights reserved.</p>
+            <p>Apple, the Apple logo, and iPhone are trademarks of Apple Inc., registered in the U.S. and other countries. Apple Pay and Touch ID are trademarks of Apple Inc. Android™ is a trademark of Google, Inc. EMV® is a registered mark owned by EMVCo LLC. www.emvco.com</p>
+          </div>
+        </div>
+      </footer>
+
+		</div><!-- end .wrapper -->
+
+		<!-- scripts -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../scripts/fancyfy-fields.js"></script>
+    <script type="text/javascript" src="../../scripts/modal.js"></script>
+    <script type="text/javascript" src="../../scripts/sticky.js"></script>
+    <script type="text/javascript" src="../../scripts/marketplace-demo.js"></script>
+		<script type="text/javascript" src="http://intridea.github.io/sketch.js/lib/sketch.min.js"></script>
+		<script type="text/javascript">
+      $(function() {
+        $('#signature1').sketch();
+        $('#signature2').sketch();
+        $('#signature3').sketch();
+        $('#signature4').sketch();
+        $('#signature5').sketch();
+      });
+		</script>
+
+	</body>
+<html>

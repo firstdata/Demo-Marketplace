@@ -9,9 +9,9 @@ angular.module('confirmation', ['ngRoute'])
   });
 }])
 
-.controller('confirmationCtrl', ["$scope","$http", "myService", function ($scope, $http, myService) {
+.controller('confirmationCtrl', ["$scope","$http", "FDService", function ($scope, $http, FDService) {
   $scope.categories = [];
-  $scope.products = myService.get();
+  $scope.products = FDService.get();
   $scope.total = 0;
 
   for (var i = 0; i < $scope.products.length; i++) {
@@ -23,9 +23,9 @@ angular.module('confirmation', ['ngRoute'])
   };
 
   $scope.removeItem = function(index) {
-    myService.remove(index);
+    FDService.remove(index);
 
-    if (myService.get().length == 0) {
+    if (FDService.get().length == 0) {
       alert('Your Cart is Empty. Please select an item.')
     }
   }

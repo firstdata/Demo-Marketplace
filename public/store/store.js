@@ -13,12 +13,12 @@ angular.module('store', ['ngRoute'])
     return {};
 }])
 
-.controller('storeCtrl', ["$scope","$http", "myService", function ($scope, $http, myService) {
+.controller('storeCtrl', ["$scope","$http", "FDService", function ($scope, $http, FDService) {
   $scope.categories = [];
   $scope.products = [];
 
   $scope.setCat = function(cat) {
-    myService.setCategory(cat);
+    FDService.setCategory(cat);
   }
 
   $http({

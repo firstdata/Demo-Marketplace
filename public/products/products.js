@@ -13,7 +13,7 @@ angular.module('products', ['ngRoute', 'ui.router'])
     return {};
 }])
 
-.controller('productsCtrl', ['$routeParams', '$scope', '$http', 'myService', function($routeParams, $scope, $http, myService) {
+.controller('productsCtrl', ['$routeParams', '$scope', '$http', 'FDService', function($routeParams, $scope, $http, FDService) {
   $scope.product = '';
   $scope.productIncludes = '';
   $scope.productFeatures = '';
@@ -66,7 +66,7 @@ angular.module('products', ['ngRoute', 'ui.router'])
     }, function errorCallback(response) { });
 
     $scope.addCart = function(id, qty, price, name) {
-      myService.set({
+      FDService.set({
         id: id,
         qty: qty,
         price: price,

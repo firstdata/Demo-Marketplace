@@ -9,9 +9,9 @@ angular.module('solutions', ['ngRoute', 'ui.router'])
   });
 }])
 
-.controller('solutionsCtrl', ['$routeParams', '$scope', '$http', 'myService', function($routeParams, $scope, $http, myService) {
+.controller('solutionsCtrl', ['$routeParams', '$scope', '$http', 'FDService', function($routeParams, $scope, $http, FDService) {
   $scope.products = [];
-  $scope.category = myService.getCategory();
+  $scope.category = FDService.getCategory();
 
   $http({
     method: 'GET',
