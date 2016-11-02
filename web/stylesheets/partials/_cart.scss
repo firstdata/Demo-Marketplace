@@ -1,0 +1,183 @@
+#cart {
+	background: #F5F4F4;
+	border: 2px solid #ccc;
+	margin-top: 15pt;
+	.sub {
+		background: $title-color;
+		padding: 10px;
+		color: white;
+		font-family: $font-medium;
+	}
+	.cart-table-toggle {
+		span {
+			float: right;
+		}
+		i {
+			float: right;
+			padding: 2px;
+			margin-left: 5pt;
+			cursor: pointer;
+			opacity: .7;
+		}
+		&:hover {
+			cursor: pointer;
+			i {
+				opacity: 1;
+			}
+		}
+	}
+	table {
+		background: white;
+		width: 100%;
+		margin-bottom: 6pt;
+		tbody {
+			border:5pt solid white;
+		}
+		.product-requirement-notification {
+  		background: rgba(255,0,0,0.1);
+		}
+		td {
+			padding: 5pt;
+			vertical-align: middle;
+			word-break: break-word;
+			min-width: 120px;
+			#cart-item-actions {
+			  font-size: 80%;
+				a {
+					cursor: pointer;
+				}
+			}
+		}
+		#order-summary-total td, .order-summary-total td {
+			border-top: 1px solid #979797;
+			font-family: $font-medium;
+			font-size: 14pt;
+			padding-top: 20pt;
+		}
+	}
+	#cart-actions {
+		text-align: center;
+		margin-top: 10pt;
+		a.link-blue {
+			display: block;
+			padding: 15pt 10pt 0;
+			text-decoration: none;
+			font-family: $font-medium;
+			&:hover {
+				text-decoration: underline;
+				cursor: pointer;
+			}
+			&.align-center {
+				text-decoration: none;
+				font-family: $font-medium;
+				margin-bottom: 10pt;
+			}
+		}
+	}
+	a.btn {
+		display: block;
+		text-transform: uppercase;
+		text-align: center;
+		background: $primary-color;
+		font-family: $font-medium;
+		border: 0;
+		padding: 10pt;
+		color: white;
+		min-width: 80px;
+		&:hover {
+			background: $primary-color-hover;
+			cursor: pointer;
+		}
+		&.disabled {
+			background: #ccc;
+			cursor: default;
+		}
+	}
+	&.faded {
+		background: #aaa;
+		cursor: default !important;
+    .cart-contents {
+	    opacity: .2;
+	    cursor: default;
+    }
+	}
+
+}
+
+#cart .transaction-fee-detail {
+	  position: absolute;
+    z-index: 3;
+    width: 100%;
+    max-width: 349px;
+    tr.border-bottom td {
+	    border-bottom: 1px solid #666;
+	    padding-bottom: 10pt;
+    }
+   	table tr td {
+		padding: 5pt 10pt;
+		p {
+			padding: 5pt 0;
+		}
+	}
+	table tr:last-child td {
+		padding-bottom: 10pt;
+	}
+	.transaction-fee-detail-toggle {
+		float: right;
+		font-size: 9pt;
+		font-weight: bold;
+		cursor: pointer;
+	}
+	table#sample-amount-toggle {
+		margin: 0;
+		tbody {
+			border:0;
+		}
+		tr td {
+			padding: 8pt 0;
+			display: block;
+			float: left;
+			width: 25%;
+			border: 1px solid #ccc;
+			text-align: center;
+			&:first-child {
+				border-radius: 5px 0 0 5px;
+				border-right: 0;
+			}
+			&:last-child {
+				border-radius: 0 5px 5px 0;
+				border-left: 0;
+			}
+			&:hover {
+				background: #e6ffcb;
+				cursor: pointer;
+			}
+			&.selected {
+				background: #43B02A;
+				color: white;
+				border-color: #43B02A;
+				cursor: default !important;
+			}
+		}
+	}
+}
+
+.transaction-fee-detail-toggle {
+	cursor: pointer;
+}
+
+@media (max-width: 740px) {
+	#cart {
+		clear: both;
+		width: 100%;
+		margin-top: 0;
+	}
+}
+
+
+@media (max-width: 480px) {
+  #cart {
+	  padding: 1em;
+	  margin-top: 2em;
+  }
+}

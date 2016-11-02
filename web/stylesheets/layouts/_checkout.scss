@@ -1,0 +1,166 @@
+.checkout {
+  .form-group {
+		@extend %clearfix;
+		margin-top: 20pt;
+		max-width: 420px;
+		.form-element {
+			margin-bottom: 15pt;
+			@extend %clearfix;
+			label {
+				display: block;
+				font-family: $font-medium;
+				font-size: 10pt;
+				&.instruction {
+					opacity: .6;
+				}
+			}
+			input, select {
+				display: block;
+				margin-bottom: 5pt;
+				margin-top: 6pt;
+				font-size: 12pt !important;
+				width: 100%;
+				padding: 0 8pt;
+				box-sizing: border-box;
+				border: 2px solid #ccc;
+				outline: 0;
+				background: white;
+				height: 40px;
+				border-radius: 0;
+				&:focus {
+					background: #eafaff;
+					border-color: $link-color;
+				}
+			}
+			img {
+				width: 100%;
+				display: block;
+				margin-top: 6pt;
+			}
+		}
+		.form-element.multiple {
+			input, select {
+				margin-bottom: 8pt;
+			}
+		}
+		.form-element.radio {
+			margin-top: 20pt;
+			position: static;
+			width: auto;
+			height: auto;
+			.radio {
+				position: static;
+				width: auto;
+				height: auto;
+				display: block;
+				@extend %clearfix;
+				input, label {
+					width: inherit;
+					display: initial;
+					opacity: 1;
+					float: left;
+					height: 30px;
+					margin: 0 0 0 6pt;
+					line-height: 30px;
+				}
+			}
+		}
+	}
+}
+.form-actions {
+	margin-bottom: 40pt;
+}
+
+.location-number {
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  font-size: 30px;
+  line-height: 50px;
+  text-align: center;
+  background: white;
+  margin-right: 15px;
+  border: 2px solid #ccc;
+  margin-bottom: 15px;
+  &:hover, &.selected {
+    background: $primary-color;
+    border-color: $primary-color;
+    color: white;
+    cursor: pointer;
+  }
+  &.selected {
+    cursor: default;
+  }
+}
+
+
+.processing-option {
+  display: block;
+  background: transparent;
+  border: 2px solid $title-color;
+  color: $title-color;
+	height: 40px;
+	font-size: 12pt;
+	min-width: 100pt;
+	width: 46%;
+	float: left;
+	margin-right: 4%;
+	text-align: center;
+	line-height: 40px;
+  font-family: $font-medium;
+	margin-bottom: 10pt;
+	&:hover, &.selected, {
+    	background: $primary-color;
+    	border-color: $primary-color;
+    	color: white;
+    	cursor: pointer;
+	}
+}
+
+.provider-item, .pricing-option  {
+  color: #aaa;
+  padding-left: 0;
+  padding-top: 0;
+  div {
+    border: 2px solid #eee;
+    img {
+      width: 100%;
+    }
+  }
+  &.selected, &:hover {
+    div {
+      border-color: $primary-color;
+    }
+  }
+}
+
+#form-error {
+		color: red;
+		padding: 8pt;
+		background: rgba(255, 0, 0, 0.1);
+		text-align: left;
+		margin: 10px 0;
+		font-size: 11pt;
+}
+
+@media (max-width: 767px) {
+  .checkout-form {
+    width: 100%;
+    #providers {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width:480px) {
+  .checkout-form {
+    .form-element div {
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+    }
+  }
+  .provider-item {
+    width: 50%;
+    padding: 5px;
+  }
+}

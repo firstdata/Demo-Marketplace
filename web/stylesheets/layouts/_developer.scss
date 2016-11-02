@@ -1,0 +1,206 @@
+/* restrict admin potal to tablet size minimum */
+body, html {
+  overflow-x: hidden;
+}
+
+.main-content {
+  overflow-x: hidden;
+  &.inner-navigation {
+    padding-bottom: 0;
+    @include flexbox;
+  }
+}
+
+.container {
+  min-width: 768px !important;
+}
+
+/* user session info */
+#user-session {
+  line-height: 18px;
+  padding: 14px 20px;
+  border-left: 1px solid #ccc;
+  height: 80px;
+}
+
+// warnings, alerts, info
+p.warning, p.info, p.success {
+  display: block;
+  margin: 5px 0;
+  @include border-radius(4px);
+  padding: 10px;
+  border: 1px solid;
+}
+
+p.warning {
+  border-color: #cd343f;
+  color: #cd343f;
+  background-color: rgba(205,92,92,0.1);
+}
+
+p.info {
+  border-color: darkorange;
+  color: darkorange;
+  background-color: rgba(255,165,0,0.1);
+}
+
+/* buttons */
+.button {
+	display: inline-block;
+	text-transform: uppercase;
+	text-align: center;
+	background: $primary-color;
+	font-family: $font-normal;
+	border: 0;
+	padding: 10pt 20pt;
+	color: white !important;
+	min-width: 180px;
+	max-width: 400px;
+  &.small {
+    padding: 5pt 10pt;
+    min-width: 100px;
+  }
+	&:hover {
+		background: #fc7243;
+		cursor: pointer;
+		color: white !important;
+	}
+	&.disabled {
+		background: #ccc;
+		cursor: default;
+	}
+  &.gray {
+    background: #999;
+    &:hover {
+      background: #aaa;
+    }
+  }
+  &.red {
+    background: indianred;
+    &:hover {
+      background: crimson;
+    }
+  }
+  &.blue {
+    background: $link-color;
+    &:hover {
+      background: #00c0ff;
+    }
+  }
+  &.icon {
+    min-width: 36px;
+    padding: 6pt;
+    margin: 5px;
+    background: none;
+    &:hover {
+      background: #eee !important;
+    }
+    &.blue {
+      color: $link-color !important;
+    }
+    &.red {
+      color: indianred !important;
+    }
+    &.gray {
+      color: #999 !important;
+    }
+    &.green {
+      color: #43B02A !important;
+    }
+  }
+}
+
+/* accordion sections */
+.page-section {
+  .page-section-content {
+    clear: both;
+    overflow: auto;
+  }
+  h2 {
+    padding-left: 20px;
+    i {
+      color: #8a8683;
+      font-size: 48%;
+      padding: 9px;
+      display: inline-block;
+      margin-top: 3px;
+      position: absolute;
+      margin-left: -30px;
+    }
+    &:hover {
+      cursor: pointer;
+      i {
+        color: $link-color;
+      }
+    }
+  }
+}
+
+/* edit/create product pages */
+hr.shadow {
+  width: 200%;
+  margin-left: -200px;
+  margin-right: -200px;
+  border: 0;
+  clear: both;
+  border-top: 20px solid white;
+  box-shadow: 0 9px 13px rgba(0, 0, 0, 0.1);
+}
+
+hr.line {
+  width: 200%;
+  margin-left: -200px;
+  margin-right: -200px;
+  border: 0;
+  clear: both;
+  border-top: 20px solid white;
+  border-bottom: 1px solid #ccc;
+  margin-top: 20px;
+}
+
+/* Developer Portal landing page */
+.developer-main-link {
+  min-height: 340px;
+  padding: 20px;
+  margin-bottom: 20px;
+  @include flexbox;
+  @include flex-direction(column);
+  @include justify-content(space-between);
+  border: 2px solid #ccc;
+  h3 {
+    margin-bottom: 0;
+  }
+  img {
+    width: 80%;
+    margin: 10px auto;
+  }
+  .small {
+    line-height: 120%;
+    color: #888;
+  }
+  &:hover {
+    border-color: $primary-color;
+    cursor: pointer;
+  }
+}
+
+.developer-box-link {
+  min-height: 150px;
+  padding: 20px;
+  margin-bottom: 20px;
+  @include flexbox;
+  @include flex-direction(column);
+  @include justify-content(center);
+  border: 2px solid #ccc;
+  i {
+    color: #bdc1cb;
+    margin-top: 10px;
+  }
+  h3 {
+    margin-bottom: 0;
+  }
+  &:hover {
+    border-color: $primary-color;
+    cursor: pointer;
+  }
+}

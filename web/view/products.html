@@ -1,0 +1,72 @@
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+  <div class="breadcrumb-inner container">
+    <div class="breadcrumb-mobile">
+      <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Products</span></a>
+    </div>
+    <ul>
+      <li><a class="link" href="#/">Shop</a></li>
+      <li><a>Products</a></li>
+    </ul>
+  </div>
+</div>
+<div id="search">
+  <div class="container">
+    <div class="column-12">
+      <form id="products-filters" autocomplete="off">
+      
+        <span class="icon"><i class="fa fa-2x fa-search"></i></span>
+        <input id="search-products"  type="text" placeholder="i.e. Barcode Scanner" ng-model="keyword" ng-change="search()" />
+        <div class="inline-block">
+          <select id="categoryfilter" ng-disabled="categoryDisabled" class="js-example-basic-multiple" multiple="multiple" use-select2 placeholder="All Business Categories" ng-model="businessCategory" ng-change="changeCategory()" ng-options="c.name for c in categories track by c.id.toString()"></select>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="main-content">
+ <section id="products-main">
+   <div class="container">
+
+     <div class="column-12" ng-show="productContentType == 'recommended'">
+       <h3>Recommended Products For <strong>{{recommendedProductName}}</strong></h3>
+       <p class="subhead" ng-show="!isRecommendedCallDone">Loading....</p>
+       <div class="shop-product featured column-3" ng-repeat="p in recommendedBundles track by $index ">
+         <a ng-href="#/product/{{p.productId}}">
+           <img ng-src="{{ProductThumbImg(p.imageUrls)}}">
+         </a>
+         <p>{{p.productName}}</p>
+         <a class="link-blue" ng-href="#/product/{{p.productId}}">View Details</a>
+       </div>
+     </div>
+
+     <div class="column-12" ng-show="heroProds.length">
+       <h3>Featured Products</h3>
+       <p class="subhead">Currently featured products that may be of interest to you</p>
+       <div class="shop-product featured column-3" ng-repeat="p in allProducts | filter:filterHero | filter:filterProd as heroProds track by $index ">
+         <a ng-href="#/{{p.prod_url}}">
+           <img ng-src="{{ProductThumbImg(p.imageUrls)}}">
+         </a>
+         <p>{{p.productName}}</p>
+         <a class="link-blue" ng-href="#/{{p.prod_url}}">View Details</a>
+       </div>
+     </div>
+
+     <div  style="clear:both;" id="allproducts">
+        <div class="column-9">
+          <h3>All Products</h3>
+        </div>
+      </div>
+      <div class="column-12" infinite-scroll='loadMore()' infinite-scroll-distance='2'>
+        <div class="shop-product hardware" ng-repeat="p in products | orderBy:sortbytag | filter:filterProd as prodToShow track by $index ">
+          <a ng-href="#/{{p.prod_url}}">
+            <img ng-src="{{ProductThumbImg(p.imageUrls)}}">
+          </a>
+          <p>{{p.productName | limitToEllipsis:45}}</p>
+          <a class="link-blue" ng-href="#/{{p.prod_url}}">View Details</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end .content -->

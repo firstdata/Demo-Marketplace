@@ -1,0 +1,8 @@
+{
+  "kong": {
+    "url": "KONG_URL",
+    "username": "KONG_USERNAME",
+    "secret": "KONG_SECRET"
+  },
+  "port": 3000
+}

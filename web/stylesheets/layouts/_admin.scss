@@ -1,0 +1,379 @@
+/* restrict admin potal to tablet size minimum */
+body, html {
+  overflow-x: hidden;
+}
+
+.main-content {
+  overflow-x: hidden;
+}
+
+.container {
+  min-width: 768px !important;
+}
+
+/* user session info */
+#user-session {
+  line-height: 18px;
+  padding: 14px 20px;
+  border-left: 1px solid #ccc;
+  height: 80px;
+}
+
+// warnings, alerts, info
+p.warning, p.info, p.success {
+  display: block;
+  margin: 5px 0;
+  @include border-radius(4px);
+  padding: 10px;
+  border: 1px solid;
+}
+
+p.warning {
+  border-color: #cd343f;
+  color: #cd343f;
+  background-color: rgba(205,92,92,0.1);
+}
+
+p.info {
+  border-color: darkorange;
+  color: darkorange;
+  background-color: rgba(255,165,0,0.1);
+}
+
+/* tables */
+.admin-table {
+  width: 100%;
+  text-align: left;
+  margin: 20px 0;
+  border-collapse: collapse;
+  border: 1px solid #aaa;
+  tr {
+    td, th {
+      border-bottom: 1px solid #ddd;
+      padding: 9px;
+      font-family: $font-light;
+      vertical-align: top;
+
+    }
+    &:last-child td {
+      border: 0;
+    }
+    th {
+      color: $title-color;
+      font-family: $font-medium;
+      background: #efefef;
+    }
+  }
+  img {
+    border: 1px solid #aaa;
+    max-height: 50px;
+    max-width: 100px;
+  }
+  form {
+    min-width: 100px;
+  }
+  .sortable {
+    .ui-state-highlight {
+      background: rgba(145, 206, 250, 0.5);
+      border: 2px dashed $link-color;
+      height: 50px !important;
+      td {
+        padding: 0;
+      }
+    }
+    tr.active {
+      background: rgba(200,200,200,0.5);
+      display: block;
+      height: 50px !important;
+      .fa-arrows {
+        background:$link-color;
+      }
+      td {
+        display: none;
+        border: none;
+        .link {
+          color: black;
+        }
+      }
+      td:nth-child(1), td:nth-child(2) {
+        display: block;
+        float: left;
+        height: 30px;
+        padding: 10px 8px;
+        line-height: 30px;
+      }
+      td:nth-child(2) {
+        font-size: 20px;
+      }
+    }
+    .fa-arrows {
+      display: block;
+      background: #ccc;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      color: white;
+      cursor: move;
+      &:hover {
+        background: $link-color;
+      }
+    }
+  }
+}
+
+form {
+  min-width: 320px;
+  max-width: 410px;
+  &.boxed {
+    padding: 20px;
+    border: 2px solid #ddd;
+    background: #fafafa;
+  }
+  img {
+    border: 1px solid #aaa;
+    background: white;
+  }
+}
+
+/* pagination */
+.admin-pagination {
+  margin: 0 auto 30px;
+  a {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: white;
+    margin-left: 3px;
+    line-height: 32px;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 0;
+    border-radius: 2px;
+    color: $link-color;
+    &:hover {
+      cursor: pointer;
+      background: $link-color;
+      color: white;
+    }
+    &.disabled, &.disabled:hover {
+      background: none;
+      color: #aaa;
+      cursor: default;
+    }
+    &.current, &.current:hover {
+      background: $link-color;
+      color: white;
+      cursor: default;
+    }
+  }
+}
+
+.admin-table-actions {
+  margin-top: 20px;
+  form {
+    margin-bottom: 10px;
+  }
+}
+
+/* buttons */
+.button {
+	display: inline-block;
+	text-transform: uppercase;
+	text-align: center;
+	background: $primary-color;
+	font-family: $font-normal;
+	border: 0;
+	padding: 10pt 20pt;
+	color: white !important;
+	min-width: 180px;
+	max-width: 400px;
+  &.small {
+    padding: 5pt 10pt;
+    min-width: 100px;
+  }
+	&:hover {
+		background: #fc7243;
+		cursor: pointer;
+		color: white !important;
+	}
+	&.disabled {
+		background: #ccc;
+		cursor: default;
+	}
+  &.gray {
+    background: #999;
+    &:hover {
+      background: #aaa;
+    }
+  }
+  &.red {
+    background: indianred;
+    &:hover {
+      background: crimson;
+    }
+  }
+  &.blue {
+    background: $link-color;
+    &:hover {
+      background: #00c0ff;
+    }
+  }
+  &.icon {
+    min-width: 36px;
+    padding: 6pt;
+    margin: 5px;
+    background: none;
+    &:hover {
+      background: #eee !important;
+    }
+    &.blue {
+      color: $link-color !important;
+    }
+    &.red {
+      color: indianred !important;
+    }
+    &.gray {
+      color: #999 !important;
+    }
+    &.green {
+      color: #43B02A !important;
+    }
+  }
+}
+
+/* accordion sections */
+.page-section {
+  .page-section-content {
+    clear: both;
+    overflow: auto;
+  }
+  h2 {
+    padding-left: 20px;
+    i {
+      color: #8a8683;
+      font-size: 48%;
+      padding: 9px;
+      display: inline-block;
+      margin-top: 3px;
+      position: absolute;
+      margin-left: -30px;
+    }
+    &:hover {
+      cursor: pointer;
+      i {
+        color: $link-color;
+      }
+    }
+  }
+}
+
+/* edit/create product pages */
+.dropzone {
+  max-width: 100% !important;
+  .dz-preview {
+    .dz-image {
+      @include border-radius(0);
+    }
+    border: 2px solid #aaa;
+    img {
+      border: none;
+    }
+  }
+}
+
+hr.shadow {
+  width: 200%;
+  margin-left: -200px;
+  margin-right: -200px;
+  border: 0;
+  clear: both;
+  border-top: 20px solid white;
+  box-shadow: 0 9px 13px rgba(0, 0, 0, 0.1);
+}
+
+#create-edit-product {
+  max-width: 100%;
+  .fancy-field {
+    max-width: 400px;
+    &.narrow {
+      max-width: 115px;
+    }
+    &.wide {
+      min-width: 400px;
+    }
+    &.full {
+      min-width: 90%;
+    }
+  }
+  .line-item {
+    margin-bottom: 6px;
+    background: #f4f4f4;
+    padding: 10px 0 2px 10px;
+    .line-item {
+      margin-bottom: 0;
+      padding-top: 0;
+      &:first-child {
+        padding-top: 10px;
+      }
+    }
+    .link {
+      display: block;
+      margin-bottom: 8px;
+      margin-top: 5px;
+    }
+    fieldset {
+    }
+    .fancy-field {
+      max-width: 400px;
+      display: inline-block;
+      &.narrow {
+        max-width: 115px;
+      }
+      &.wide {
+        min-width: 400px;
+      }
+      &.full {
+        min-width: 90%;
+      }
+    }
+    .button.icon {
+      display: inline-block;
+      float: left;
+      margin: 6px 5px 6px 0;
+    }
+  }
+  .option-checkbox {
+    label {
+      display: inline-block !important;
+      float: left;
+      line-height: 50px;
+      margin-right: 10px;
+    }
+  }
+}
+
+/* search products */
+#search-results-container {
+  background: white;
+  border: 2px solid #aaa;
+  overflow-y: scroll;
+  max-height: 220px;
+  #search-results {
+    margin: 0;
+    border: 0;
+    .result {
+        color: inherit;
+      &.added {
+        color: #aaa;
+        .highlight {
+          background: 0;
+        }
+      }
+    }
+    .highlight {
+      background: wheat;
+      padding:5px;
+    }
+  }
+}

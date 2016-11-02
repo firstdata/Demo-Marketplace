@@ -1,0 +1,50 @@
+.main-content-wrapper {
+  background: white;
+}
+
+#inner-navigation {
+  float: left;
+  min-width: 250px;
+  border-right: 1px solid #ccc;
+  @include flex-basis(250px);
+  ul {
+    li {
+      font-family: $font-medium;
+      margin-bottom: 15px;
+      a {
+        display: block;
+        padding: 3px 10px;
+        &.current, &.current:hover {
+          background: $primary-color;
+          color: white;
+        }
+        &:hover {
+          color: $link-color;
+          cursor: pointer;
+        }
+      }
+      ul {
+        margin-left: 20px;
+        li {
+          margin-bottom: 0;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+#inner-content {
+  padding: 0 40px 40px 40px;
+}
+
+@media (max-width: 800px) {
+  #inner-content {
+    .column-4,
+    .column-5,
+    .column-6 {
+      float: none;
+      width: 100%;
+    }
+  }
+}

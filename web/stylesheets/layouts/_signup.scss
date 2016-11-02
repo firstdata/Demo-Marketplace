@@ -1,0 +1,51 @@
+#location-setup {
+  /* drag and drop UI  */
+  .order-item {
+    border: 2px solid $primary-color;
+    padding: 10px;
+    background: white;
+    cursor: pointer;
+    margin: 5px;
+
+  }
+  .location-container {
+    border: 2px solid #ddd;
+    background: #eee;
+    max-width: 400px;
+    list-style-type: none;
+    margin: 10px 0 0 0;
+    padding: 10px;
+    min-height: 100px;
+    .order-item {
+       border-color: $title-color;
+    }
+  }
+  #all-items {
+    margin: 0 auto;
+    max-width: 300px;
+  }
+}
+
+#signature {
+ border: 2px solid #eee;
+}
+
+// vendors
+.vendor {
+  margin-bottom: 30px;
+  img {
+    max-width: 200px;
+    width: 100%;
+    border: 2px solid #ddd;
+    display: block;
+    margin: 0 auto 10px auto;
+  }
+
+  h4 {
+    margin-bottom: 0;
+  }
+
+  .button {
+    margin-top: 10px;
+  }
+}

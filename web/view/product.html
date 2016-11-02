@@ -1,0 +1,76 @@
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+  <div class="breadcrumb-inner container">
+    <div class="breadcrumb-mobile">
+      <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>{{bundle_info.productName}}</span></a>
+    </div>
+    <ul>
+      <li><a class="link" href="#/">Shop</a></li>
+      <li><a class="link" href="#/products/c">Products</a></li>
+      <li><a>{{bundle_info.productName}}</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main-content">
+ <section>
+   <div class="container">
+   
+     <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types, 'column-12': !(cart.total_qty || cart.payment_types)}">
+       <div class="column-3">
+          <img ng-src="{{cimage}}"/>
+          <div id="product-images">
+            <a ng-class="{'selected': img == cimage}" ng-repeat="img in thumbImages" ng-mouseover="changeImage(img)" ng-click="changeImage(img)"><img ng-src="{{img}}"/></a>
+          </div>
+       </div>
+       <div class="column-9">
+         <h1>{{bundle_info.productName}} <span class="price">${{bundle_info.price | numberNF : 2}}</span> </h1>
+         <h4 ng-show="min_lease_amt"><a class="link"  ng-click="leaseProduct(bundle_info)">Lease</a> for as low as <strong>{{min_lease_amt | currency}}/month</strong></h4>
+         
+         <p>{{bundle_info.productLongDescription}}</p>
+         <div class="shop-product-actions">
+           <a class="link-bold" id="add-to-cart" ng-click="addToCart()">Add to Cart</a>
+           <!-- <span>|</span>
+           <a ng-if="min_lease_amt" class="link-bold" id="lease-now" ng-click="leaseProduct(bundle_info)">Lease Now</a> -->
+         </div>
+         <!-- <p><i class="fa fa-credit-card fa-lg"></i> Credit Card Processing @ 2.69% + 5 cents per swipe*<br> <span class="small">*3.69% + $0.05 per non-swiped transactions</span> <a id="pricing-terms-toggle" ng-init="showTc = false" class="small link green" style="cursor:pointer;" ng-click="showTc = !showTc">{{showTc ? 'Hide' : 'View'}} Terms &amp; Conditions</a></p> -->
+         <div id="pricing-terms" class="small" ng-show="showTc">
+           <br>
+           <p>Offer applies to new Clover Station, Mobile or Mini clients only.</p><br>
+           <p>Transactions will be billed according to transaction type:</p>
+           <ul>
+             <li>A rate of 2.69% + $0.05 per transaction fee applies to all credit and debit swiped transactions (sometimes referred to as "card present" transactions). Chip-enabled "dipped" transactions will be billed at the swiped rate.</li>
+             <li>A rate of 3.69% + $0.05 per transaction fee applies to all credit and debit non-swiped transactions. Most manually "keyed" transactions will be billed at the non-swiped rate.</li>
+           </ul><br>
+           <p>Please review your Merchant Processing Agreement for more information about these fees.</p>
+           <p>Program requires purchase of Clover point-of-sale hardware, security protection. A software plan may be required. Wireless/data access services are not included.</p><br>
+           <p>The Clover trademark and logo are owned by Clover Network, Inc., a First Data company</p>
+         </div>
+       </div>
+       <div class="column-12" ng-show="features.length">
+          <h3>Features</h3>
+          <ul>
+            <li ng-repeat="f in features">{{f}}</li>
+          </ul>
+       </div>
+     </div>
+     <ng-include src="'templates/cart.tpl'"></ng-include>
+   </div>
+ </section>
+ <ng-include src="'templates/included_products.tpl'"></ng-include>
+ <section ng-hide="specs | isEmpty">
+    <div class="container">
+      <h3>Hardware Specifications</h3>
+      <table id="product-specifications">
+        <tr ng-repeat="(key, sps) in specs">
+          <th>{{key}}</th>
+          <td>
+            <p ng-repeat="s in sps track by $index">{{s}}</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+  <ng-include src="'templates/recommended_add.tpl'"></ng-include>
+  <ng-include src="'templates/faq.tpl'"></ng-include>
+</div><!-- end .content -->
+

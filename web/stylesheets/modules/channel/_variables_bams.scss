@@ -1,0 +1,29 @@
+@import "../mixins";
+
+//== Grid Variables
+$grid-columns: 12;
+$grid-max-width: 65em;
+
+//== Breakpoints
+$breakpoint-small: "only screen and (min-width: 20em)";
+$breakpoint-medium: "only screen and (min-width: 30em)";
+
+//== Colors
+$font-dark:				      #6b5e51 !default;
+$title-color:			      #c41230 !default;
+$primary-color:					#0073cf !default;
+$primary-color-hover:   #0052c2 !default;
+$link-color:			      #0052c2 !default;
+$link-color-hover:      #012169 !default;
+$footer-background:     #ECE6DD !default;
+$footer-text-color:     #857363 !default;
+$panel-toggle-color:    #c41230 !default;
+
+//== Typography
+@include register-font('SimpleSansLight');
+@include register-font('SimpleSansMedium');
+@include register-font('SimpleSans');
+
+$font-normal:			"SimpleSans", Arial, sans-serif !default;
+$font-light:			"SimpleSansLight", Arial, sans-serif !default;
+$font-medium:			"SimpleSansMedium", Arial, sans-serif !default;

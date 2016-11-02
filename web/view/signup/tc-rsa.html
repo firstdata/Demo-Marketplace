@@ -1,0 +1,1833 @@
+<style>
+    .viewSignature{border: 3px solid orange; min-height: 160px; margin-top: 5px; background: #fffbd3;}
+</style>
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+    <div class="breadcrumb-inner container">
+        <div class="breadcrumb-mobile">
+            <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Merchant Agreement</span></a>
+        </div>
+        <ul>
+            <li><a>Merchant Application <i style="color: green;" class="fa fa-check"></i></a></li>
+            <li><a>Location Setup <i style="color: green;" class="fa fa-check"></i></a></li>
+            <li><a class="current">Merchant Agreement</a></li>
+            <li><a style="color:#aaa;">Finish</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container" id="terms">
+        <table border="0" cellpadding="2" cellspacing="0">
+            <thead>
+            <tr>
+                <th></th>
+                <th style="vertical-align: middle; font-size: 14pt; text-align: center !important; line-height:24px;" colspan="3">MERCHANT PROCESSING APPLICATION AND AGREEMENT</th>
+                <th align="right" style="vertical-align:middle;" class="print">(Page 1 of 3)</th>
+                <th style="background: white !important;"><img ng-if="isLogoVisible" ng-src="{{encodedLogoSrc}}" style="max-width: 100%; max-height:30px;"/></th>
+            </tr>
+            <tr>
+              <td style="min-height:10px; height:10px;"></td>
+            </tr>
+            <tr>
+                <th style="text-align: left !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">{{merchantBean.pgVersion}}</th>
+                <th style="text-align: center !important; border: 1px solid black;" colspan="3">COMPLETE SECTIONS (1-9)</th>
+                <th  style="text-align: right !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">{{merchantBean.version}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="width-5" colspan="3">
+                    Merchant #: <span class="dottedLine">N/A</span></td>
+                <td class="align-right width-5" colspan="2">
+                    Loc.<span class="dottedLine align-center ">1</span> of <span class="dottedLine align-center ">1</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr>
+        <!-- (1) TELL US ABOUT YOUR BUSINESS -->
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th>(1) TELL US ABOUT YOUR BUSINESS</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td class="width-8" colspan="5">
+                        <label>Legal Name:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.legalDbaName}}</span>
+                    </td>
+                    <td class="width-2" colspan="1">
+                        <label>Store #:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="width-1" colspan="3">
+                        <label>DBA/Outlet Name:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.dbaName}}</span>
+                    </td>
+                    <td colspan="3">
+                        <label>First/Last Contact Name:</label>
+                        <span class="user-input">{{merchantBean.firstName}} {{merchantBean.lastName}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="width-2" colspan="2">
+                        <label>Address:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessAddress}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Suite #:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessAptSuite || 'N/A'}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>City:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessCity}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>State:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessState}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Zip:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessZipcode}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>Business Phone:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessPhoneNumber}}</span>
+                    </td>
+                    <td colspan="3">
+                        <label>Customer Service Phone:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>Fax Phone:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td colspan="3">
+                        <label>Cell Phone:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>E-mail Address:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.emailAddress}}</span>
+                    </td>
+                    <td colspan="3">
+                        <label>Website URL Address:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.url || 'N/A'}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>TIN Type:</label>
+                        {{!isTinTypeSsn ?'&#9746':'☐'}} EIN (Fed Tax ID #)&nbsp;&nbsp;
+                        {{isTinTypeSsn ?'&#9746':'☐'}} SSN
+                    </td>
+                    <td colspan="3">
+                        <label>Retrieval Requests:</label>
+                        &#9744; Dedicated 24 hour fax&nbsp;&nbsp;
+                        &#9744; No fax; mail&nbsp;&nbsp;
+                        ☒ Dispute Manager
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br/>
+            <table class="border" style="background: #eee;">
+                <tr>
+                    <td colspan="3"><strong>NOTE:</strong> Failure to provide accurate information may require us to withhold income tax from your funding per IRS regulations.</td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label>Name <span style="font-style: italic">(as it appears on your income tax return)</span></label><br>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.taxBusinessName}}</span>
+                    </td>
+                    <td align="center">
+                        <label>&#9744; Federal Tax ID# <span style="font-style: italic">(as it appears on your income tax return)</span></label><br>
+                        <span class="user-input">{{maskDigit((merchantBean.merchantBusinessBean.socialSecurityNumber != merchantBean.merchantBusinessBean.employerIdNumberTax) ? merchantBean.merchantBusinessBean.employerIdNumberTax : merchantBean.merchantBusinessBean.socialSecurityNumber )}}</span>
+                    </td>
+                    <td align="center">
+                        <label>{{merchantBean.merchantBusinessBean.isCertified ?'&#9746':'☐'}} I certify that I am a foreign entity/nonresident alien.</label><br>
+                      <span style="font-style: italic">(If checked, please attach IRS Form W-8.)</span>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <table class="border-bottom">
+                <tbody>
+                <tr>
+                    <td colspan="2">
+                        <label>Product/Services you sell:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.mccDescription}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label>Time frame from transaction to delivery:</label>
+                        <strong>% of orders delivered in:</strong>
+                        0-7 days <span class="user-input dottedLine">100</span>% <strong>+</strong>
+                        8-14 days <span class="user-input dottedLine">0</span>% <strong>+</strong>
+                        15-30 days <span class="user-input dottedLine">0</span>% <strong>+</strong>
+                        over 30 days <span class="user-input dottedLine">0</span>% <strong>= 100%</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label>Who performs product/service fulfillment?</label>
+                        Direct <span class="user-input dottedLine">Yes</span>
+                        Vendor <span class="user-input dottedLine"></span> If Vendor, add name, address, phone.
+                        &#9744; Other: <em>(specify)</em> <span class="user-input"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Do you use any third party to store, process or transmit cardholder data? </label>
+                        &#9744; Yes&nbsp;&nbsp;
+                        ☒ No&nbsp;&nbsp;
+                    </td>
+                    <td>
+                        <label>If yes, give name/address:</label>
+                        <span class="user-input"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label>Please identify any Software used for storing, transmitting, or processing card transactions or authorization requests.</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <!-- ( 2 ) OWNERSHIP -->
+        <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+                <th>(2) OWNERSHIP</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+                <tr>
+                    <td colspan="1">
+                        <label>State Organized:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.stateIncorp}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Mo/Yr Started:</label>
+                        <span class="user-input">{{merchantBean.businessYearStarted}}</span>
+                    </td>
+                    <td colspan="4">
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="I" ? "&#9746;" : "☐" }}
+                  </span> Sole Ownership
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="P" ? "&#9746;" : "☐" }}
+                  </span> Partnership
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="T" ? "&#9746;" : "☐" }}
+                  </span> Non Profit/Tax Exempt
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="C" ? "&#9746;" : "☐" }}
+                  </span> Public Corp.
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="PRC" ? "&#9746;" : "☐" }}
+                  </span> Private Corp.
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="L" ? "&#9746;" : "☐" }}
+                  </span>  L.L.C
+                  <span class="user-input">
+                    {{merchantBean.organizationTypeReferenceCode ==="G" ? "&#9746;" : "☐" }}
+                  </span> Govt.
+                    </td>
+                </tr>
+                <td colspan="3">
+                    <label>Owner/Partner/Officer Name:</label>
+
+                    <span class="user-input">{{merchantBean.firstName}}</span> &nbsp;<span class="user-input">{{merchantBean.lastName}}</span>
+                </td>
+                <td colspan="2">
+                    <label>D.O.B.:</label>
+                    <span class="user-input">{{merchantBean.dateOfBirth}}</span>
+                </td>
+                <td>
+                    <label>Social Security #:</label>
+                    <span class="user-input">{{maskDigit(merchantBean.merchantBusinessBean.socialSecurityNumber)}}</span>
+                </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>Home Phone</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.phoneNumber}}</span>
+                    </td>
+                    <td colspan="3">
+                        <label>Ownership %:</label>
+                        <span class="user-input">100</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label>Home Address:</label>
+                        <span class="user-input">{{merchantBean.homeAddress}}  {{merchantBean.homeAddress2 || ''}} </span>
+                    </td>
+                    <td>
+                        <label>City:</label>
+                        <span class="user-input">{{merchantBean.city}}</span>
+                    </td>
+                    <td>
+                        <label>State</label>
+                        <span class="user-input">{{merchantBean.state}}</span>
+                    </td>
+                    <td>
+                        <label>Zip:</label>
+                        <span class="user-input">{{merchantBean.zipCode}}</span>
+                    </td>
+                    <td>
+                        <label>Country</label>
+                        <span class="user-input">{{merchantBean.country}}</span>
+                    </td>
+                </tr>
+
+
+                <!-- Need To discuss !-->
+                </tr>
+                <td colspan="3">
+                    <label>Owner/Partner/Officer Name:</label>
+                    <span class="user-input">N/A</span>
+                </td>
+                <td colspan="2">
+                    <label>D.O.B.:</label>
+                    <span class="user-input">N/A</span>
+                </td>
+                <td>
+                    <label>Social Security #:</label>
+                    <span class="user-input">N/A</span>
+                </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>Home Phone</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td colspan="3">
+                        <label>Ownership %:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label>Home Address:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td>
+                        <label>City:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td>
+                        <label>State</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td>
+                        <label>Zip:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td>
+                        <label>Country</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                <!-- Need To discuss !-->
+            </table>
+        </div>
+        <hr>
+        <!-- Need to discuss -->
+        <!-- ( 3 ) BUSINESS FINANCIAL DATA -->
+        <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+                <th>(3) BUSINESS FINANCIAL DATA</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table cellpadding="2" cellspacing="0">
+                <tr>
+                    <td colspan="3" style="border-right: 1px solid #aaa;">
+                        <table>
+                            <tr>
+                                <td colspan="2">
+                                    <table>
+                                        <tr>
+                                            <td><strong>Total Annual Volume</strong></td>
+                                            <td class="align-right"><strong>This Location</strong></td>
+                                            <td class="align-right"><strong>All Locations</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>MasterCard/ Visa</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">{{annualMcVisaFormatted || 'N/A'}}</span></td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Discover/PayPal</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">{{discoverEnabled ? annualDiscFormatted : 'N/A'}}</span></td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>American Express OptBlue®</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">{{(amexEnabled && isAmexOptBlue) ? annualAmexFormatted : 'N/A'}}</span></td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Voyager</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>WEX</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                            <td class="align-right">$<span class="user-input dottedLine">N/A</span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td colspan="2">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Average Card Sale Amount</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.avgTicket}}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Highest Sale Amount</td>
+                                            <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.merchantBusinessBean.hiTicket}}</span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="border-right: 1px solid #aaa;">
+                        <table>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>Card Present</td>
+                                            <td class="align-right"><span class="user-input dottedLine">{{merchantBean.merchantBusinessBean.f2fPercent}}</span>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Internet</td>
+                                            <td class="align-right"><span class="user-input dottedLine">{{ merchantBean.merchantBusinessBean.internetPercent}}</span>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mail Order / Direct Marketing</td>
+                                            <td class="align-right"><span class="user-input dottedLine">N/A</span>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Phone Order</td>
+                                            <td class="align-right"><span class="user-input dottedLine">{{merchantBean.merchantBusinessBean.motoPercent}}</span>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td class="align-right"><span class="user-input">100% </span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>Swiped</td>
+                                            <td class="align-right"><span class="user-input dottedLine">{{merchantBean.merchantBusinessBean.f2fPercent}}</span>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Keyed</td>
+                                            <td class="align-right"><span class="user-input dottedLine">{{ merchantBean.merchantBusinessBean.internetPercent + merchantBean.merchantBusinessBean.motoPercent}}</span>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td class="align-right"><span class="user-input">100%</span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <hr>
+        <!-- ( 4 ) BANKING AND FUNDING INFORMATION -->
+        <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+                <th>(4) BANKING AND FUNDING INFORMATION</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+                <tr>
+                    <td>
+                        <label>ABA #:</label>
+                        <span class="user-input">{{merchantBean.abaNumber}}</span>
+                    </td>
+                    <td>
+                        <label>DDA #:</label>
+                        <span class="user-input">{{merchantBean.accountNumber}}</span>
+                    </td>
+                </tr>
+                <!-- TODO: Need to discuss -->
+                <tr>
+                    <td>
+                        <label>ABA #:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                    <td>
+                        <label>DDA #:</label>
+                        <span class="user-input">N/A</span>
+                    </td>
+                </tr>
+                <!-- TODO: Need to discuss -->
+                <tr>
+                    <td>
+                        <label>Deduct Fees:</label>
+                        ☒ Daily <span style="font-style: italic">(excluding Flat Rate)</span>&nbsp;&nbsp;
+                        &#9744; Monthly <span style="font-style: italic">(fee will apply)</span>
+                    </td>
+                    <td>
+                        <label>Bank Will Fund:</label>
+                        ☒ Outlet&nbsp;&nbsp;
+                        &#9744; Head Office</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <hr>
+        <!-- ( 5 ) ENTITLEMENTS-->
+        <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+                <th>(5) ENTITLEMENTS</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table class="border-bottom" cellpadding="2" cellspacing="0">
+                <tr>
+                    <td colspan="2">
+                        <span class="user-input"> {{(amexEnabled && isAmexOptBlue) ?'☒':'☐'}}</span> American Express OptBlue&reg;
+                    </td>
+                    <td>
+                        <span class="user-input"> {{debitEnabled ?'☒':'☐'}}</span> Pin Debit
+                    </td>
+                    <td>
+                        <span class="user-input">&#9744;</span> EBT  SNAP/FNS#:
+                        <span class="user-input dottedLine"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <span class="user-input">&#9744;</span> Voyager Fleet&nbsp;&nbsp;&nbsp;
+                        <span style="font-style: italic !important;">(Participation in Voyager Tax Exempt Program):</span> <span class="user-input">&#9744;</span> Yes <span class="user-input">&#9744;</span> No
+                        <span style="font-style: italic !important;">(if yes, additional request form required)</span>
+                    </td>
+                    <td colspan="2">
+                        <span class="user-input">&#9744;</span> WEX Full Acquiring
+                        <span class="user-input">&#9744;</span> WEX (Non-Full Svc)
+                        <span class="user-input">&#9744;</span> MC Fleet
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <span class="user-input">{{(amexEnabled && !isAmexOptBlue) ?'☒':'☐'}}</span> American Express Pass Through SE (existing): <span class="user-input dottedLine"></span>
+                    </td>
+                    <td colspan="2">
+                        Pass Through:
+                        <span class="user-input">&#9744;</span> Split Dial
+                        <span class="user-input">&#9744;</span> EDC
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <hr>
+        <hr class="page-break">
+        <table>
+            <tr>
+                <th class="print"></th>
+                <th colspan="3" class="print" style="vertical-align: middle; font-size: 16pt; text-align: center !important;" colspan="3">MERCHANT PROCESSING APPLICATION AND AGREEMENT</th>
+                <th class="print" align="right">(Page 2 of 3)</th>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="width-5 print" colspan="3">
+                    DBA Name: <span class="user-input">{{merchantBean.merchantBusinessBean.dbaName}}</span></td>
+                <td class="align-right width-5 print" colspan="2">
+                    Loc.<span class="dottedLine align-center ">1</span> of <span class="dottedLine align-center ">1</span>
+                </td>
+            </tr>
+        </table>
+
+        <!-- ( 6 ) EQUIPMENT DETAILS -->
+        <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+                <th class="print" style="text-align: left !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">{{merchantBean.pgVersion}}</th>
+                <th colspan="3">(6) EQUIPMENT DETAILS</th>
+                <th class="print" style="text-align: right !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">{{merchantBean.version}}</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table class="border" cellpadding="2" cellspacing="0">
+                <tr class="align-center">
+                    <td>
+                      Rental &#149; Purchase <br>
+                      Customer-Owned <br>
+                      <span style="vertical-align: super;font-size: smaller;">*</span>Lease</span>
+                    </td>
+                    <td>QTY</td>
+                    <td>IP</td>
+                    <td>Equipment Type <br> (i.e., Clover/Terminal/VAR)</td>
+                    <td>Industry Type</td>
+                    <td>Model Code and Name</td>
+                    <td>Unit Price w/o Tax and S&H</td>
+                    <td>Customer-Owned Equipment Track/Version/Serial #</td>
+                </tr>
+                <tr class="align-center" ng-repeat="val in merchantBean.equipment">
+                    <td><span class="user-input">{{val.fullNameTerm}}</span></td>
+                    <td><span class="user-input">{{val.quantity}}</span></td>
+                    <td><span class="user-input">&#9744;</span></td>
+                    <td><span class="user-input">{{val.equipmentType}}</span></td>
+                    <td><span class="user-input">{{merchantBean.merchantBusinessBean.businessType}}</span></td>
+                    <td><span class="user-input">{{val.modelName}}</span></td>
+                    <td align="left" class="align-left">$ <span class="user-input">{{(val.unitPrice | currency : "")}}</span></td>
+                    <td><span class="user-input">N/A</span></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        <strong>Shipping and Handling:</strong>&nbsp;&nbsp;
+                        Standard $<span class="user-input dottedLine">19.99</span>&nbsp;&nbsp;
+                        Overnight $<span class="user-input dottedLine"></span>
+                    </td>
+                    <td><span class="user-input">{{emvEnabled ?'&#9746':'☐'}}</span> Enable EMV</td>
+                </tr>
+            </table>
+            <p>*See Equipment Lease Agreement for the Terms and Conditions governing your Leased equipment.</p>
+        </div>
+
+        <!-- ( 7 ) FEE SCHEDULE -->
+        <table class="border" cellpadding="2" cellspacing="0">
+            <tr>
+                <th>(7) FEE SCHEDULE</th>
+            </tr>
+        </table>
+        <div class="section">
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="2" style="text-align: center !important;" class="small">Product Subscriptions (Monthly)</td>
+                            </tr>
+                            <tr>
+                                <td>Clover Services (Per Station)</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.cloverServiceFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Insightics Solution</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.insighticsFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Perka Solution</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td>TransArmor Solution</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.transarmorSolution || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="2" style="text-align: center !important;" class="small">Compliance Fees</td>
+                            </tr>
+                            <tr>
+                                <td>Monthly Compliance Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.monthlySVCFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Annual Compliance Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.annualComplianceFee || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="2" style="text-align: center !important;" class="small">Mobile Payments Solution (Clover Go)</td>
+                            </tr>
+                            <tr>
+                                <td>Mobile Payments Setup Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.fdMobilePaySetupFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mobile Payments Setup Fee (Per Terminal ID)</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.mobilePaySVCFee || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="2" style="text-align: center !important;" class="small">eCommerce/Wireless Solutions</td>
+                            </tr>
+                            <tr>
+                                <td>Payeezy Setup Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.payeezySetupFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Payeezy Monthly Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.e4monthlyFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Payeezy Webstore Solution</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.payeezyWebstoreFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Global ePricing MC/Visa Service Fee</td>
+                                <td class="align-right"><span class="user-input dottedLine">{{merchantBean.eComEpricing || 'N/A'}}</span> %</td>
+                            </tr>
+                            <tr>
+                                <td>Internet Set-Up Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.globalGatewaySetupFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Internet Authorization Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.internetAuthFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Internet Service Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td>Wireless Access Fee (Per User)</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.wirelessAccessFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Other: <span class="user-input dottedLine"></span></td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <!-- TODO: neeed Discuss -->
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="4" style="text-align: center !important;" class="small">Petroleum Services</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Datawire Micronode
+                                    <span class="user-input">&#9744;</span> Yes
+                                    <span class="user-input">&#9744;</span> No
+                                </td>
+                                <td>Datawire Monthly Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Voyager</td>
+                                <td>Authorization Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Sales/Credit Discount</td>
+                                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">WEX</td>
+                                <td>Full Service Authorization Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Sales/Credit Discount</td>
+                                <td class="align-right"><span class="user-input dottedLine">N/A</span> %</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Chargeback Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Retrieval Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Non-Full Service Authorization Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                        </table>
+                        <!-- TODO: neeed Discuss -->
+                    </td>
+                    <td>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="2" style="text-align: center !important;" class="small">Start-Up Fees</td>
+                            </tr>
+                            <tr>
+                                <td>Application Fee (Non-Refundable)</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.applicationFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Reprogramming Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.programmingFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Debit Set-Up Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.debitStartUp || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Miscellaneous Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td><span style="vertical-align: super;font-size: smaller;">*</span>Equipment Purchase</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{(equipmentPurchase | currency : "") || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Other: <span class="user-input dottedLine"></span></td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                            <tr>
+                                <td>Total Amount:</td>
+                                <td class="align-right">$ <span class="user-input dottedLine">{{(totalAmountStartUpFees | currency : "") || 'N/A'}}</span> w/o tax</td>
+                            </tr>
+                        </table>
+                        <table style="border:1px solid; border-top:0;">
+                            <tr>
+                                <td><span style="vertical-align: super;font-size: smaller;">*</span>Plus applicable State/City/Local sales tax.</td>
+                            </tr>
+                        </table>
+                        <br>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="4" class="small">Debit Fees</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Bundled Debit <br>(Applies to MC/V/Disc Non-PIN and PIN Debit)</td>
+                                <td>Discount Rate</td>
+                                <td class="align-right"><span class="user-input dottedLine">{{merchantBean.bundledDebitRate || 'N/A'}}</span> %&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>Sales/Return Trans Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.bundledDebitFee || 'N/A'}}</span><span style="vertical-align: super;font-size: smaller;">&nbsp;&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Unbundled Debit <br>(Applies to PIN Debit only)</td>
+                                <td>Transaction Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.unbundledDebitFee || 'N/A'}}</span><span style="vertical-align: super;font-size: smaller;">*</span></td>
+                            </tr>
+                        </table>
+                        <table style="border:1px solid; border-top:0;">
+                            <tr>
+                                <td><span style="vertical-align: super;font-size: smaller;">*</span>Plus applicable PIN Debit Network fees.</td>
+                            </tr>
+                        </table>
+                        <br>
+                        <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                            <tr>
+                                <th colspan="3" class="small">Miscellaneous Fees* (If Applicable)</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">TransArmor Data Protection Service (Tokenization & Encryption)</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.transarmorDataProtection || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Non-Receipt of PCI Validation</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.pciValidation || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Business Advantage Pkg</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.busAdvPkg || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Minimum Processing Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.minimumProcessingFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Paper Statement Fee (Default is free electronic statement)</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.paperStatementFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Chargeback Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.chargebackFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">ACH Reject Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.achRejectFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Batch Settlement Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.batchSettlementFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Monthly Funding Advantage</td>
+                                <td class="align-right"><span class="user-input dottedLine">{{merchantBean.monFundAdv || 'N/A'}}</span> %</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">AVS</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.avsFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Voice Authorization</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.voiceAuthFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">MC/V/Discover Network Access Fee</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.mcNetworkAccessFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">MC License Volume Fee</td>
+                                <td class="align-right"><span class="user-input dottedLine">{{merchantBean.mcLicenseFee || 'N/A'}}</span> %</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">MC Cross Border Fee USD</td>
+                                <td class="align-right"><span class="user-input dottedLine">{{merchantBean.mcCrossBorderFee || 'N/A'}}</span> %</td>
+                            </tr>
+                            <tr>
+                                <td>Visa Int’l Service Fee</td>
+                                <td class="align-right">USD: <span class="user-input dottedLine">{{merchantBean.visaIntlUSD || 'N/A'}}</span> %</td>
+                                <td class="align-right">Non-USD: <span class="user-input dottedLine">{{merchantBean.visaIntlNonUSD || 'N/A'}}</span> %</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">American Express Pass Through</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.amexPassThru || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">EBT</td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">{{merchantBean.ebtFee || 'N/A'}}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Other: <span class="user-input dottedLine"></span></td>
+                                <td class="align-right">$ <span class="user-input dottedLine space-right">N/A</span></td>
+                            </tr>
+                        </table>
+                        <table style="border:1px solid; border-top:0;">
+                            <tr>
+                                <td><span style="vertical-align: super;font-size: smaller;">*</span>You may be charged, if applicable, additional Card/Payments Organization pass through fees and costs for your transactions as described in the Interchange Qualification Matrix and American Express OptBlue® Guide available at www.businesstrack.com.</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <hr class="page-break">
+            <table>
+                <tr>
+                    <th class="print"></th>
+                    <th colspan="3" class="print" style="vertical-align: middle; font-size: 16pt; text-align: center !important;" colspan="3">MERCHANT PROCESSING APPLICATION AND AGREEMENT</th>
+                    <th class="print" align="right">(Page 3 of 3)</th>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="width-5 print" colspan="3">
+                        DBA Name: <span class="user-input">{{merchantBean.merchantBusinessBean.dbaName}}</span></td>
+                    <td class="align-right width-5 print" colspan="2">
+                        Loc.<span class="dottedLine align-center ">1</span> of <span class="dottedLine align-center ">1</span>
+                    </td>
+                </tr>
+            </table>
+            <table class="border" cellpadding="2" cellspacing="0">
+                <tr>
+                    <th>(7) FEE SCHEDULE (cont'd)</th>
+                </tr>
+            </table>
+            <table cellpadding="2" cellspacing="0" class="border">
+                <tr>
+                    <td colspan="2">Pricing Method<span style="vertical-align: super;font-size: smaller;">A</span></td>
+                    <td align="center">MC/Visa/Discover Ntwk/PayPal 2-Tier</td>
+                    <td align="center">MC/Visa/Discover Ntwk/PayPal 3-Tier</td>
+                    <td colspan="2" align="center">Transaction Fees<br> (Applies to MC/Visa/Discover Ntwk/PayPal 2-Tier and<br> MC/Visa/Discover Ntwk/PayPal 3-Tier ONLY)</td>
+                    <td align="center">MC / Visa /Discover Ntwk / PayPal / American Express OptBlue® Discount Rate</td>
+                    <td align="center">IC Plus</td>
+                </tr>
+                <tr>
+                    <td colspan="8" align="center" style="background:#eee;">Qualified Discount Rates</td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/Visa/Discover Ntwk/PayPal Credit Discount Rate</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCreditRateTier2 || 'N/A'}}</span> %</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCreditRateTier3 || 'N/A'}}</span> %</td>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td colspan="2">MC/V/Discover Ntwk/PayPal Credit Trans Fee</td>
+                                <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaCreditFeeTier || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCreditRateRateAuth || 'N/A'}}</span> %</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCreditRateInterchange || 'N/A'}}</span> %</td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/Visa/Discover Ntwk/PINless POS <span style="vertical-align: super;font-size: smaller;">*</span>Non-PIN (Signature) Debit Discount Rate</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaDebitRateTier2 || 'N/A'}}</span> %</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaDebitRateTier3 || 'N/A'}}</span> %</td>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td colspan="2">MC/V/Discover Ntwk/PINless POS Non-PIN (Signature) Debit Trans Fee</td>
+                                <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaDebitFeeTier || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaDebitRateRateAuth || 'N/A'}}</span> %</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaDebitRateInterchange || 'N/A'}}</span> %</td>
+                </tr>
+                <tr>
+                    <td colspan="2">American Express OptBlue®</td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td colspan="2" style="background: #aaa;">
+                        <table>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td class="align-right"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.amexDiscountRate || 'N/A'}}</span> %</td>
+                </tr>
+                <tr>
+                    <td colspan="8" align="center" style="background:#eee;">Mid-Qualified Discount Rates (Does not apply to MC / Visa / Discover/PayPal 2 Tier)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/Visa/Discover Ntwk/PayPal Credit Discount Rate</td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCardMQRate || 'N/A'}}</span> %</td>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td colspan="2">MC/V/Discover Ntwk/PayPal Credit Trans Fee</td>
+                                <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaCardMQFee || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/Visa/Discover Ntwk <span style="vertical-align: super;font-size: smaller;">*</span>Non-PIN (Signature) Debit Discount Rate</td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCardNPMQRate || 'N/A'}}</span> %</td>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td colspan="2">MC/V/Discover Ntwk Non-PIN (Signature) Debit Trans Fee</td>
+                                <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaCardNPMQFee || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                </tr>
+                <tr>
+                    <td colspan="8" align="center" style="background:#eee;">Non-Qualified Discount Rates</td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/Visa/Discover Ntwk/PayPal Credit Discount Rate</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCreditNonQualRateTier2 || 'N/A'}}</span> %</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaCreditNonQualRateTier3 || 'N/A'}}</span> %</td>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td colspan="2">MC/V/Discover Ntwk/PayPal Credit Trans Fee</td>
+                                <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaCreditNonQualFeeTier || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/Visa/Discover Ntwk <span style="vertical-align: super;font-size: smaller;">*</span>Non-PIN (Signature) Debit Discount Rate</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaDebitNonQualRateTier2 || 'N/A'}}</span> %</td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.visaDebitNonQualRateTier3 || 'N/A'}}</span> %</td>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td colspan="2">MC/Visa/Discover Ntwk Non-PIN (Signature) Debit Trans Fee</td>
+                                <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaDebitNonQualFeeTier || 'N/A'}}</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="background:#eee;"><span style="vertical-align: super;font-size: smaller;">*</span>Fees do not apply if Bundled Debit is chosen</td>
+                </tr>
+                <tr>
+                    <td colspan="2">MC/V/ Discover Ntwk/PINless POS Authorization & Return Transaction Fee</td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td colspan="2" style="background: #aaa;">
+                        <table>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td class="align-right"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.visaCreditFeeRateAuth || 'N/A'}}</span></td>
+                    <td class="align-right">$ <span class="user-input dottedLine">{{merchantBean.visaCreditFeeInterchange || 'N/A'}}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+
+                        Non-Qual Surcharge Fee<br>
+                        (excluding Card/Payments Organization pass-through fees, and any interchange rate difference)<br>
+                        <hr>
+                        Applies to Non-Qualified MC, Visa, Discover Ntwk/ PayPal, and/or Non-PIN (Signature) Debit Transactions. <br>Rewards Cards Surcharge Rate
+                    </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                    <td colspan="2" style="background: #aaa;">
+                        <table>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td class="align-right"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="align-right"><span class="user-input dottedLine">{{merchantBean.nonQualifiedSurchargeFee || 'N/A'}}</span>% <br><br><br><br><br><span class="user-input dottedLine">{{merchantBean.rewardsSurchargeRate || 'N/A'}}</span> % </td>
+                    <td class="align-right" style="background: #aaa;"></td>
+                </tr>
+            </table>
+            <p><span style="vertical-align: super;font-size: smaller;">A</span> Interchange Rates are variable and are determined by how your transactions clear. Please see your Interchange Rate Schedule, Interchange Qualification Matrix and American Express OptBlue® Guide for Interchange Rates & Dues/Assessments and qualification criteria as of the date of this Application. The Interchange Rates and Dues/Assessments are subject to change. American Express OptBlue® has Program Pricing which is not Interchange and which is subject to change.</p>
+            <br>
+            <table cellpadding="2" cellspacing="0" class="border">
+                <tr>
+                    <td colspan="2" align="center">Swiped/Non-Swiped<br>(if selected, the discount rates below apply to all card types and brands accepted)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>Swiped or Dipped Transactions</td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td></td>
+                                            <td colspan="5"><span class="user-input dottedLine space-left">{{merchantBean.swipedRate || 'N/A'}}</span> % of gross transaction</td>
+                                        </tr>
+                                        <tr>
+                                            <td>+</td>
+                                            <td colspan="5">$ <span class="user-input dottedLine">{{merchantBean.swipedFee || 'N/A'}}</span> per transaction </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>Non-Swiped and Non-Dipped Transactions</td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td></td>
+                                            <td colspan="5"><span class="user-input dottedLine space-left">{{merchantBean.nonSwipedRate || 'N/A'}}</span> % of gross transaction</td>
+                                        </tr>
+                                        <tr>
+                                            <td>+</td>
+                                            <td colspan="5">$ <span class="user-input dottedLine">{{merchantBean.nonSwipedFee || 'N/A'}}</span> per transaction </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!--  ( 8 ) AGREEMENT APPROVAL -->
+        <table border="0" cellpadding="5" cellspacing="0">
+            <tr>
+                <th>(8) AGREEMENT APPROVAL</th>
+            </tr>
+            <tbody style="text-align:justify;">
+            <tr>
+                <td><strong>On behalf of myself as an individual, and the entity on whose behalf I am signing, (A) I authorize [Servicers], the applicable Card / Payments Organizations, and its and their Affiliates, third party subcontractors and/or agents:</strong> (i) to use, disclose, and exchange amongst them, the information in the Agreement and information about me personally, (including by requesting, personal and business consumer reports, bank references, and other information as necessary from time to time), for marketing and administrative purposes, verification purposes, purposes under the Merchant Processing Application and Agreement (“MPA”), if approved, and any other uses permitted by law; (ii) to inform me directly about the contents of requested consumer reports (including the name and address of the agency furnishing the report), and (ii) to receive any and all personal and business credit financial information from all references, including banks and consumer reporting agencies, which are hereby released to provide that information; and (B) I certify that: (i) The federal taxpayer identification number and corresponding filing name provided herein are correct; (ii) The statements made and agreed to in this MPA, to which I have not made any alterations or stricken out any language, are true, complete and accurate, and may be relied upon as current unless changed or updated per the Notice provisions of Agreement; (iii) I can read and understand the English language; (iv) I have received and read a copy of the (a) MPA (consisting of Sections 1-9), (b) General Terms and Conditions, (c) Confirmation Page (version [{{merchantBean.pgVersion}}]), and (d) Interchange rate Schedule. I understand that the Interchange Qualification Matrix and American Express OptBlue® Guide and Your Payments Acceptance Guide are available at www.businesstrack.com and the signature below is for the entire contents of the listed documents; v) I have authority to bind the entity on whose behalf I am signing below; I further acknowledge and agree that I will not use my merchant account and/or the Services for illegal transactions, for example, those prohibited by the Unlawful Internet Gambling Enforcement Act, 31 U.S.C. Section 5361 et seq, as may be amended from time to time or for processing and acceptance of transactions in certain jurisdictions pursuant to 31 CFr Part 500 et seq. and other laws enforced by the Office of Foreign Assets Control (OFAC).</td>
+            </tr>
+            </tbody>
+        </table>
+        <table border="0" cellpadding="2" cellspacing="0">
+            <tr>
+                <td>
+                    <span class="bold">Merchant Business Principal:</span>
+                    <div class="signature-box">
+                        <canvas id="signature1" ng-mousemove="canMouseUp(1)" my-touchend="canMouseUp(1)" sketch></canvas>
+                        <span ng-show="signature1Empty">Please sign in the box with mouse or finger.</span>
+                        <a class="button" ng-hide="signature1Empty" ng-click="resetCanvas(1)">Clear Signature</a>
+                    </div>
+                    <p>Date: <span class="user-input dottedLine">{{signature1Date | date:'shortDate'}}</span></p>
+                    <p>Print Name: <span class="user-input dottedLine">{{merchantBean.firstName}} {{merchantBean.lastName}}</span></p>
+                    <div>
+                        <span class="user-input">{{merchantBean.title ==="PRESIDENT" ? "&#9746;" : "&#9744;" }}</span> President
+                        <span class="user-input">{{merchantBean.title ==="VICE PRESIDENT" ? "&#9746;" : "&#9744;" }}</span> Vice President
+                        <span class="user-input">{{merchantBean.title ==="MEMBER LLC" ? "&#9746;" : "&#9744;" }}</span> Member L.L.C
+                        <span class="user-input">{{merchantBean.title ==="OWNER" ? "&#9746;" : "&#9744;" }}</span> Owner
+                        <span class="user-input">{{merchantBean.title ==="PARTNER" ? "&#9746;" : "&#9744;" }}</span> Partner
+                        <span class="user-input">{{isTitleOther ? "&#9746;" : "&#9744;" }}</span> Other <span class="user-input dottedLine">{{isTitleOther ? merchantBean.title : "" }}</span>
+                    </div>
+                </td>
+                <td>
+                  <table class="bold" style="background: #eee">
+                      <td colspan="1">{{merchantBean.serviceTitle}}</td>
+                      <td colspan="2">{{merchantBean.serviceBody}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="3">X Signature <span class="user-input dottedLine"></span></td>
+                    </tr>
+                  </table>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <hr>
+        <!--  ( 9 ) PERSONAL GUARANTY -->
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+                <th style="text-align: left !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">{{merchantBean.pgVersion}}</th>
+                <th colspan="3">(9) PERSONAL GUARANTY</th>
+                <th  style="text-align: right !important; background: white !important; color: black !important; border: 1px solid black; font-size:11pt; font-size:1.1vmax;">{{merchantBean.version}}</th>
+            </tr>
+        </table>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+                <td colspan="2" style="text-align: justify;">
+                    {{merchantBean.personalGuaranty}} (the Guaranteed Parties) acceptance of the MPA and the General Terms and Conditions, the undersigned (“Guarantor”): (A) Unconditionally and irrevocably guarantees the full payment and performance of Merchant’s
+                    obligations (i) as they now exist or as modified under the foregoing agreements, (ii) with or without actual notice of changes, and (iii) during and after the term of the agreements; (B) Waives notice of Merchant’s default; (C) Shall indemnify the Guaranteed Parties for any and all amounts due from Merchant; (D) Warrants, with knowledge that Guaranteed Parties are
+                    acting in full reliance on the same, this Personal Guarantee of payment and not of collection; (E) Acknowledges that (i) the Guaranteed Parties may proceed in law directly against Guarantor and not Merchant, and (ii) this is a continuing personal guaranty and shall not be discharged or affected for any reason.</td>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="bold">Signature</span>:
+                    <div class="signature-box">
+                        <canvas id="signature4" ng-mousemove="canMouseUp(4)" my-touchend="canMouseUp(4)" width="554" sketch></canvas>
+                        <span ng-show="signature4Empty">Please sign in the box with mouse or finger.</span>
+                        <a class="button" ng-hide="signature4Empty" ng-click="resetCanvas(4)">Clear Signature</a>
+                    </div>
+                    <p class="align-right">,an individual</p>
+                </td>
+
+            </tr>
+        </table>
+        <br>
+    </div>
+
+    <hr class="page-break">
+
+    <!-- CONFIRMATION -->
+    <div class="container" id="confirmation">
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+                <th style="text-align: left !important; background: black !important; color: white font-size:11pt; font-size:1.1vmax;">{{merchantBean.pgVersion}}</th>
+                <th colspan="3">PART I: CONFIRMATION PAGE</th>
+                <th></th>
+            </tr>
+        </table>
+        <br>
+        <div class="section">
+            <table>
+                <tr>
+                    <td class="width-1">
+                        <label><strong>PROCESSOR INFORMATION:</strong></label>
+                    </td>
+                    <td class="width-8">
+                        <table class="border-bottom" cellpadding="2" cellspacing="0">
+                            <tr>
+                                <td class="width-6" colspan="5">
+                                    <label>Name: </label>
+                                    <span class="user-input">{{merchantBean.processor}}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="width-6" colspan="5">
+                                    <label>Address: </label>
+                                    <span class="user-input">{{merchantBean.processorAddress}}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <label>URL: </label>
+                                    <span class="user-input">{{merchantBean.processorUrl}}</span>
+                                </td>
+                                <td colspan="2">
+                                    <label>Customer Service #: </label>
+                                    <span class="user-input">{{merchantBean.processorCustomerService}}</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tr style="text-align: justify;"><p><strong>Please read this entire Agreement. It describes the terms on which we will provide merchant processing Services to you. This summary provides answers to commonly asked questions about your Agreement.</strong></p></tr>
+            <tr>
+                <td style="text-align: justify;">
+                    <p><strong>1. Your Discount Rates and other fees</strong> are calculated based on transactions qualifying for certain program pricing and interchange rates levied by the applicable Card Organization. Transactions that fail to qualify for these rates will be charged an additional fee. Interchange and program pricing levied by the Card Organization is subject to change, (see Section 6 of the General Terms & Conditions).</p>
+                    <p><strong>2. We may debit your bank account</strong> (also referred to as your Settlement Account) for amounts owed to us.</p>
+                    <p><strong>3. You are liable for Chargebacks and there are many reasons why a Chargeback may occur.</strong> When they occur we will debit your Settlement Account. See Section 8 of the General Terms & Conditions.</p>
+                    <p><strong>4. If you wish to dispute any charge or funding,</strong> you must notify us within 60 days of the date of the statement on which the charge or funding appears.</p>
+                    <p><strong>5. This Agreement limits our liability to you.</strong> See Section 10 of the General Terms & Conditions for further details.</p>
+                </td>
+                <td style="text-align: justify;">
+                    <p><strong>6. We have assumed certain risks</strong> by agreeing to provide you with the Services. Accordingly, we may take certain actions to mitigate our risk, including termination of this Agreement, and holding monies otherwise payable to you (see Sections 16 and 17 of the General Terms & Conditions).</p>
+                    <p><strong>7. By executing this Agreement with us</strong> you authorize us and our Affiliates to obtain and share financial and credit information regarding your business and the signers and guarantors of this Agreement until all your obligations to us and our Affiliates are satisfied.</p>
+                    <p><strong>8. Arbitration:</strong> This Agreement contains a binding arbitration provision in Section 27 that affects your rights under this Agreement with respect to all Services.</p>
+                </td>
+            </tr>
+        </table>
+        <table class="border-bottom" cellpadding="2" cellspacing="0">
+            <tr>
+                <td class="width-10"></td>
+            </tr>
+        </table>
+        <div class="section clearfix">
+            <br>
+            <table border="0" cellpadding="2" cellspacing="0" style="width: 45%; float:left; margin-right: 5%;">
+                <tr>
+                    <td><p><strong>Information about Bank:</strong></p></td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>a) Your Bank, who is a Visa and MasterCard Member Bank, is {{merchantBean.sponsorBank}}(<strong>Bank</strong>), {{merchantBean.sponsorBankAddress}},{{merchantBean.sponsorBankCustServNumber}}.</p>
+                        <p>b) Bank is the entity approved to extend acceptance of Visa and MasterCard products directly to you and will be a party to the sections of this Agreement listed in Section 2.2.</p>
+                        <p>c) Bank works with Processor to provide the Services to you with respect to Visa Cards and to MasterCard Cards.</p>
+                        <p>d) Bank shall, either directly or through Processor, advise you of pertinent Card Organization Rules with which you must comply.</p>
+                        <p>e) Bank is responsible for and must provide settlement funds to you and will be responsible for all funds held in a reserve.</p>
+                    </td>
+                </tr>
+            </table>
+            <table border="0" cellpadding="2" cellspacing="0" style="width: 45%; float:left; margin-right: 5%;">
+                <tr>
+                    <td><p><strong>Your Responsibilities:</strong></p></td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>a) You must comply in full at all times with this Agreement (including the Your Payments Acceptance Guide), all Card Organization Rules and all Cardholder and customer data security and storage requirements.
+                        <p>b) You may view and download the Your Payments Acceptance Guide at
+                            <a class="link" href="https://www.businesstrack.com" target="_blank">https://www.businesstrack.com</a>
+                        <p>c) You may view and download the Interchange Qualification Matrix and American Express OptBlue® Guide at
+                            <a class="link" href="https://www.businesstrack.com" target="_blank">https://www.businesstrack.com</a>
+                        <p>d) You may download the Visa and MasterCard rules at: <a class="link" href="https://usa.visa.com/support/merchant.html" target="_blank">https://usa.visa.com/support/merchant.html</a> <a class="link" href="http://www.mastercard.com/us/merchant/support/rules.html" target="_blank">http://www.mastercard.com/us/merchant/support/rules.html</a>
+                        <p>e) For your account to stay operational, you must keep fraud and Chargeback levels below Card Organization thresholds.
+                        <p>f) Please retain a signed copy of your Agreement.
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+                <td>Print Merchant’s Business Legal Name: <span class="user-input">{{merchantBean.merchantBusinessBean.legalDbaName}}</span></td>
+            </tr>
+        </table>
+        <br>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tr>
+                <td colspan="2"><strong>By signing below, you:</strong></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <strong>
+                        <p>&nbsp;&nbsp;(i)  confirm that you have received and read the Application, <a class="link" ng-click="agreementClicked = 'true'" href="{{merchantBean.s3PathForTerms}}" target="_blank">General Terms & Conditions</a> [version {{merchantBean.pgVersion}}, consisting of 10 pages including this Confirmation Page], [Interchange Rate Schedule]; and</p>
+                        <p>&nbsp;&nbsp;(ii)  agree to all terms in this Agreement in your capacity as a person authorized to sign on behalf of the business set out in the Application.</p>
+                        <p>&nbsp;&nbsp;(iii)  acknowledge that you have executed the Agreement using an electronic signature process and that signature reflects your agreement to be bound to the General Terms and Conditions set forth in the Agreement.</p>
+                    </strong>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>NO SALES REPRESENTATIVE IS AUTHORIZED TO ACCEPT OR AGREE TO ANY ALTERATIONS TO THIS AGREEMENT.</strong></td>
+            </tr>
+            <tr>
+                <td>
+                    <br>
+                    <span class="bold">Business Principal</span>:
+                    <div class="signature-box">
+                        <canvas id="signature8" ng-mousemove="canMouseUp(8)" my-touchend="canMouseUp(8)"  ng-if="agreementClicked" sketch></canvas>
+                        <canvas id="signature8" ng-if="!agreementClicked"></canvas>
+                        <span ng-show="signature8Empty">Please sign in the box with mouse or finger.</span>
+                        <a class="button" ng-hide="signature8Empty" ng-click="resetCanvas(8)">Clear Signature</a>
+                    </div>
+                    <p>Date: <span>{{signature8Date | date:'shortDate'}}</span></p>
+                    <p>Print Name: <span class="user-input dottedLine">{{merchantBean.firstName}} {{merchantBean.lastName}}</span></p>
+                    <div>
+                        <span class="user-input">{{merchantBean.title ==="PRESIDENT" ? "&#9746;" : "&#9744;" }}</span> President
+                        <span class="user-input">{{merchantBean.title ==="VICE PRESIDENT" ? "&#9746;" : "&#9744;" }}</span> Vice President
+                        <span class="user-input">{{merchantBean.title ==="MEMBER LLC" ? "&#9746;" : "&#9744;" }}</span> Member L.L.C
+                        <span class="user-input">{{merchantBean.title ==="OWNER" ? "&#9746;" : "&#9744;" }}</span> Owner
+                        <span class="user-input">{{merchantBean.title ==="PARTNER" ? "&#9746;" : "&#9744;" }}</span> Partner
+                        <span class="user-input">{{isTitleOther ? "&#9746;" : "&#9744;" }}</span> Other <span class="user-input dottedLine">{{isTitleOther ? merchantBean.title : "" }}</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table class="border-bottom" cellpadding="2" cellspacing="0">
+            <tr>
+                <td class="width-10"></td>
+            </tr>
+        </table>
+        <p>{{merchantBean.pgVersion}}</p>
+    </div>
+    <!-- end #confirmation -->
+    <hr class="page-break">
+    <!-- start #lease -->
+    <div class="container" id="lease" ng-show="isLeasedAgreement">
+        <table border="0" cellpadding="2" cellspacing="0">
+            <thead>
+            <tr>
+                <td colspan="3" class="align-center"><h1>EQUIPMENT LEASE AGREEMENT</h1></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="width-5" colspan="1">
+                    Merchant #: <span class="user-input">N/A</span>
+                </td>
+                <td class="align-center width-5" colspan="1">
+                    Sales Rep. Name: <span class="user-input"></span>
+                </td>
+                <td class="align-right width-5" colspan="1">
+                    Sales #: <span class="user-input"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr>
+        <!-- (1) MERCHANT INFORMATION -->
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tbody><tr>
+                <th class="width-8">MERCHANT INFORMATION</th>
+            </tr>
+            </tbody></table>
+        <div class="section">
+            <table class="border" cellpadding="2" cellspacing="0">
+                <tbody><tr>
+                    <td class="width-5" colspan="5">
+                        <label>Corporate Business Name</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.legalDbaName}}</span>
+                    </td>
+                    <td class="width-2" colspan="2">
+                        <label>DBA Name</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.dbaName}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="width-2" colspan="2">
+                        <label>Business Address:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessAddress}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>City:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessCity}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Country:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessCountry}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>State:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessState}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Zip:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessZipcode}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Your Business Phone:</label>
+                        <span class="user-input">{{merchantBean.merchantBusinessBean.businessPhoneNumber}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <label>Business Type:</label>
+                  <span class="user-input">
+                       {{merchantBean.organizationTypeReferenceCode ==="I" ? "&#9746;" : "☐" }}
+                  </span> Sole Ownership
+                  <span class="user-input">
+                      {{merchantBean.organizationTypeReferenceCode ==="P" ? "&#9746;" : "☐" }}
+                  </span> Partnership
+                  <span class="user-input">
+                      {{merchantBean.organizationTypeReferenceCode ==="T" ? "&#9746;" : "☐" }}
+                  </span> Non Profit/Tax Exempt
+                  <span class="user-input">
+                      {{merchantBean.organizationTypeReferenceCode ==="C" ? "&#9746;" : "☐" }}
+                  </span> Public Corp.
+                  <span class="user-input">
+                      {{merchantBean.organizationTypeReferenceCode ==="PRC" ? "&#9746;" : "☐" }}
+                  </span> Private Corp.
+                  <span class="user-input">
+                       {{merchantBean.organizationTypeReferenceCode ==="L" ? "&#9746;" : "☐" }}
+                  </span>  L.L.C
+                  <span class="user-input">
+                      {{merchantBean.organizationTypeReferenceCode ==="G" ? "&#9746;" : "☐" }}
+                  </span> Govt.
+                    </td>
+                    <td colspan="1">
+                        <label>Tax ID#:</label>
+                        <span class="user-input">{{maskDigit(merchantBean.merchantBusinessBean.employerIdNumberTax)}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Years in Business</label>
+                        <span class="user-input">{{merchantBean.businessYearStarted}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="width-2" colspan="2">
+                        <label>Billing Address (if different from above):</label>
+                        <span class="user-input">{{merchantBean.homeAddress}} {{merchantBean.homeAddress2 || ''}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>City:</label>
+                        <span class="user-input">{{merchantBean.city}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>Country:</label>
+                        <span class="user-input">{{merchantBean.country}}</span>
+                    </td>
+                    <td colspan="1">
+                        <label>State:</label>
+                        <span class="user-input">{{merchantBean.state}}</span>
+                    </td>
+                    <td colspan="2">
+                        <label>Zip:</label>
+                        <span class="user-input">{{merchantBean.zipCode}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="width-2" colspan="3">
+                        <label>Bank Name:</label>
+                        <span class="user-input">{{merchantBean.instName || 'N/A'}}</span>
+                    </td>
+                    <td colspan="2">
+                        <label>Routing Number:</label>
+                        <span class="user-input">{{merchantBean.abaNumber}}</span>
+                    </td>
+                    <td colspan="2">
+                        <label>Account Number:</label>
+                        <span class="user-input">{{merchantBean.accountNumber}}</span>
+                    </td>
+                </tr>
+                </tbody></table>
+        </div>
+        <hr>
+        <!-- (2) DESCRIPTION OF LEASED EQUIPMENT -->
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr>
+                <th class="width-8">DESCRIPTION OF LEASED EQUIPMENT</th>
+            </tr>
+            </tbody>
+        </table>
+        <div class="section">
+            <br>
+            <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                <tbody><tr>
+                    <th class="small">Equipment Type</th>
+                    <th class="small">Quantity</th>
+                    <th class="small align-right">Unit Price w/o Tax and S & H</th>
+                </tr>
+                <tr ng-repeat="lineItem in merchantBean.leaseEquipment">
+
+                    <td> <span class='user-input dottedLine'> <span>{{lineItem.modelName}} </span></span></td>
+                    <td><span class="user-input dottedLine">{{lineItem.quantity}}</span></td>
+                    <td class="align-right">$ <span class="user-input dottedLine"> {{(lineItem.unitPrice | currency : "")}}</span></td>
+                </tr>
+                </tbody></table>
+        </div>
+        <hr>
+        <!-- (3) SCHEDULE OF PAYMENTS -->
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr>
+                <th class="width-8">SCHEDULE OF PAYMENTS</th>
+            </tr>
+            </tbody>
+        </table>
+        <div class="section">
+            <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                <tbody><tr style="font-size: 13pt !important; line-height:130%; font-weight: bold;">
+                    <td style="font-size: 14px !important; line-height:130%; font-weight: bold;">Lease Term:</td>
+                    <td style="font-size: 14px !important; line-height:130%; font-weight: bold;" class="align-right"><span class="user-input dottedLine">{{merchantBean.leaseTerm}}</span> mos.</td>
+                </tr>
+                <tr style="font-size: 13pt !important; line-height:130%; font-weight: bold;">
+                    <td style="font-size: 14px !important; line-height:130%; font-weight: bold;">Total Monthly Lease Charge:<br><span class="small">(w/o taxes, late fees, or other charges that may apply)</span></td>
+                    <td style="font-size: 14px !important; line-height:130%; font-weight: bold;" class="align-right">$<span class="user-input dottedLine">{{merchantBean.totalMonthlyLeaseCharge}}</span></td>
+                </tr>
+                <tr style="font-size: 13pt !important; line-height:130%; font-weight: bold;">
+                    <td style="font-size: 14px !important; line-height:130%; font-weight: bold;">Total Cost To Lease:</td>
+                    <td style="font-size: 14px !important; line-height:130%; font-weight: bold;" class="align-right">$<span class="user-input dottedLine">{{merchantBean.totalCostToLease}}</span></td>
+                </tr>
+                </tbody></table>
+            <table cellpadding="2" cellspacing="0" style="border: 1px solid; border-top:0;">
+                <tbody><tr>
+                    <td colspan="2">
+                        <strong>Annual tax handling fee:</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>AL, AR, CA, CT, GA, IN, KY, LA, MS,
+                        MO, NE, NV, NM, NC, OK, OR, RI, SC,
+                        TN, TX, VT, VA, WA, WV, WI, WY</td>
+                    <td class="align-right">$<span class="user-input dottedLine">30.20</span></td>
+                </tr>
+                <tr>
+                    <td>All other states</td>
+                    <td class="align-right">$<span class="user-input dottedLine">10.20</span></td>
+                </tr>
+                </tbody></table>
+            <table cellpadding="2" cellspacing="0" style="border: 1px solid; border-top:0;">
+                <tbody><tr>
+                    <td>Approx. Date of First ACH Payment:</td>
+                    <td class="align-right"><span class="user-input dottedLine">1st of the following month</span></td>
+                </tr>
+                <tr>
+                    <td>Approx. Amount of First ACH Payment:</td>
+                    <td class="align-right">$<span class="user-input dottedLine">{{merchantBean.totalMonthlyLeaseCharge}}</span></td>
+                </tr>
+                </tbody></table>
+        </div>
+        <hr>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tbody><tr>
+                <td style="text-align: justify;">This Equipment Lease Agreement (“Agreement”) is being entered into by and between First Data Merchant Services LLC and the Lessee identified in the signature panel of this Agreement. In this Agreement, the words “we,” “our” and “us” refer to First Data Merchant Services LLC and its successors and assigns and the words “you” and “your” refer to Lessee and its permitted successors and assigns. This Equipment Lease Agreement may be a factor in the pricing you are receiving for processing services provided by us.</td>
+            </tr>
+            <tr>
+                <td style="text-align: justify;">
+                    <p><span style="text-decoration: underline;">1. EffectiveDate,Term and Interim Rent.</span></p>
+                    <p>a) This Agreement becomes effective on the date we deliver any piece of Equipment to you (the “Delivery Date”).
+                        This Agreement remains in effect until all of your obligations and all of our obligations under it have been satisfied. We will deliver the Equipment to the site designated by you.</p>
+                    <p>b) <span style="text-decoration: underline;">Term</span>: The term of this Agreement begins on a date designated by us after receipt of all required documentation and acceptance by us represented by our delivery of Equipment to you (the “Commencement Date”), and continues for the number of months indicated above in the Lease Term. YOU AGREE THIS AGREEMENT IS A NON- CANCELLABLE COMMITMENT BY YOU TO LEASE THE EQUIPMENT IDENTIFIED HEREIN FOR THE ENTIRE LEASE TERM INDICATED ABOVE. You agree to pay all amounts due during the Lease Term and confirm upon execution the Lease Term is specifically defined as written above.</p>
+                    <p>d) You agree to pay an Interim Lease Payment in the amount of one-thirtieth (1/30th) of the monthly lease charge for each day from and including the Delivery Date until the date preceding the Commencement Date.</p>
+                    <p>2. <span style="text-decoration: underline;">Authorization</span>. Lessee hereby authorizes us or our designees, successors or assigns (hereinafter “Lessor”) to with- draw any amounts including any and all sales taxes now due or hereinafter imposed, owed by Lessee in conjunction with this Agreement by initiating debit entries to Lessee’s account at the bank named above (hereinafter “Bank”), or such other bank as the Lessee may from time to time use. In the event of default of Lessee’s obligation hereunder, Lessee authorizes debit of its account for the full amount due under this Agreement. Further, Lessee authorizes Bank to accept and to charge any debit entries initiated by Lessor to Lessee’s account. In the event that Lessor withdraws funds erroneously from Lessee’s account, Lessee authorizes Lessor to credit Lessee’s account for an amount not to exceed the original amount of the debit. This authorization is to remain in full force and effect until Lessor and Bank have received written notice from Lessee of its termination in such time and in such manner as to afford Lessor and Bank a reasonable opportunity to act.</p>
+                    <p>3. <span style="text-decoration: underline;">Default;Remedies.</span></p>
+                    <p>a) If any debit of your bank account initiated by us is rejected when due, or if you otherwise fail to pay us any amounts due hereunder when due, or if you default in any material respect in the performance or observance of any obligation or provision of this Agreement or any agreement with any of our affiliates, alliances or joint ventures, any such event shall be a default hereunder. Without limiting the foregoing, any default by you under a Merchant Processing Agreement (“MPA”) with us or with an alliance or joint venture to which we are a party may be treated as a default under this Agreement. Such a default would include a default resulting from early termination of the MPA, if applicable. For fees that may be applicable upon payment default, please see paragraph 10.</p>
+                    <p>b) Upon the occurrence of any default, we may at our option, effective immediately without notice, either (i) terminate this Agreement and our future obligations under this Agreement, repossess the Equipment and proceed in any lawful manner against you for collection of all charges that have accrued and are due and payable, or (ii) accelerate the remaining payments due, which shall be calculated as ninety-five (95%) of the product of (1) your monthly payment and (2) the number of months then outstanding on the Lease Term. If Equipment has not been returned this accelerated amount shall include the then fair market value of the Equipment (as determined in good faith by us). This acceleration of payments is not a penalty but liquidated damages for our loss of the bargain. Upon any such termination for default, we may proceed in any lawful manner to obtain satisfaction of the amounts owed to us and, if applicable, our recovery of the Equipment, including entering onto your premises to recover the Equipment. In addition, you shall also be responsible for our costs of collection, court costs and reasonable attorneys’ fees, as well as applicable shipping, repair and refurbishing costs of recovered Equipment. You agree that we shall be entitled to recover any amounts due to us under this Agreement by charging your bank account or any other funds of yours that come into our possession or control, or within the possession or control of our affiliates, alliances or joint ventures, or by setting off amounts that you owe to us against any amounts we may owe to you, without notifying you prior to doing so. Without limiting the foregoing, you agree that we are entitled to recover amounts owed to us under this Agreement by obtaining directly from an alliance or joint venture to which we are a party and with which you have entered into a MPA any funds held or available as security for payment under the terms of the MPA, including funds available under the “Reserve Account; Security Interest” section of the MPA, if applicable.</p>
+                    <p>4. <span style="text-decoration: underline;">Return or Purchase of Equipment at End of Lease Period.</span> Upon the completion of your Lease Term the Agreement shall continue on a month-to-month basis. There is no obligation to continue the lease after the Lease Term ends. At the end of your Lease Term, you will have the option to: (a) return the Equipment to us; (b) purchase the Equipment from us for the lesser of fair market value at the time (as determined in good faith by us), or an amount equal to ten-percent (10%) of the total lease payments under this Lease Agreement with respect to each item of Equipment; or (c) as noted, rent the Equipment on a month-to-month basis at the existing monthly lease payment. In the absence of an affirmative election by you to return or purchase the Equipment, (c) will apply and this Agreement will continue on a month-to-month basis at the existing monthly lease payment. After the end of the Lease Term, if you do not want to continue to rent the Equipment on a month-to-month basis, then you will be obligated to provide Lessor with notice of that choice prior to the end of the Lease Term and advise whether you will return the Equipment to Lessor or purchase the Equipment, which price Lessor shall provide to you upon receipt of the notification. If you fail to provide such notice at least thirty (30) days prior to the end of the Lease Term, you acknowledge that Lessor may not have time to suspend billing due for the next month’s lease charge. If we terminate this Agreement pursuant to paragraph 3 due to a default by you, then you shall immediately return the Equipment to us at the address set forth in paragraph 11 no later than the tenth Business Day after termination, or remit to us the fair market value of the Equipment which amount we shall provide after good faith determination. We may collect any amounts due to us under this paragraph 4 by debiting your Settlement Account, and to the extent we are unable to obtain full satisfaction in this manner, you agree to pay the amounts owed to us promptly upon our request.</p>
+                    <p>5. <span style="text-decoration: underline;">Limitation on Liability.</span> We are not liable for any loss, damage or expense of any kind or nature caused directly or indirectly by the Equipment, including any damage or injury to persons or property caused by the Equipment. We are not liable for the use or maintenance of the Equipment, its failure to operate, any repairs or service to it, or by any interruption of service or loss of use of the Equipment or resulting loss of business. Our liability arising out of or in any way connected with this Agreement shall not exceed the aggregate lease amount paid to us for the particular Equipment involved. In no event shall we be liable for any indirect, incidental, special or consequential damages. The remedies available to you under this Agreement are your sole and exclusive remedies.</p>
+                    <p>6. <span style="text-decoration: underline;">Governing Law; Dispute Resolution; Miscellaneous.</span> This Agreement shall be governed by and will be construed in accordance with the laws of the State of New York (without applying its conflicts of laws principles). We have substantial facilities in the State of New York and many of the services provided under this Agreement are provided from these facilities. The exclusive venue for any actions or claims arising under or related to this Agreement shall be the appropriate state or federal court located in Suffolk County New York. If any part of this Agreement is not enforceable, the remaining provisions will remain valid and enforceable.</p>
+                    <p>7. <span style="text-decoration: underline;">Equipment and Software.</span></p>
+                    a) We agree to lease to you and you agree to lease from us the equipment identified on the first page of this Agreement or such other comparable equipment we provide you (the “Equipment”), according to the terms and conditions of this Agreement. Such Equipment may include CloverTM branded devices used in connection with the Clover devices (“Clover Devices”) or other equipment or peripherals compatible with Clover Devices (e.g. receipt printers or cash drawers).<p></p>
+                    <p>b) For the avoidance of doubt, each Clover Device includes (i)operating software and (ii)the then-current, Clover standard object code version of software resident on or accessible through a Clover Device at the time we provide you with the Clover Device (“Clover Software”), but Clover Software does not include any software that may be obtained by you separately from using the Clover Device (e.g., from the CloverTM App Market).</p>
+                    <p>c) We are providing the Equipment to you “as is” and make no representations or warranties of any kind as to the suitability of the Equipment for any particular purpose.</p>
+                    <p>d) YOU ACKNOWLEDGE THAT THE EQUIPMENT YOU LEASE UNDER THIS LEASE AGREEMENT MAY NOT BE COMPATIBLE WITH ANOTHER PROCESSOR’S SYSTEMS AND THAT WE DO NOT HAVE ANY OBLIGATION TO MAKE SUCH EQUIPMENT COMPATIBLE IN THE EVENT THAT YOU ELECT TO USE ANOTHER SERVICE PROVIDER. UPON TERMINATION OF YOUR MERCHANT PROCESSING AGREE- MENT, YOU ACKNOWLEDGE THAT YOU MAY NOT BE ABLE TO USE THE EQUIPMENT LEASED UNDER THIS LEASE AGREEMENT WITH SAID SERVICE PROVIDER.
+                    </p><p>8. <span style="text-decoration: underline;">Warranties.</span></p>
+                    <p>a) All warranties express or implied, made to you or any other person are hereby disclaimed including without limitation, any warranties regarding quality, suitability, merchantability, fitness for a particular use, quiet enjoyment, or infringement.
+                    </p><p>b) YouwarrantthatyouwillonlyusetheEquipmentforcommercialpurposesandwillnotusetheEquipmentfor any household or personal purposes.
+                </p><p>c) LeasedEquipmentiswarrantedagainstmaterialdefectsforthelifeofthelease.Thiswarrantydoesnotinclude damage to the Equipment resulting from accident or misuse or any other breach of the Agreement. If the Equipment should become defective within the warranty period, First Data Merchant Services LLC will replace it free of charge (except that appropriate shipping charges may apply).</p>
+                    <p>9. <span style="text-decoration: underline;">Lease Guaranty.</span> No guarantor shall have any right of subrogation to any of our rights in the Equipment or this Lease or against you, and any such right of subrogation is hereby waived and released. All indebtedness that exists now or arises after the execution of this Agreement between you and any guarantor is hereby subordinated to all of your present and future obligations, and those of your guarantor, to us, and no payment shall be made or accepted on such indebtedness due to you from a guarantor until the obligations due to us are paid and satisfied in full.</p>
+                    <p>10. <span style="text-decoration: underline;">Payment of Amounts Due, Administrative and Collection Fees.</span></p>
+                    a)
+                    <table cellpadding="2" cellspacing="0" style="border: 1px solid;">
+                        <tbody><tr>
+                            <th colspan="2" class="small">SCHEDULE OF FEES
+                            </th></tr>
+                        <tr>
+                            <td colspan="2"><strong>Default Fees</strong></td>
+                        </tr>
+                        <tr>
+                            <td>NSF Fee</td>
+                            <td class="align-right">$10</td>
+                        </tr>
+                        <tr>
+                            <td>Collection Fee</td>
+                            <td class="align-right">$25</td>
+                        </tr>
+                        <tr>
+                            <td>Late Fee</td>
+                            <td class="align-right">$10</td>
+                        </tr>
+                        <tr>
+                            <td>Collection Invoicing Fee</td>
+                            <td class="align-right">$7</td>
+                        </tr>
+                        <tr>
+                            <td>Improper Return Fee</td>
+                            <td class="align-right">$100*</td>
+                        </tr>
+                        </tbody></table>
+                    <table cellpadding="2" cellspacing="0" style="border: 1px solid; border-top:0;">
+                        <tbody><tr>
+                            <td colspan="2"><strong>Administrative Fees</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Upgrade Fee</td>
+                            <td class="align-right">$50</td>
+                        </tr>
+                        <tr>
+                            <td>Assumption Fee</td>
+                            <td class="align-right">$150</td>
+                        </tr>
+                        <tr>
+                            <td>Lease Copy Fee</td>
+                            <td class="align-right">$7</td>
+                        </tr>
+                        </tbody></table>
+                    <p>b) The monthly lease charge is due and payable on the same day of each successive month thereafter of the Lease Term for each piece of lease Equipment. You agree to pay all assessed costs for delivery and installation of Equipment.</p>
+                    <p>c) In addition to the monthly lease charge, you shall pay, or reimburse us for, amounts equal to any taxes or assessments on or arising out of this Agreement or the Equipment, and related supplies or any services, use or activities hereunder, including without limitation, state and local sales, use, property, privilege and excise tax, exclusive, however, of taxes based on our net income. Reimbursement of property tax calculation is based on an average tax rate.</p>
+                    <p>d) Your lease payments will be due despite dissatisfaction for any reason with the Equipment or related processing services.</p>
+                    <p>e) Whenever any payment is not made by you in full when due, you shall pay us a late fee of $10.00 for each month during which it remains unpaid but in no event more than the maximum permitted by law. You shall also pay to us a NSF fee of $10.00 for any debit we attempt to make against your bank account that is for any reason rejected, but in no event more than the maximum amount permitted by law.</p>
+                    <p>f) In the event your account is placed into collections for past due lease amounts, you agree that we can recover a collection expense fee of $25 for each aggregate payment requiring a collection effort, but in no event more than the maximum amount permitted by law.</p>
+                    <p>g) * See paragraph 11(g) for details regarding this fee.</p>
+
+                    <p>11. <span style="text-decoration: underline;">Use and Return of Equipment; Insurance.</span></p>
+                    <p>a) You shall cause the Equipment to be operated by competent and qualified personnel in accordance with any</p>
+                    operating instructions furnished by us or the manufacturer. You shall maintain the Equipment in good operating condition and protect it from deterioration, normal wear and tear excepted.<!--
+<p-->b) You shall not permit any physical alteration or modification of th eEquipment , or change the installation site of
+                    the Equipment, without our prior written consent.<p></p>
+                    <p>c) You shall not create, incur, assume or allow any consensually or judicially imposed liens or encumbrances on ,or part with possession of, or sublease the Equipment without our prior written consent.</p>
+                    <p>d) You shall comply with all governmental laws, rules and regulations relating to the use of the Equipment. You are
+                        also responsible for obtaining all permits required to operate the Equipment at your facility.</p>
+                    <p>e) We or our representatives may, at any time, enter your premises for purposes of inspecting, examining or repairing the Equipment.</p>
+                    <p>f) The Equipment shall remain our personal property and shall not under any circumstances be considered to be a fixture affixed to your real estate. You shall permit us to affix suitable labels or stencils to the Equipment evidencing our ownership.</p>
+                    <p>g) You agree that all Equipment returns shall be to TASQ Technology, 1169 CantonRoad, Marietta, GA., 30066, be done in a manner that can be tracked, and shall have Lease number referenced on the return packaging. You understand and agree that your failure to return the Equipment in the manner noted in the preceding sentence will delay our receipt of the return and possibly result in you being charged $100. If returned Equipment shows excessive wear and tear or is not in good operating condition (in each case, as determined by us in our reasonable discretion), you will be charged our cost to restore such Equipment to normal or good operating condition, as applicable.</p>
+                    <p>h) You shall keep the Equipment adequately insured against loss by fire, theft, and all other hazards.</p>
+                    <p>i) You shall provide proof of insurance as evidenced by a certificate naming First Data Merchant Services LLC as a loss payee under your insurance policy. The loss, destruction, theft or damage of or to the Equipment shall not relieve you from your obligation to pay the full purchase price or total monthly lease charges hereunder.</p>
+                    <p>12. <span style="text-decoration: underline;">Site Preparation.</span> You will prepare the installation site(s) for the Equipment, including but not limited to the power supply circuits and phone lines, in conformance with the manufacturer’s and our specifications and will make the site(s) available to us by the confirmed shipping date.</p>
+                    <p>13. <span style="text-decoration: underline;">Title to Equipment.</span> We at all times retain title to the Equipment unless we agree otherwise in writing. You agree to execute and deliver to us any statement or instrument that we may request to confirm or evidence our ownership of the Equipment, and you irrevocably appoint us as your attorney-in-fact to execute and file the same in your name and on your behalf. If a court determines that the leasing transaction contemplated by this Agreement does not constitute a financing and is not a lease of the Equipment, then we shall be deemed to have a first lien security interest on the Equipment as of the date of this Agreement, and you will execute such documentation as we may request to evidence such security interest.</p>
+                    <p>14. <span style="text-decoration: underline;">Software License.</span> We retain all ownership and copyright interest in and to all computer software, related documentation, technology, know-how and processes embodied in or provided in connection with the Equipment (“FD Software”) other than computer software, related documentation, technology, know-how and processes owned or licensed by the manufacturer of the Equipment (“Manufacturer Software”). Manufacturer Software together with the FD Software is collectively referred to as “Software”. You shall have only a nonexclusive license to use the Software in your operation of the Equipment. Notwithstanding the foregoing, ownership and copyright right interest in and to the Clover Software and your license to use the Clover Software and the Clover services is described in and governed by the terms of your MPA or in a separate agreement.
+                    </p><p>15. <span style="text-decoration: underline;">Indemnification.</span> You shall indemnify and hold us harmless from and against any and all losses, liabilities, damages and expenses, (including attorneys’ fees) resulting from (a) the operation, use, condition, liens against, or return of the Equipment or (b) any breach by you of any of your obligations hereunder, except to the extent any losses, liabilities, damages or expenses result from our gross negligence or willful misconduct.</p>
+                    <p>16. <span style="text-decoration: underline;">Assignment.</span> You may not assign or transfer this Agreement, by operation of law or otherwise, without our prior written consent. For purposes of this Agreement, any transfer of voting control of you or your parent shall be considered an assignment or transfer hereof. We may assign or transfer this Agreement and our rights and obligations hereunder, in whole or in part, to any third party without the necessity of obtaining your consent.</p>
+                    <p>17. <span style="text-decoration: underline;">Notices.</span> All notices must be in writing, if to you at your address appearing on the cover page of this Agreement and if to us at 4000 Coral Ridge Drive, Coral Springs, Florida, 33065. Attn: Lease Department, and shall be deemed to have been given (i) if sent by mail or courier, upon the earlier of five (5) days after mailing or when actually received or, in the case of courier, when delivered, and (ii) if sent by facsimile machine, when the courier confirmation copy is actually received. Notice given in any other manner shall be effective when actually received, if to you at the address appearing on the cover page of this Agreement or by any electronic means, including but not limited to the email address you have provided on the cover page of the Agreement. Notices sent to the Merchant’s last known address, as indicated in our records, shall constitute effective notice to the Merchant under this Agreement. Customer Service toll free number 1-877-257-2094.</p>
+                    <p>18. <span style="text-decoration: underline;">Entire Agreement.</span> This Agreement constitutes the entire agreement between the parties with respect to its subject matter, supersedes any previous agreements and understandings and can be changed only by a written agreement signed by all parties. This Agreement may be executed in any number of counterparts and all of such counterparts taken together shall be deemed to constitute one and the same instrument. Delivery of an executed counterpart of a signature page of this Agreement by facsimile shall be effective as delivery of a manually executed counterpart of this Agreement.</p>
+                </td>
+            </tr>
+            </tbody></table>
+        <hr>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tbody><tr>
+                <th colspan="2">LEASE ACCEPTANCE</th>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: justify;">Undersigned agrees to all terms and conditions contained in this Equipment Lease Agreement. Lessee authorizes First Data Merchant Services LLC or its agents, to request and obtain from a consumer reporting agency personal and business consumer reports. Each of the undersigned authorizes us to obtain subsequent consumer reports in connection with the maintenance, updating, renewal or extension of the Agreement. Each of the undersigned furthermore agrees that all references, including banks and consumer reporting agencies, may release any and all personal and business credit financial information to us. <strong><span style="text-decoration: underline;">THIS LEASE IS A NON-CANCELLABLE COMMITMENT BY YOU FOR THE FULL LEASE TERM INDICATED HEREIN.</span></strong> By executing the below, Lessee confirms that the Lease Term is filled in above.Any attempt by you to terminate this commitment prior to the end of the Lease Term, entitles First Data Merchant Services LLC to all rights and remedies set forth in paragraph 3 including acceleration of the remaining payments due, which shall be calculated as 95% of the product of (1) your monthly payment and (2) the number of months then outstanding on the Lease Term. BY SIGNING BELOW, YOU ARE AGREEING TO THE TERMS AND CONDITIONS IN THIS AGREEMENT AND ACKNOWLEDGING PROCESSOR’S ACCEPTANCE OF THIS AGREEMENT. IF YOU SIGN USING AN ELECTRONIC SIGNATURE PROCESS, THAT SIGNATURE REFLECTS YOUR AGREEMENT TO BE BOUND BY THE TERMS AND CONDITIONS IN THIS AGREEMENT.</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="signature-box">
+                        <canvas id="signature6" ng-mousemove="canMouseUp(6)" my-touchend="canMouseUp(6)" sketch></canvas>
+                        <span ng-show="signature6Empty">Please sign in the box with mouse or finger.</span>
+                        <a class="button" ng-hide="signature6Empty" ng-click="resetCanvas(6)">Clear Signature</a>
+
+                    </div>
+                    <p>Date: <span class="user-input dottedLine">{{signature6Date | date:'shortDate'}}</span></p>
+                    <p>Print Name: <span class="user-input dottedLine">{{merchantBean.firstName}} {{merchantBean.lastName}}</span></p>
+                    <div>
+                        <span class="user-input">{{merchantBean.title ==="PRESIDENT" ? "&#9746;" : "&#9744;" }}</span> President
+                        <span class="user-input">{{merchantBean.title ==="VICE PRESIDENT" ? "&#9746;" : "&#9744;" }}</span> Vice President
+                        <span class="user-input">{{merchantBean.title ==="MEMBER LLC" ? "&#9746;" : "&#9744;" }}</span> Member L.L.C
+                        <span class="user-input">{{merchantBean.title ==="OWNER" ? "&#9746;" : "&#9744;" }}</span> Owner
+                        <span class="user-input">{{merchantBean.title ==="PARTNER" ? "&#9746;" : "&#9744;" }}</span> Partner
+                        <span class="user-input">{{isTitleOther ? "&#9746;" : "&#9744;" }}</span> Other <span class="user-input dottedLine">{{isTitleOther ? merchantBean.title : "" }}</span>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            </tbody></table>
+        <hr>
+        <table border="0" cellpadding="10" cellspacing="0">
+            <tbody><tr>
+                <th colspan="2">PERSONAL GUARANTY</th>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: justify;">Undersigned unconditionally guarantees performance of this Equipment Lease Agreement by Lessee and payment of all sums due hereunder in the event of default, hereby waiving any modification, amendment or extension and notice thereof, and further agrees to the terms of this Equipment Lease Agreement insofar as they apply to the undersigned as guarantor. BY SIGNING BELOW, YOU ARE AGREEING TO THE TERMS AND CONDITIONS IN THIS AGREEMENT AND ACKNOWLEDGING PROCESSOR’S ACCEPTANCE OF THIS AGREEMENT. IF YOU SIGN USING AN ELECTRONIC SIGNATURE PROCESS, THAT SIGNATURE REFLECTS YOUR AGREEMENT TO BE BOUND BY THE TERMS AND CONDITIONS IN THIS AGREEMENT.</td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="bold">Personal Guarantor’s Signature (No Title Allowed)</span>:
+                    <div class="signature-box">
+                        <canvas id="signature7" ng-mousemove="canMouseUp(7)" my-touchend="canMouseUp(7)" sketch class="disable"></canvas>
+                        <span ng-show="signature7Empty">Please sign in the box with mouse or finger.</span>
+                        <a class="button" ng-hide="signature7Empty" ng-click="resetCanvas(7)">Clear Signature</a>
+                    </div>
+                    <p class="align-right">,an individual</p>
+                </td>
+                <td>
+                    <br>
+                    <p>Date: <span class="user-input dottedLine">{{signature7Date | date:'shortDate'}}</span></p>
+                    <p>Print Name: <span class="user-input dottedLine">{{merchantBean.firstName}} {{merchantBean.lastName}}</span></p>
+                    <p>Home Phone Number: <span class="user-input dottedLine">{{merchantBean.merchantBusinessBean.phoneNumber}}</span></p>
+                    <table class="border" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td colspan="2">
+                                <label>Home Address:</label>
+                                <span class="user-input">{{merchantBean.merchantBusinessBean.businessAddress}} {{merchantBean.merchantBusinessBean.businessAptSuite}}</span>
+                            </td>
+                            <td>
+                                <label>City:</label>
+                                <span class="user-input">{{merchantBean.merchantBusinessBean.businessCity}}</span>
+                            </td>
+                            <td>
+                                <label>State:</label>
+                                <span class="user-input">{{merchantBean.merchantBusinessBean.businessState}}</span>
+                            </td>
+                            <td>
+                                <label>Zip:</label>
+                                <span class="user-input">{{merchantBean.merchantBusinessBean.businessZipcode}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <label>DOB:</label>
+                                <span class="user-input">{{merchantBean.dateOfBirth}}</span>
+                            </td>
+                            <td colspan="3">
+                                <label>Social Security #:</label>
+                                <span class="user-input">{{maskDigit(merchantBean.merchantBusinessBean.socialSecurityNumber)}}</span>
+                            </td>
+                        </tr>
+                        </tbody></table>
+
+                </td>
+            </tr>
+            </tbody></table>
+
+
+    </div><!-- end #lease -->
+
+    <hr>
+
+    <div class="container screen">
+        <div class="align-center">
+            <!-- TODO: add link here or re-word -->
+            <!--<div><input type="checkbox"  ng-model="readUnderstood" /> I have read and understood the entire <a class="link" href="#" target="_blank">Merchant Agreement</a> and Confirmation.</div>-->
+            <br>
+            <!--<a class="button blue" href="javascript:window.print();">Print PDF</a>-->
+            <a class="button" ng-class="{'disabled': (isFormNotValid() || clickedTCSubmit)}" ng-click="isFormNotValid() || clickedTCSubmit || submitTC()"><i ng-show="clickedTCSubmit" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>{{clickedTCSubmit ? ' Submitting...' : 'Submit'}}</a>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,122 @@
+#solution-detail {
+	.hero {
+		background: url('../img/solution-restaurantcounter-hero.jpg');
+		background-repeat: no-repeat;
+		background-position-y: top;
+		color: white;
+		overflow: auto;
+  	h1 {
+    	margin-bottom: 30px;
+      padding: 130px 0;
+      color: white;
+  	}
+		form {
+			input {
+				border: 0;
+				padding: 10pt;
+				min-width: 280px;
+				box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+				@include border-radius(2pt);
+			}
+			button {
+				text-transform: uppercase;
+				border: 0;
+				padding: 10pt;
+				color: white;
+				@include border-radius(20pt);
+				min-width: 80px;
+				box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+				&:hover {
+					background: #006f34;
+				}
+			}
+    }
+	}
+	.solution-features {
+  	ul li {
+    	list-style: disc;
+      margin-top: 5pt;
+      margin-left: 20pt;
+      line-height: 150%;
+  	}
+	}
+	#shop-products {
+		.shop-product {
+			padding: 5pt;
+			& > div {
+				background: white;
+				border: 2px solid #E3E3E3;
+				padding: 10pt 10pt 15pt;
+				img {
+					height: 200px;
+					clear: both;
+					display: block;
+					margin: -20px auto;
+					z-index: 1;
+    		}
+				.shop-product-name {
+          font-family: $font-medium;
+					overflow: auto;
+					position: relative;
+					z-index: 2;
+					p {
+  				  float: right
+					}
+				}
+				.shop-product-actions a {
+					display: inline-block;
+					padding: 10pt;
+				}
+				.shop-product-actions span {
+					color: #ccc;
+				}
+				.small {
+					color: #aaa;
+					min-height: 30px;
+				}
+			}
+		}
+	}
+	#shop-accessories {
+		& > div > p {
+			margin-bottom: 15pt;
+		}
+		.shop-accessory {
+			padding: 5pt;
+			max-width: 50%;
+			a:first-child {
+				display: block;
+				background: white;
+				border: 2px solid #E3E3E3;
+				min-height: 50px;
+				margin-bottom: 5pt;
+				padding: 10pt;
+				@include flexbox;
+				@include justify-content(center);
+				@include align-items(center);
+			}
+			img {
+				width: 100%;
+				max-width: 150px;
+			}
+			a:nth-child(3) {
+				display: block;
+				cursor: pointer;
+			}
+		}
+	}
+}
+
+@media (max-width: 991px) {
+  .shop-product-name, .shop-product-price {
+    float: none !important;
+    text-align: left;
+    display: block;
+    margin-bottom: 0;
+  }
+
+  .shop-product-price {
+    font-size: 10pt;
+    margin-bottom: 30px;
+  }
+}

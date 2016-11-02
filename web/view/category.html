@@ -1,0 +1,122 @@
+<header>
+  <div ng-include="headerTpl"></div>
+  <div class="hero">
+    <div class="container">
+      <h1>{{category_info.description}}</h1>
+    </div>
+  </div>
+</header>
+
+
+<div class="content">
+  <div id="buy-quicklinks" class="quicklinks" scroll-links>
+    <div class="container">
+      <ul>
+        <li><a href="#/">&laquo; Back to Shop</a></li>
+      </ul>
+    </div>
+  </div>
+  <section class="bundle-features align-center">
+    <div class="container">
+      <h2>Sed ut perspiciatis unde omnis iste natus</h2>
+      <div class="column-6 align-left">
+        <ul>
+          <li>Consectetur adipiscing elit, sed do eiusmod.</li>
+          <li>Tt labore et dolore magna aliqua.</li>
+          <li>Ut enim ad minim.  Tempor incididunt.</li>
+        </ul>
+      </div>
+      <div class="column-6 align-left">
+        <ul>
+          <li>Consectetur adipiscing elit, sed do eiusmod.</li>
+          <li>Tt labore et dolore magna aliqua.</li>
+          <li>Ut enim ad minim.  Tempor incididunt.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="shop-bundles" class="align-center">
+    <div class="container">
+      <h2>Choose the best solution for your business</h2>
+      <p>Please select a bundle to start, then accessories</a></p>
+      <div class="shop-bundle column-4" ng-repeat="b in bundles">
+        <div class="shop-bundle-image">
+          <img src="https://www.clover.com/assets/images/public-site/hardware/station-product-specs2.png" />
+        </div>
+        <div class="shop-bundle-details">
+          <h3 class="shop-bundle-name">{{b.bundleName}}</h3>
+          <p class="shop-bundle-price">Starting at $999</p>
+          <p class="shop-bundle-desciption">To keep lines down and your sales up.</p>
+          <div class="shop-bundle-actions">
+            <a class="link-bold" href="#/products/premium-clover-station">View Details</a>
+            <span>|</span>
+            <a class="link-bold video" open-video href="https://www.youtube.com/watch?v=5h-nRDE_Qco">Watch Video</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-bundle column-4">
+        <div class="shop-bundle-image">
+          <img src="https://www.clover.com/assets/images/public-site/hardware/station-product-specs2.png" />
+        </div>
+        <div class="shop-bundle-details">
+          <h3 class="shop-bundle-name">Standard Clover Station Bundle</h3>
+          <p class="shop-bundle-price">Starting at $799</p>
+          <p class="shop-bundle-desciption">The ultimate portable linebuster.</p>
+          <div class="shop-bundle-actions">
+            <a class="link-bold" href="premium-clover-station/">View Details</a>
+            <span>|</span>
+            <a class="link-bold video" open-video href="https://www.youtube.com/watch?v=5h-nRDE_Qco">Watch Video</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-bundle column-4">
+        <div class="shop-bundle-image">
+          <img src="https://www.clover.com/assets/images/public-site/hardware/mini-product-specs.png" />
+        </div>
+        <div class="shop-bundle-details">
+          <h3 class="shop-bundle-name">Clover Mini Bundle</h3>
+          <p class="shop-bundle-price">Starting at $599</p>
+          <p class="shop-bundle-desciption">Take your business wherever you want.</p>
+          <div class="shop-bundle-actions">
+            <a class="link-bold">Buy Now</a>
+            <a class="link-bold video" open-video ng-href="{{youtubeUrl}}">Watch Video</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-bundle column-4">
+        <div class="shop-bundle-image">
+          <img src="https://www.clover.com/assets/images/public-site/hardware/mobile-product-specs.png" />
+        </div>
+        <div class="shop-bundle-details">
+          <h3 class="shop-bundle-name">Clover Mobile Bundle</h3>
+          <p class="shop-bundle-price">Starting at $399</p>
+          <p class="shop-bundle-desciption">A powerful pocket-size solution.</p>
+          <div class="shop-bundle-actions">
+            <a class="link-bold">Buy Now</a>
+            <a class="link-bold video" open-video ng-href="{{youtubeUrl}}">Watch Video</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-bundle column-4">
+        <div class="shop-bundle-image">
+          <img src="https://www.clover.com/assets/images/public-site/hardware/go-product-specs.png" />
+        </div>
+        <div class="shop-bundle-details">
+          <h3 class="shop-bundle-name">Clover Go Bundle</h3>
+          <p class="shop-bundle-price">Starting at $299</p>
+          <p class="shop-bundle-desciption">A powerful pocket-size solution.</p>
+          <div class="shop-bundle-actions">
+            <a class="link-bold">Buy Now</a>
+            <a class="link-bold video" open-video ng-href="{{youtubeUrl}}">Watch Video</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end .content -->

@@ -1,0 +1,123 @@
+#contact-info {
+  padding-top: 20px;
+  table {
+    tr td {
+      padding-right: 10px;
+      vertical-align: middle;
+      &:last-child {
+        padding-left: 10px;
+        border-left: 1px solid #aaa;
+      }
+    }
+  }
+}
+
+// custom marketing banner on Dashboard page
+// TODO: Travis to confirm if this element has dynamic layout or only content
+.marketing-container {
+  font-size: 16px;
+  height: 300px;
+  margin-bottom: 15px;
+  padding: 30px;
+  background-size: cover;
+  table {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+form {
+  margin: 10px 0;
+  width: 100%;
+  .form-element {
+    margin-bottom: 5px;
+    &.horizontal {
+      label, input, select {
+        display: inline-block;
+      }
+      label {
+        min-width: 60px;
+      }
+    }
+    &.vertical {
+      label, input, select {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+    input, select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      box-sizing: border-box;
+      outline: none !important;
+      border: 2px solid #ccc;
+      box-shadow: none !important;
+      z-index: 1;
+      padding: 3px;
+      background: none;
+      &:focus {
+        outline: none !important;
+        border: 2px solid #0368da;
+      }
+      &:-moz-focusring { /* remove firefox dotted border thing */
+        color: transparent;
+        text-shadow: 0 0 0 #000;
+      }
+      &.disabled,
+      &.disabled:focus {
+        background-color: #eee;
+        color: #666;
+        border: 2px solid #eee;
+      }
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+// datepicker widget
+.ui-widget.ui-widget-content {
+  @include border-radius(0);
+  border: 2px solid #0368da;
+  padding: 0;
+  .ui-datepicker-header {
+    background: #0368da;
+    color: white;
+    border: 0;
+    @include border-radius(0);
+    .ui-icon {
+      text-indent: -9999px;
+      overflow: hidden;
+    }
+  }
+  .ui-state-default {
+    border: none;
+    background: #eee;
+    &:hover {
+      background: $primary-color;
+      color: white;
+    }
+  }
+  .ui-state-disabled .ui-state-default {
+    background: white;
+    opacity: 1;
+    color: #aaa;
+  }
+  .ui-state-highlight {
+    border-color: #0368da;
+    background: #eee;
+    color: #0368da;
+    font-weight: bold;
+  }
+  .ui-state-active {
+    background: $primary-color;
+    color: white;
+    font-weight: bold;
+  }
+}

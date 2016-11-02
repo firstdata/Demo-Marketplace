@@ -1,0 +1,55 @@
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+  <div class="breadcrumb-inner container">
+    <div class="breadcrumb-mobile">
+      <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>{{family.productName}}</span></a>
+    </div>
+    <ul>
+      <li><a class="link" href="#/">Shop</a></li>
+      <li><a class="link" href="#/products/c">Products</a></li>
+      <li><a>{{family.productName}}</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main-content">
+  <section>
+    <div class="container">
+      <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types, 'column-12': !(cart.total_qty || cart.payment_types)}">
+        <div class="column-3">
+          <img ng-src="{{family.imageUrls[0] ? family.imageUrls[0] : placeholderImageUrl}}"/>
+        </div>
+        <div class="column-9">
+          <h1>{{family.productName}}</h1>
+          <p>{{family.productLongDescription}}</p>
+          <div class="shop-product-actions">
+            <a class="link-bold" ng-click="gotoAnchor('product-configuration-options')">Select Payment Types</a>
+          </div>
+        </div>
+
+        <div class="clearfix multiple" id="product-configuration-options" style="max-width: 800px;">
+          <h3>Payment Types</h3>
+          <h4>Please add all Payment Types you want to accept.</h4>
+          <div class="product-configuration-option column-3" ng-class="{'selected': p.productId == productId}" ng-repeat="p in family.options track by $index">
+            <a>
+              <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}">
+            </a>
+            <p>{{p.productName}}</p>
+            <a class="link-blue add-to-cart" ng-click="addToCart(family, p)">Add to Cart</a>
+          </div>
+        </div>
+
+      <div class="column-12" ng-show="features.length">
+        <h3>Features</h3>
+        <ul>
+          <li ng-repeat="f in features">{{f}}</li>
+        </ul>
+      </div>
+      </div>
+      <ng-include src="'templates/cart.tpl'"></ng-include>
+    </div>
+  </section>
+  <!--Adding Includes section for Acquiring Products. FDMP-3533-->
+  <ng-include src="'templates/included_products.tpl'"></ng-include>
+
+   <ng-include src="'templates/faq.tpl'"></ng-include>
+</div><!-- end .content -->
