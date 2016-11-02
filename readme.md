@@ -13,9 +13,9 @@ Update config/default.json file. Use credentials received from the https://docs.
 ```
 {
   "kong": {
-    "url": "KONG_URL",
-    "username": "KONG_USERNAME",
-    "secret": "KONG_SECRET"
+    "url": "API_URL",
+    "username": "API_USERNAME",
+    "secret": "API_SECRET"
   },
   "port": 3000
 }
