@@ -13,6 +13,7 @@ var username = process.env.APP_KONG_USERNAME ? process.env.APP_KONG_USERNAME : c
 var secret = process.env.APP_KONG_SECRET ? process.env.APP_KONG_SECRET : config.get('kong.secret');
 var port = process.env.APP_PORT ? process.env.APP_PORT : config.get('port');
 
+
 // load web app
 app.use('/web', express.static(__dirname + '/web'));
 
@@ -50,7 +51,7 @@ var getAuthenticationHeaders = function () {
 app.get('/marketplace/v1/categories', function(req, res) {
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/categories',
+    url: kongUrl + '/marketplace/v1/categories',
     headers:getAuthenticationHeaders()
   };
 
@@ -68,7 +69,7 @@ app.get('/marketplace/v1/products', function(req, res) {
 
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products',
+    url: kongUrl + '/marketplace/v1/products',
     headers:getAuthenticationHeaders()
   };
 
@@ -89,7 +90,7 @@ app.get('/marketplace/v1/products/:pid/details/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/details/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/details/',
     headers:getAuthenticationHeaders()
   };
 
@@ -109,7 +110,7 @@ app.get('/marketplace/v1/products/:pid/features/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/features/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/features/',
     headers:getAuthenticationHeaders()
   };
 
@@ -128,7 +129,7 @@ app.get('/marketplace/v1/products/:pid/specs/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/specs/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/specs/',
     headers:getAuthenticationHeaders()
   };
 
@@ -147,7 +148,7 @@ app.get('/marketplace/v1/products/:pid/recommended/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/recommended/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/recommended/',
     headers:getAuthenticationHeaders()
   };
 
@@ -166,7 +167,7 @@ app.get('/marketplace/v1/products/:pid/includes/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/includes/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/includes/',
     headers:getAuthenticationHeaders()
   };
 
@@ -185,7 +186,7 @@ app.get('/marketplace/v1/products/:pid/options/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/options/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/options/',
     headers:getAuthenticationHeaders()
   };
 
@@ -204,7 +205,7 @@ app.get('/marketplace/v1/products/:pid/faq/', function(req, res) {
   var pid = req.params.pid;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/products/' + pid + '/faq/',
+    url: kongUrl + '/marketplace/v1/products/' + pid + '/faq/',
     headers:getAuthenticationHeaders()
   };
 
@@ -223,7 +224,7 @@ app.get('/marketplace/v1/categories/:categoryName/industries/', function(req, re
   var categoryName = req.params.categoryName;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/categories/' + categoryName + '/industries/',
+    url: kongUrl + '/marketplace/v1/categories/' + categoryName + '/industries/',
     headers:getAuthenticationHeaders()
   };
 
@@ -244,7 +245,7 @@ app.get('/marketplace/v1/categories/:categoryName/industries/:industryDescriptio
   var industryDescription = req.params.industryDescription;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/categories/' + categoryName + '/industries/' + industryDescription + '/merchantcategorycodes/',
+    url: kongUrl + '/marketplace/v1/categories/' + categoryName + '/industries/' + industryDescription + '/merchantcategorycodes/',
     headers:getAuthenticationHeaders()
   };
 
@@ -263,7 +264,7 @@ app.get('/marketplace/v1/contracts/:orderId/agreement/', function(req, res) {
   var orderId = req.params.orderId;
   var options = {
     method: 'GET',
-    url: kongUrl + 'marketplace/v1/contracts/' + orderId + '/agreement/',
+    url: kongUrl + '/marketplace/v1/contracts/' + orderId + '/agreement/',
     headers:getAuthenticationHeaders()
   };
 
@@ -281,7 +282,7 @@ app.post('/marketplace/v1/cart/validate', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/cart/validate',
+    url: kongUrl + '/marketplace/v1/cart/validate',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
@@ -301,7 +302,7 @@ app.post('/marketplace/v1/application/submit/', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/application/submit',
+    url: kongUrl + '/marketplace/v1/application/submit',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
@@ -321,7 +322,7 @@ app.post('/marketplace/v1/pricing/equipment', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/pricing/equipment',
+    url: kongUrl + '/marketplace/v1/pricing/equipment',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
@@ -341,7 +342,7 @@ app.post('/marketplace/v1/pricing/global', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/pricing/global',
+    url: kongUrl + '/marketplace/v1/pricing/global',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
@@ -361,7 +362,7 @@ app.post('/marketplace/v1/pricing/acquiring', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/pricing/acquiring',
+    url: kongUrl + '/marketplace/v1/pricing/acquiring',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
@@ -381,7 +382,7 @@ app.post('/marketplace/v1/application/checkout', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/application/checkout',
+    url: kongUrl + '/marketplace/v1/application/checkout',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
@@ -401,7 +402,7 @@ app.post('/marketplace/v1/application/update', function(req, res) {
   var body = req.body;
   var options = {
     method: 'POST',
-    url: kongUrl + 'marketplace/v1/application/update',
+    url: kongUrl + '/marketplace/v1/application/update',
     json: body,
     "content-type": 'application/json',
     headers:getAuthenticationHeaders()
