@@ -38,4 +38,4 @@ grunt deploy
 
 This will concatenate all your changes into the fd.js file.
 
-More information you can find on [docs.developer.firstdata.com/docs/](https://docs.developer.firstdata.com/docs/)
+More information you can find on [docs.developer.firstdata.com/docs/](https://docs.developer.firstdata.com/marketplace/)
