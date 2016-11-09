@@ -388,7 +388,7 @@ header {
           padding: 23px 11px 32px 11px;
           border-left: 1px solid #FFF;
           border-right: 1px solid #FFF;
-          border-top: 10px solid white; }
+          border-top: 4px solid white; }
           header nav #main-menu li a:hover {
             color: #0052c2;
             cursor: pointer; }

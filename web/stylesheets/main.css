@@ -319,6 +319,47 @@ a.btn {
     background: #00a9e0; }
     .button.blue:hover {
       background: #00c0ff; }
+  .button.dark-blue {
+    background: #004164; }
+    .button.dark-blue:hover {
+      background: #00567c; }
+  .button.outline {
+    background: white;
+    color: #f03d00 !important;
+    border: 2px solid #f03d00; }
+    .button.outline:hover {
+      color: #fc7243 !important;
+      border-color: #fc7243;
+      cursor: pointer;
+      background: white; }
+    .button.outline.disabled {
+      color: #ccc !important;
+      border-color: #ccc;
+      cursor: default; }
+    .button.outline.gray {
+      color: #999 !important;
+      border-color: #999; }
+      .button.outline.gray:hover {
+        color: #aaa !important;
+        background: #aaa; }
+    .button.outline.red {
+      color: indianred !important;
+      border-color: indianred; }
+      .button.outline.red:hover {
+        color: crimson !important;
+        border-color: crimson; }
+    .button.outline.blue {
+      border-color: #00a9e0;
+      color: #00a9e0 !important; }
+      .button.outline.blue:hover {
+        border-color: #00c0ff;
+        color: #00c0ff !important; }
+    .button.outline.dark-blue {
+      border-color: #004164;
+      color: #004164 !important; }
+      .button.outline.dark-blue:hover {
+        border-color: #00567c;
+        color: #00567c !important; }
   .button.icon {
     min-width: 36px;
     padding: 6pt;
@@ -388,7 +429,7 @@ header {
           padding: 23px 11px 32px 11px;
           border-left: 1px solid #FFF;
           border-right: 1px solid #FFF;
-          border-top: 10px solid white; }
+          border-top: 4px solid white; }
           header nav #main-menu li a:hover {
             color: #00a9e0;
             cursor: pointer; }
@@ -467,7 +508,6 @@ footer {
   footer .footer-top {
     border-bottom: 2px solid rgba(0, 0, 0, 0.2);
     padding-bottom: 0;
-    margin-bottom: 36px;
     overflow: auto; }
     footer .footer-top .footer-menu {
       overflow: auto;
@@ -492,11 +532,13 @@ footer {
         font-size: 24px;
         margin-left: 3px;
         text-align: center; }
-  footer .copyright p {
-    font: 11px/11px Arial,Helvetica,sans-serif;
-    margin-bottom: 20px; }
-    footer .copyright p:first-child {
-      margin-bottom: 10px; }
+  footer .footer-bottom {
+    padding-top: 36px; }
+    footer .footer-bottom .copyright p {
+      font: 11px/11px Arial,Helvetica,sans-serif;
+      margin-bottom: 20px; }
+      footer .footer-bottom .copyright p:first-child {
+        margin-bottom: 10px; }
 
 @media (max-width: 1000px) {
   .breadcrumb-inner li a, .breadcrumb-inner li a:hover {
@@ -2366,6 +2408,31 @@ table#product-specifications {
     .order-cart a img {
       width: 30px;
       margin-top: -30px; }
+
+/* templates */
+.templates-toggle {
+  margin-bottom: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #ccc; }
+
+#templates {
+  margin-bottom: 20px; }
+  #templates #template-list {
+    max-height: 155px;
+    overflow: hidden; }
+    #templates #template-list.expanded {
+      max-height: 100%; }
+  #templates table {
+    width: 100%; }
+    #templates table tr.template td {
+      vertical-align: middle;
+      padding-bottom: 10px; }
+      #templates table tr.template td .order-cart {
+        float: none;
+        margin-right: 10px;
+        margin-bottom: 0; }
+      #templates table tr.template td.small {
+        line-height: 140%; }
 
 .discount-row td:first-child {
   width: 50%; }

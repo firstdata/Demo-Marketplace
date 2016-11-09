@@ -11,7 +11,7 @@ body, html {
   }
 }
 
-.container {
+body, .container {
   min-width: 768px !important;
 }
 
@@ -163,7 +163,12 @@ hr.line {
   min-height: 340px;
   padding: 20px;
   margin-bottom: 20px;
-  @include flexbox;
+/*   @include flexbox; */
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox */
   @include flex-direction(column);
   @include justify-content(space-between);
   border: 2px solid #ccc;
@@ -188,7 +193,12 @@ hr.line {
   min-height: 150px;
   padding: 20px;
   margin-bottom: 20px;
-  @include flexbox;
+/*   @include flexbox; */
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox */
   @include flex-direction(column);
   @include justify-content(center);
   border: 2px solid #ccc;
@@ -202,5 +212,333 @@ hr.line {
   &:hover {
     border-color: $primary-color;
     cursor: pointer;
+  }
+}
+
+/* NEW LANDING PAGE */
+/* TODO: remove styles for old landing page once approved */
+#developer-hero {
+  height: 400px;
+  background: url('../../developer/assets/img/hero.jpg') no-repeat center center;
+  background-size: cover;
+  padding-top: 120px;
+}
+.developer-link {
+  min-height: 320px;
+  margin-bottom: 20px;
+  @include flex-direction(column);
+  @include justify-content(space-between);
+  @include align-items(center);
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox */
+  color: white !important;
+  background-color: #004164;
+  cursor: pointer;
+  &#link-payeezy {
+    background-image: url('../../developer/assets/img/payeezy-dark.jpg');
+    background-size: cover;
+  }
+  &#link-rapidconnect {
+    background-image: url('../../developer/assets/img/rapidconnect-dark.jpg');
+    background-size: cover;
+  }
+  &#link-marketplace {
+    background-image: url('../../developer/assets/img/marketplace-dark.jpg');
+    background-size: cover;
+  }
+  &#link-clover {
+    background-image: url('../../developer/assets/img/clover-dark.jpg');
+    background-size: cover;
+  }
+  &#link-gyft {
+    background-image: url('../../developer/assets/img/gyft-dark.jpg');
+    background-size: cover;
+  }
+  h3 {
+    color: white;
+    padding: 40px 20px 30px 20px;
+    margin: 0;
+    display: block;
+    min-height: 140px;
+    width: 100%;
+  }
+  img {
+    margin-top: 40px;
+  }
+  .rollover-text {
+    display:none;
+    padding: 20px;
+    min-height: 140px;
+    .link {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .name {
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 24px;
+    }
+  }
+  &:hover {
+    h3 {
+      display: none;
+    }
+    .rollover-text {
+      display:block;
+      color: white;
+      background-color: rgba(0,0,0,.6);
+      .link {
+        color: $link-color;
+        &:hover {
+          color: $link-color-hover;
+          cursor: pointer;
+        }
+      }
+      .name {
+        color: #004164;
+      }
+    }
+  }
+}
+
+/* "Not sure what you are looking for?" section */
+#integration-wizard {
+  max-width: 800px;
+  margin: 0 auto;
+  .form-element {
+    &.column-6, &.column-4  {
+      clear: none;
+      padding: 5px 5px 0 5px;
+    }
+  }
+	input[type="radio"] {
+		display:none;
+	}
+	input[type="radio"] + label {
+		font-size: 16px;
+		display: block;
+		padding: 20px 10px;
+		border: 2px solid #ccc;
+		background-color: #f7f8f9;
+		-webkit-transition: all 0.2s linear;
+		-o-transition: all 0.2s linear;
+		-moz-transition: all 0.2s linear;
+		transition: all 0.2s linear;
+		&:hover {
+  	  border-color: $primary-color;
+  	  color: $primary-color;
+		}
+	}
+	#integration {
+  	 max-width: 500px;
+  	 margin: 40px auto;
+	}
+	#industry {
+	  input[type="radio"] + label {
+			color: white;
+			padding: 70px 10px;
+			background-size: cover;
+			opacity: 0.8;
+		}
+    input[type="radio"] + label:hover {
+			opacity: 1;
+			cursor: pointer;
+		}
+		input[type="radio"]:checked + label {
+			opacity: 1;
+		}
+	}
+	input[type="radio"]:checked + label {
+		border-color: $primary-color;
+		color: $primary-color;	;
+		background-color: white;
+	}
+}
+#wizard-results {
+  .result {
+    a {
+      display: inline-block;
+      max-width: 250px;
+      border: 2px solid #ccc;
+      padding-bottom: 10px;
+      &:hover {
+        border-color: $primary-color;;
+        cursor: pointer;
+      }
+      img {
+        width: 100%;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+.fancy-field.required::before {
+  content: "*";
+  color: crimson;
+  float: right;
+  font-weight: bold;
+  margin-bottom: -25px;
+}
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: block;
+  box-sizing: border-box;
+  outline: none !important;
+  box-shadow: none !important;
+  z-index: 1;
+  background: none;
+  width: 100%;
+  font-size: 15px;
+  border: 2px solid #ccc;
+  padding: 10px;
+  resize: none !important;
+  &:focus {
+    border-color: #00a9e0;
+  }
+}
+label.required::after {
+  content: "*";
+  color: crimson;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+/* contact form modals */
+.modal {
+	color: #424242;
+  .modal-content,
+  .modal-body {
+	  border: 0;
+    background: white !important;
+  }
+  .modal-header {
+  	background: #004164;
+  	margin-bottom: 15px;
+    h4 {
+      color: white !important;
+    }
+  }
+  .modal-body {
+    padding: 0 15px;
+    form {
+      overflow: auto;
+      max-width: 100%;
+      .form-element {
+        text-align: left;
+        .fancy-field.required::before {
+          content: "*";
+          color: crimson;
+          float: right;
+          font-weight: bold;
+          margin-bottom: -25px;
+        }
+        textarea {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          display: block;
+          box-sizing: border-box;
+          outline: none !important;
+          box-shadow: none !important;
+          z-index: 1;
+          background: none;
+          width: 100%;
+          font-size: 15px;
+          border: 2px solid #ccc;
+          padding: 10px;
+          resize: none !important;
+          &:focus {
+            border-color: #00a9e0;
+          }
+        }
+      }
+    }
+    table {
+      width: 100%;
+    }
+  }
+  .modal-footer {
+  	background: #eaebec;
+  	text-align: right;
+  	padding: 15px;
+  	margin-top: 15px;
+  	.button {
+    	color: white;
+    	font-size: 14px;
+    	min-width: 0;
+      &.button-secondary {
+        background: #999;
+        &:hover {
+          background: #aaa;
+        }
+      }
+      &.button-primary {
+        background: $primary-color;
+        &:hover {
+          background: $primary-color-hover;
+        }
+      }
+    }
+  }
+  &.prompt {
+  	width: 400px;
+  	text-align: center;
+  	&.warning .modal-header {
+    	background: indianred;
+    }
+  }
+}
+
+// UAL submission page
+.ual-error {
+  background: rgba(255,0,0,0.1);
+  padding: 10px;
+  border: 1px solid red;
+  border-radius: 4px;
+  color: red;
+}
+.table {
+  width: 100%;
+  text-align: left;
+  margin: 20px 0;
+  border-collapse: collapse;
+  border: 1px solid #aaa;
+  tr {
+    td, th {
+      border-bottom: 1px solid #ddd;
+      padding: 9px;
+      font-family: $font-light;
+      vertical-align: middle;
+      word-break: break-all;
+    }
+    &.details td {
+      padding: 0;
+      table {
+        width: 100%;
+        background: #f6f7f8;
+        tr {
+          td {
+            padding: 2px 9px;
+            border-color: #dfdfdf;
+            font-size: 90%;
+          }
+        }
+      }
+    }
+    &:last-child td {
+      border: 0;
+    }
+    th {
+      color: $title-color;
+      font-family: $font-medium;
+      background: #efefef;
+    }
   }
 }

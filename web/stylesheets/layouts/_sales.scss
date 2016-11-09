@@ -448,6 +448,41 @@
   }
 }
 
+/* templates */
+.templates-toggle {
+  margin-bottom: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #ccc;
+}
+
+#templates {
+  margin-bottom: 20px;
+  #template-list {
+    max-height: 155px;
+    overflow: hidden;
+    &.expanded {
+      max-height: 100%;
+    }
+  }
+  table {
+    width: 100%;
+    tr.template {
+      td {
+        vertical-align: middle;
+        padding-bottom: 10px;
+        .order-cart {
+          float: none;
+          margin-right: 10px;
+          margin-bottom:0
+        }
+        &.small {
+          line-height: 140%;
+        }
+      }
+    }
+  }
+}
+
 .discount-row td:first-child {
   width: 50%;
 }
@@ -482,3 +517,4 @@
 .discount-row.added td {
   color: #aaa;
 }
+

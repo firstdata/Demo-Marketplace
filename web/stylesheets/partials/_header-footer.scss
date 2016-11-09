@@ -36,7 +36,7 @@ header {
           padding: 23px 11px 32px 11px;
           border-left: 1px solid #FFF;
           border-right: 1px solid #FFF;
-          border-top: 10px solid white;
+          border-top: 4px solid white;
           &:hover {
             color: $link-color;
             cursor: pointer;
@@ -140,7 +140,6 @@ footer {
   .footer-top {
     border-bottom: 2px solid rgba(0,0,0,0.2);
     padding-bottom: 0;
-    margin-bottom: 36px;
     overflow: auto;
     .footer-menu {
       overflow: auto;
@@ -171,11 +170,14 @@ footer {
       }
     }
   }
-  .copyright p {
-    font: 11px/11px Arial,Helvetica,sans-serif;
-    margin-bottom: 20px;
-    &:first-child {
-      margin-bottom: 10px;
+  .footer-bottom {
+    padding-top: 36px;
+    .copyright p {
+      font: 11px/11px Arial,Helvetica,sans-serif;
+      margin-bottom: 20px;
+      &:first-child {
+        margin-bottom: 10px;
+      }
     }
   }
 }
