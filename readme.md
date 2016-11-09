@@ -28,7 +28,7 @@ npm install
 npm start
 ```
 
-Now you can visit localhost:8181 to view the site.
+Now you can visit localhost:3000 to view the site.
 
 If you need to make changes into any of JavaScript files, make all changes and then run: 
 
