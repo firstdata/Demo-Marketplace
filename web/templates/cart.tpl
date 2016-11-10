@@ -159,7 +159,13 @@
            <p><strong><a class="link" ng-href="#/processing/{{cart.payment_types.id}}">{{cart.payment_types.name}}</a></strong><span ng-show="isAllowEdit()"> | <a class="small link" ng-click="removePaymentTypes()">Remove</a></span></p>
            <p ng-repeat="p in cart.payment_types.products track by $index">&nbsp;&bullet; {{p.name}} <a class="small link" ng-click="removeProcessing(p)" ng-show="isAllowEdit()">Remove</a></p>
          </td>
-         <td class="align-right"><span ng-show="cart.transaction_fee">{{cart.transaction_fee.rate}}% + {{cart.transaction_fee.fee|currency}}</span><span ng-hide="cart.transaction_fee.rate || cart.transaction_fee.fee">TBD</span></td>
+         <td class="align-right">
+             <div ng-show="cart.transaction_fee">
+                 <span>{{cart.transaction_fee.rate}}% + {{cart.transaction_fee.fee|currency}}</span>
+                <p><a class="small link" data-toggle="modal" data-target="#view-fees-modal">View Details</a>
+             </div>
+             <div ng-hide="cart.transaction_fee.rate || cart.transaction_fee.fee">TBD</div>
+         </td>
        </tr>
      </table>
     </div>
@@ -179,4 +185,90 @@
       <p class="small">Payment Processing Fees will be determined based on industry, transactional volume, estimated average ticket, and estimated highest ticket size.</p>
     </div>
   </div>
+    <!-- View Fees Modal -->
+    <div class="modal fade include-detail-modal" tabindex="-1" role="dialog" id="view-fees-modal">
+        <div class="vertical-alignment-helper">
+            <div class="modal-dialog vertical-align-center">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
+                        <h4 class="modal-title">Rates and Fees</strong></h4>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="rates-details-modal">
+                            <div class="column-6">
+
+                                <table class="table rates">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="3">
+                                            <h3 style="margin-bottom:0;">{{cart.payment_types.name}}</h3>
+                                            <strong>{{cart.transaction_fee.rate}}% + {{cart.transaction_fee.fee|currency}} is the qualified rate</strong>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style="border: none;">
+                                        <tr>
+                                            <td><strong>Description</strong></td>
+                                            <td class="align-right"><strong>Rate (%)</strong></td>
+                                            <td class="align-right"><strong>Fee ($)</strong></td>
+                                        </tr>
+                                        <tr ng-repeat="p in acquiringPricing track by $index">
+                                            <td>{{p.productName}}</td>
+                                            <td class="align-right"><span>{{p.rateDefault}}</span></td>
+                                            <td class="align-right"><span>{{p.defaultAmt}}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="column-6">
+                                <table class="table rates">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="3">
+                                            <h3 style="margin-bottom:0;">Product Pricing</h3>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style="border: none;">
+                                        <tr>
+                                            <td><strong>Description</strong></td>
+                                            <td class="align-right"><strong>Rate (%)</strong></td>
+                                            <td class="align-right"><strong>Fee ($)</strong></td>
+                                        </tr>
+                                        <tr ng-repeat="p in equipmentPricing track by $index">
+                                            <td>{{p.productName}}</td>
+                                            <td class="align-right"><span>{{p.rateDefault}}</span></td>
+                                            <td class="align-right"><span>{{p.defaultAmt}}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table rates">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="3">
+                                            <h3 style="margin-bottom:0;">Rates - Applies to all</h3>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style="border: none;">
+                                        <tr>
+                                            <td><strong>Description</strong></td>
+                                            <td class="align-right"><strong>Rate (%)</strong></td>
+                                            <td class="align-right"><strong>Fee ($)</strong></td>
+                                        </tr>
+                                        <tr ng-repeat="p in globalPricing track by $index">
+                                            <td>{{p.productName}}</td>
+                                            <td class="align-right"><span>{{p.rateDefault}}</span></td>
+                                            <td class="align-right"><span>{{p.defaultAmt}}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -940,6 +940,10 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
     $scope.transactionFee = true;
     $scope.allowExpand = true;
 
+    $scope.acquiringPricing = [];
+    $scope.equipmentPricing = [];
+    $scope.globalPricing = [];
+
     $scope.page = $routeParams.page;
 
 
@@ -963,6 +967,16 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
       $scope.allowExpand = false;
       $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
     }
+
+    $("#view-fees-modal").on('show.bs.modal', function () {
+      $scope.acquiringPricing = fdService.getAcquiringPricingStorage();
+      console.log($scope.acquiringPricing)
+      $scope.equipmentPricing = fdService.getEquipmentPricingStorage();
+      $scope.globalPricing = fdService.getGlobalPricingStorage();
+      if (!$scope.$$phase) {
+        $scope.$apply();
+      }
+    });
   };
 
   /**
@@ -1166,7 +1180,7 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
     
     return true;
   };
-  
+
   ///////////////// MAIN ////////////////////////////////
 
   _init();

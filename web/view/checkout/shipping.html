@@ -141,3 +141,273 @@
  
 </div><!-- end .content -->
 <ng-include src="'templates/transaction-info-warning.tpl'"></ng-include>
+
+
+<!-- View Fees Modal -->
+<div class="modal fade include-detail-modal" tabindex="-1" role="dialog" id="view-fees-modal">
+    <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
+                    <h4 class="modal-title">Rates and Fees</strong></h4>
+                </div>
+                <div class="modal-body row">
+                    <div class="rates-details-modal">
+                        <div class="column-6">
+                            <table class="table rates">
+                                <thead>
+                                <tr>
+                                    <th colspan="3">
+                                        <h3 style="margin-bottom:0;">Rates - Tier 3</h3>
+                                        <strong>2.16% + $0.29 is the qualified rate</strong>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td class="align-right"><strong>Rate (%)</strong></td>
+                                    <td class="align-right"><strong>Fee ($)</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Qualified Credit</td>
+                                    <td class="align-right"><span>2.162</span></td>
+                                    <td class="align-right"><span>0.29</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa International Svc Fee Enhanced</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Mid Qualified Non Pin Debit</td>
+                                    <td class="align-right"><span>2.472</span></td>
+                                    <td class="align-right"><span>0.29</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Mid Qualified Credit</td>
+                                    <td class="align-right"><span>2.472</span></td>
+                                    <td class="align-right"><span>0.29</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Non Qualified Credit</td>
+                                    <td class="align-right"><span>3.385</span></td>
+                                    <td class="align-right"><span>0.29</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Qualified Non Pin Debit</td>
+                                    <td class="align-right"><span>2.063</span></td>
+                                    <td class="align-right"><span>0.29</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Non Qualified Non Pin Debit</td>
+                                    <td class="align-right"><span>2.525</span></td>
+                                    <td class="align-right"><span>0.29</span></td>
+                                </tr>
+                                <tr>
+                                    <td>069-AMEX VOICE ADDR VERIF</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.10</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC/V/Discover/Amex Chargeback Fees</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC/V/Discover AVS Fees</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC/V/Discover/Amex Voice Authorization Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC/V/Discover Access Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa US Debit Transaction Integrity Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>PAYPAL ENABLEMENT</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                <tr>
+                                    <td>22G-Discover International Processing Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Discover Internal Svs Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>47P-VISA BASE II ACQ VOUCHER FEE</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.0195</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa International Service Fee</td>
+                                    <td class="align-right"><span>0</span></td>
+                                    <td class="align-right"></td>
+                                </tr>
+                                <tr>
+                                    <td>47N-VISA BASE II SYS FILE FEE</td>
+                                    <td class="align-right"><span>0</span></td>
+                                    <td class="align-right"><span>0.0018</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa Zero Amount Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>47O-VISA BASE II ACQ VOUCHER DEBIT</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0.0155</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa Misuse of Auth Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa Zero Floor Limit Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa Partial Authorization Transaction Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Visa Fixed Acquirer Network Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC License Volume Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC Cross Border Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC Processing Integrity Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC US Account Status Inquiry Svs Interregional Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MC US Account Status Inquiry Svs Intrarregional Fee</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>11M-MC CVC2 FEE</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>American Express Qualified Credit</td>
+                                    <td class="align-right"><span>0.55</span></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>286-American Express Network Fee</td>
+                                    <td class="align-right"><span>0.15</span></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                <tr>
+                                    <td>57B Amex Interchange</td>
+                                    <td class="align-right"></td>
+                                    <td class="align-right"><span>0</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="column-6">
+                            <table class="table rates">
+                                <thead>
+                                <tr>
+                                    <th colspan="3">
+                                        <h3 style="margin-bottom:0;">Rates - Applies to all</h3>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td class="align-right"><strong>Rate (%)</strong></td>
+                                    <td class="align-right"><strong>Fee ($)</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>ACH Reject Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Addr. Verification Local Auth. Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Addr. Verification Wats Auth. Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Addr. Verification Regional Auth. Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Addr. Verification 950 Call Auth. Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Minimum Processing Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Batch Settlement Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>PCI Non-Validation</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Early Termination Fee</td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                    <td class="align-right"><span>TBD</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
