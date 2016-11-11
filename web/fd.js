@@ -4984,7 +4984,6 @@ app.filter('orderByObj', function() {
         cartDetails: cartDetails
       };
 
-      this.clearOppListCache();
       return $http.post(urlPrefix + '/marketplace/v1/application/checkout', data);
     };
 
@@ -4993,7 +4992,6 @@ app.filter('orderByObj', function() {
      * @return {HttpPromise}
      */
     this.submitSignature = function(data){
-      this.clearOppListCache();
       return $http.post(urlPrefix + '/marketplace/v1/application/submit/', data);
     };
 
@@ -5002,7 +5000,6 @@ app.filter('orderByObj', function() {
      * @return {HttpPromise}
      */
     this.submitMerchantApplication = function(data){
-      this.clearOppListCache();
       data = changeToUpper(data);
       return $http.post(urlPrefix + '/marketplace/v1/application/update', data);
     };
