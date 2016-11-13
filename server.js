@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.use(express.static('web'));
 
 
-app.listen(port, function () {
+app.listen(process.env.PORT || port, function () {
   console.log('listening on port ' + port);
 });
 
