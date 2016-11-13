@@ -17,9 +17,21 @@
     "grunt-create-appconfig": "^0.1.0",
     "grunt-file-creator": "^0.1.3",
     "grunt-jsvalidate": "",
-    "request": "^2.75.0"
+    "request": "^2.75.0",
+    "body-parser": "^1.15.2"
   },
   "dependencies": {
-    "angular-mocks": "1.4.8"
+    "config": "^1.21.0",
+    "crypto": "0.0.3",
+    "express": "^4.14.0",
+    "grunt": "~0.4.5",
+    "grunt-cache-breaker": "^2.0.1",
+    "grunt-contrib-concat": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-create-appconfig": "^0.1.0",
+    "grunt-file-creator": "^0.1.3",
+    "grunt-jsvalidate": "",
+    "request": "^2.75.0",
+    "body-parser": "^1.15.2"
   }
 }
