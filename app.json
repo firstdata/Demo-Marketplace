@@ -2,5 +2,6 @@
   "name": "Marketplace Sample App",
   "description": "A Demo Marketplace",
   "repository": "https://github.com/firstdata/Demo-Marketplace",
+  "logo", "https://developer.firstdata.com/img/logo.png",
   "keywords": ["node", "express", "static"]
 }
