@@ -2,6 +2,5 @@
   "name": "Marketplace Sample App",
   "description": "A Demo Marketplace",
   "repository": "https://github.com/firstdata/Demo-Marketplace",
-  "logo": "http://www.fdmarketplacedemo.com/img/favicon.ico",
   "keywords": ["node", "express", "static"]
 }
