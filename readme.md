@@ -9,7 +9,7 @@ You can visit [fdmarketplacedemo.com](http://fdmarketplacedemo.com) to see a liv
 
 ### Update configuration file
 
-Update config/default.json file. Use credentials received from the https://docs.developer.firstdata.com site:
+Update config/default.json file. Use credentials received from the https://developer.firstdata.com site:
 ```
 {
   "kong": {
@@ -38,4 +38,7 @@ grunt deploy
 
 This will concatenate all your changes into the fd.js file.
 
-More information you can find on [docs.developer.firstdata.com/docs/](https://docs.developer.firstdata.com/marketplace/)
+More information you can find on [developer.firstdata.com/docs/](https://docs.developer.firstdata.com/marketplace/)
+
+## Deploy to Heroku
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/firstdata/Demo-Marketplace/tree/master)
