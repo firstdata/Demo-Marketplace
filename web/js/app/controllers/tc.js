@@ -213,6 +213,7 @@ app.controller('TCCtrl', ['$scope', '$rootScope', '$filter', '$location', '$rout
    $scope.totalAmountStartUpFees = 0;
 
    $scope.assignMerchantInfo = function(data) {
+     console.log(data)
     if(angular.isUndefined(data)) {
       data = {};
     }
@@ -235,6 +236,8 @@ app.controller('TCCtrl', ['$scope', '$rootScope', '$filter', '$location', '$rout
     if(!angular.isUndefined(data.dbaName)) {
       $scope.merchantBean.merchantBusinessBean.dbaName = data.dbaName;
     }
+
+
     if(!angular.isUndefined(data.employeeInformation)) {
       for(var i=0;i<data.employeeInformation.length;i++) {
         if(!(angular.isUndefined(data.employeeInformation[i].firstName)||(data.employeeInformation[i].firstName ==null ))){
