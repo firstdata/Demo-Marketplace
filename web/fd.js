@@ -2799,7 +2799,6 @@ app.controller('SignupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'f
       $scope.updatedFormData.merchantAttributesRequestInformation = [];
       $scope.updatedFormData.contactsInformation = [];
       $scope.updatedFormData.employeeInformation = [];
-      $scope.updatedFormData.siteSurvey = {};
 
       $scope.updatedFormData.merchantReferenceCode = 'MERC';
       $scope.updatedFormData.merchantType = 'Retail';
@@ -2873,27 +2872,6 @@ app.controller('SignupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'f
           'accountNumber': $scope.formData.ACCOUNT_NUMBER,
           'ordinal': 2
       });
-
-      $scope.updatedFormData.siteSurvey.siteVisitation = $scope.formData.siteVisitation;
-      $scope.updatedFormData.siteSurvey.businessZone = $scope.formData.businessZone;
-      $scope.updatedFormData.siteSurvey.merchantBusinessLocation = $scope.formData.businessLocationType;
-      $scope.updatedFormData.siteSurvey.seasonalMerchant = $scope.formData.seasonalMerchant;
-      $scope.updatedFormData.siteSurvey.totalFloors = $scope.formData.buildingFloors;
-      $scope.updatedFormData.siteSurvey.floorOccupied = $scope.formData.buildingFloors;
-      $scope.updatedFormData.siteSurvey.merchantsNameDisplayed = $scope.merchantDisplayed;
-      $scope.updatedFormData.siteSurvey.apartmentSquareFoot = $scope.formData.squareFootage;
-      $scope.updatedFormData.siteSurvey.merchantsOwnBuildSpace = $scope.formData.ownOrRent;
-      $scope.updatedFormData.siteSurvey.totalRegister = $scope.formData.noOfRegisters;
-      $scope.updatedFormData.siteSurvey.licenceDisplayed = $scope.formData.businessLicenseDisplay;
-      $scope.updatedFormData.siteSurvey.returnPolicy = $scope.formData.returnPolicy;
-      $scope.updatedFormData.siteSurvey.separateRefundPolicy = $scope.formData.returnPolicyCard;
-      $scope.updatedFormData.siteSurvey.customerDeposit = $scope.formData.customerDeposit;
-      $scope.updatedFormData.siteSurvey.deliveryTimeFrame_0_To_7 = $scope.formData.DELIVERY0_7;
-      $scope.updatedFormData.siteSurvey.deliveryTimeFrame_8_To_14 = $scope.formData.DELIVERY8_14;
-      $scope.updatedFormData.siteSurvey.deliveryTimeFrame_15_To_30 = $scope.formData.DELIVERY15_30;
-      $scope.updatedFormData.siteSurvey.deliveryTimeFrame_Over_30 = $scope.formData.DELIVERY31;
-      $scope.updatedFormData.siteSurvey.salesDeposit = $scope.formData.cardDeposit;
-      $scope.updatedFormData.siteSurvey.autoRenew = $scope.formData.orderRenewal;
 
       fdService.submitMerchantApplication($scope.updatedFormData)
         .success(function(data, status, headers, config) {
