@@ -5503,7 +5503,7 @@ app.filter('orderByObj', function() {
       for (var i = 0; i < data.length; i++){
 
         if ('Transaction' == data[i].occurrence.type) {
-          if (2 == data[i].productId){
+          if (2 == data[i].productId || 80382 == data[i].productId){
             cart.transaction_fee = {
               fee: data[i].defaultAmt,
               rate: data[i].rateDefault,
