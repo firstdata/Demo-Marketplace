@@ -197,7 +197,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         for (var i in cart.data) {
           data.cartdetails.push(
             {
-              "productId": cart.data[i].id,
+              "productid": cart.data[i].id,
             }
           );
         }
@@ -207,7 +207,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         for (var i in cart.payment_types.products) {
           data.cartdetails.push(
             {
-              "productId": cart.payment_types.products[i].id,
+              "productid": cart.payment_types.products[i].id,
             }
           );
         }
