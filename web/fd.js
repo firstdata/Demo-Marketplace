@@ -4798,7 +4798,7 @@ app.filter('orderByObj', function() {
         for (var i in cart.data) {
           data.cartdetails.push(
             {
-              "productid": cart.data[i].id,
+              "productId": cart.data[i].id,
             }
           );
         }
@@ -4808,7 +4808,7 @@ app.filter('orderByObj', function() {
         for (var i in cart.payment_types.products) {
           data.cartdetails.push(
             {
-              "productid": cart.payment_types.products[i].id,
+              "productId": cart.payment_types.products[i].id,
             }
           );
         }
