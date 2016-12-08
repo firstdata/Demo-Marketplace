@@ -1,48 +1,51 @@
 #shop {
-  .hero {
-  	background: url('../img/shop-hero.jpg');
-  	background-repeat: no-repeat;
-  	background-position-y: top;
-  	color: white;
-  	overflow: auto;
-  	background-size: cover;
-  	h1 {
-    	margin-bottom: 30px;
-      padding: 130px 0;
-      color: white;
-  	}
-  	form {
-  		input {
-  			border: 0;
-  			padding: 10pt;
-  			min-width: 280px;
-  			box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
-  			@include border-radius(2pt);
-  		}
-  		button {
-  			text-transform: uppercase;
-  			border: 0;
-  			padding: 10pt;
-  			color: white;
-  			@include border-radius(20pt);
-  			min-width: 80px;
-  			box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
-  			&:hover {
-  				background: #006f34;
-  			}
-  		}
-    }
-  }
+	.hero {
+		background: url('../img/shop-hero.jpg');
+		background-repeat: no-repeat;
+		background-position-y: top;
+		color: white;
+		overflow: auto;
+		background-size: cover;
+		h1 {
+			margin-bottom: 30px;
+			padding: 130px 0;
+			color: white;
+		}
+		form {
+			input {
+				border: 0;
+				padding: 10pt;
+				min-width: 280px;
+				box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+				@include border-radius(2pt);
+			}
+			button {
+				text-transform: uppercase;
+				border: 0;
+				padding: 10pt;
+				color: white;
+				@include border-radius(20pt);
+				min-width: 80px;
+				box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+				&:hover {
+					background: #006f34;
+				}
+			}
+		}
+	}
 	#shop-businesstypes {
-	  min-height: 350px;
+		min-height: 350px;
 		.business-type, .whats-important {
+			@include flexbox;
+			@include flex-direction(row);
 			padding: 5pt;
 			a {
 				display: block;
 				color: white;
-        font-family: $font-medium;
+				font-family: $font-medium;
 				min-height: 200px;
 				padding: 0 20pt;
+				@include flex-grow(1);
 				@include flexbox;
 				@include flex-direction(column);
 				@include justify-content(center);
@@ -67,11 +70,11 @@
 
 		}
 		.whats-important {
-  		a {
-    		border: 2px solid #ccc;
-  		  color: $primary-color;
-  		  cursor: pointer;
-  		}
+			a {
+				border: 2px solid #ccc;
+				color: $primary-color;
+				cursor: pointer;
+			}
 		}
 	}
 
@@ -88,14 +91,14 @@
 					display: block;
 					margin: -20px auto;
 					z-index: 1;
-    		}
+				}
 				.shop-product-name {
-          font-family: $font-medium;
+					font-family: $font-medium;
 					overflow: auto;
 					position: relative;
 					z-index: 2;
 					p {
-  				  float: right
+						float: right
 					}
 				}
 				.shop-product-actions a {
@@ -144,15 +147,15 @@
 }
 
 @media (max-width: 991px) {
-  .shop-product-name, .shop-product-price {
-    float: none !important;
-    text-align: left;
-    display: block;
-    margin-bottom: 0;
-  }
+	.shop-product-name, .shop-product-price {
+		float: none !important;
+		text-align: left;
+		display: block;
+		margin-bottom: 0;
+	}
 
-  .shop-product-price {
-    font-size: 10pt;
-    margin-bottom: 30px;
-  }
+	.shop-product-price {
+		font-size: 10pt;
+		margin-bottom: 30px;
+	}
 }
