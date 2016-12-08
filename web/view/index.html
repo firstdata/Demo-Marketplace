@@ -20,7 +20,7 @@
       <h1>Select business type</h1>
       <p class="subhead">First Data offers ready-to-go bundles that are perfectly suited for your type of business.</p>
       <div ng-repeat="item in categories" class="business-type column-3">
-        <a style="background:url({{item.imageURL ? item.imageURL : placeholderImageUrl}})" ng-click="changeCategory(item)" href="javascript:;"><span>{{item.description}}</span></a>
+        <a ng-style="{'background': 'url(' + (item.imageURL ? item.imageURL : placeholderImageUrl) + ')'}" ng-click="changeCategory(item)" href="javascript:;"><span>{{item.description}}</span></a>
        </div>
     </div>
   </section>
