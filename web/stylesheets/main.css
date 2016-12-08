@@ -1215,8 +1215,9 @@ form {
   -moz-align-items: center;
   align-items: center;
   background-size: cover !important; }
-#shop #shop-businesstypes .business-type span, #shop #shop-businesstypes .whats-important span {
-  display: block; }
+#shop #shop-businesstypes .business-type a span, #shop #shop-businesstypes .whats-important a span {
+  display: block;
+  max-width: 210px; }
 #shop #shop-businesstypes .business-type#restaurant-counter a, #shop #shop-businesstypes .whats-important#restaurant-counter a {
   background: url(../img/shop-businesstype-1.png); }
 #shop #shop-businesstypes .business-type#restaurant-table a, #shop #shop-businesstypes .whats-important#restaurant-table a {
@@ -1307,6 +1308,9 @@ form {
   display: block;
   cursor: pointer; }
 
+@media (max-width: 1199px) {
+  #shop-businesstypes .business-type a span {
+    max-width: 160px !important; } }
 @media (max-width: 991px) {
   .shop-product-name, .shop-product-price {
     float: none !important;
@@ -1316,7 +1320,13 @@ form {
 
   .shop-product-price {
     font-size: 10pt;
-    margin-bottom: 30px; } }
+    margin-bottom: 30px; }
+
+  #shop-businesstypes .business-type a span {
+    max-width: 110px !important; } }
+@media (max-width: 767px) {
+  #shop-businesstypes .business-type a span {
+    max-width: 220px !important; } }
 #solution-detail .hero {
   background: url("../img/solution-restaurantcounter-hero.jpg");
   background-repeat: no-repeat;
