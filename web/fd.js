@@ -3106,10 +3106,46 @@ app.controller('TCCtrl', ['$scope', '$rootScope', '$filter', '$location', '$rout
    $scope.totalAmountStartUpFees = 0;
 
    $scope.assignMerchantInfo = function(data) {
-     console.log(data)
+
     if(angular.isUndefined(data)) {
       data = {};
     }
+
+    if(!angular.isUndefined(data.dynamicVersionInfo)) {
+     for(var i=0;i<data.dynamicVersionInfo.length;i++) {
+       if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='PROCESSOR'){
+         $scope.merchantBean.processor = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='PROCESSOR_URL'){
+         $scope.merchantBean.processorUrl = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='PROCESSOR_ADDRESS'){
+         $scope.merchantBean.processorAddress = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='PROCESSOR_CUSTOMER_SERVICE'){
+         $scope.merchantBean.processorCustomerService = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='SPONSOR_BANK'){
+         $scope.merchantBean.sponsorBank = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='SPONSOR_BANK_ADDRESS'){
+         $scope.merchantBean.sponsorBankAddress = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='SPONSOR_BANK_CUST_SERV_NUMBER'){
+         $scope.merchantBean.sponsorBankCustServNumber = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='S3_FILE_PATH_FOR_TERMS'){
+         $scope.merchantBean.s3PathForTerms = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='TEMPLATE_PATH'){
+         $scope.merchantBean.templatePath = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='SERVICERS_TITLE'){
+         $scope.merchantBean.serviceTitle = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='SERVICERS_BODY'){
+         $scope.merchantBean.serviceBody = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='PERSONAL_GUARANTY'){
+         $scope.merchantBean.personalGuaranty = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='CONFIRMATION_VERSION'){
+         $scope.merchantBean.pgVersion = data.dynamicVersionInfo[i].value;
+       } else if(!angular.isUndefined(data.dynamicVersionInfo[i].property) && data.dynamicVersionInfo[i].property=='MPA_VERSION'){
+         $scope.merchantBean.version = data.dynamicVersionInfo[i].value;
+       }
+     }
+    }
+
+
     if(!angular.isUndefined(data.emvEnabled)) {
       $scope.emvEnabled = data.emvEnabled;
     }
