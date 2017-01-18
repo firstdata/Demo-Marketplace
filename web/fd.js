@@ -5473,20 +5473,30 @@ app.filter('orderByObj', function() {
     this.lookupByZip = function(zip, callback){
       if (zip.length < 5) return;
       var geocoder = new google.maps.Geocoder();
-      geocoder.geocode( { "address": zip }, function(result, status) {
+      geocoder.geocode( { "address": zip + ' USA' }, function(result, status) {
         var city = '';
         var state = '';
+        var neighborhood = '';
         if (status == google.maps.GeocoderStatus.OK && result.length > 0) {
           for (var component in result[0]['address_components']) {
             for (var i in result[0]['address_components'][component]['types']) {
               if (result[0]['address_components'][component]['types'][i] == "administrative_area_level_1") {
-                city = result[0]['address_components'][1]['long_name'];
                 state = result[0]['address_components'][component]['short_name'];
+              }
+              if (result[0]['address_components'][component]['types'][i] == "locality") {
+                city = result[0]['address_components'][component]['long_name'];
+              }
+              if (result[0]['address_components'][component]['types'][i] == "neighborhood") {
+                neighborhood = result[0]['address_components'][component]['long_name'];
               }
               if (result[0]['address_components'][component]['types'][i] == "country") {
                 country = result[0]['address_components'][component]['short_name'];
               }
             }
+          }
+
+          if (!city.length && neighborhood.length) {
+            city = neighborhood;
           }
         }
 
