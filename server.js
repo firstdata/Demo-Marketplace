@@ -8,9 +8,9 @@ var config = require('config');
 /**
  * load configuration from config/default.json or from environment variables if any
  */
-var kongUrl = (process.env.APP_KONG_URL ? process.env.APP_KONG_URL : config.get('kong.url')).replace(/\/$/, "");
-var username = process.env.APP_KONG_USERNAME ? process.env.APP_KONG_USERNAME : config.get('kong.username')
-var secret = process.env.APP_KONG_SECRET ? process.env.APP_KONG_SECRET : config.get('kong.secret');
+var kongUrl = (process.env.SANDBOX_URL ? process.env.SANDBOX_URL : config.get('kong.url')).replace(/\/$/, "");
+var username = process.env.API_KEY ? process.env.API_KEY : config.get('kong.username')
+var secret = process.env.API_SECRET ? process.env.API_SECRET : config.get('kong.secret');
 var port = process.env.APP_PORT ? process.env.APP_PORT : config.get('port');
 
 
