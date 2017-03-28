@@ -5,17 +5,17 @@
   "logo": "https://developer.firstdata.com/img/logo.png",
   "keywords": ["node", "express", "static"],
   "env": {
-    "APP_KONG_URL": {
+    "SANDBOX_URL": {
       "description": "The URL you recieved via Email"
     },
-    "APP_KONG_USERNAME": {
+    "API_KEY": {
       "description": "The username you recieved via Email"
     },
-    "APP_KONG_SECRET": {
+    "API_SECRET": {
       "description": "The secret you recieved via Email"
     },
      "APP_PORT": {
-      "description": "The port this app should run on"
+      "description": "The port this app should run on (i.e. 3000, 8081, etc.)"
     }
   }
 }
