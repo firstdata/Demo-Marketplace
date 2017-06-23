@@ -44,6 +44,24 @@ var getAuthenticationHeaders = function () {
   }
 }
 
+app.all('*', function(req, res) {
+  var options = {
+    method: req.method,
+    url: kongUrl + req.originalUrl,
+    headers: getAuthenticationHeaders()
+  };
+
+  if (req.method == 'POST') {
+    options['json'] = req.body;
+    options['content-type'] = 'application/json';
+  }
+
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error);
+    res.status(response.statusCode).send(body);
+  });
+});
+
 /**
  * GET service /marketplace/v1/categories
  * get list of categories
