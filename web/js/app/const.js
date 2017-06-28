@@ -53,7 +53,8 @@
         {'abbr': 'WI', 'name': 'Wisconsin'},
         {'abbr': 'WY', 'name': 'Wyoming'}
       ],
-      
+      citySpecialChar: {'St.':'Saint','ñ':'n',"'":" "},
+
       SHIPPING_METHODS: {
         1: {name: '$19.99 Standard Shipping (4-5 Business Days)', price: 19.99},
         2: {name: 'FREE Standard Shipping (4-5 business days)', price: 0},
@@ -63,6 +64,9 @@
       },
       PURCHASE_CODE: 'P',
       OWNED_CODE: 'O',
+      FSPFUNDTYPES : ['deposits', 'nonBankAdjustments', 'depositAdjustments', 'chargebackReversals', 'interchangeAssessments', 'discountServices', 'fees', 'financialAdjustments', 'chargebacks'],
+      OPTIONSPRODUCTTYPES : ['Telecheck'],
+      COMPANY_ID: 386,
                 
   }
   app.constant('CONST', constants);

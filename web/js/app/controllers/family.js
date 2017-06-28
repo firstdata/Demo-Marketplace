@@ -96,7 +96,7 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
    * Add product to cart
    * @param {Object} bundle
    */
-  $scope.addToCart = function(bundle){
+  $scope.addToCart = function(bundle, family){
 
     if (!bundle) {
       bundle = JSON.parse(JSON.stringify($scope.bundle_info));
@@ -104,35 +104,84 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
       $anchorScroll();
     }
     
+    var category = fdService.getCategoryFromSession();
+
     var pid = bundle.productId;
     
     if (!Object.keys(bundle).length) {
       return;
     }
-    if ($rootScope.cart.data[pid]){
-      var qty = parseInt($rootScope.cart.data[pid].qty);
-      if (qty < 10) {
-        qty++;
-        $rootScope.cart.data[pid].qty = qty.toString();
-      }
-    } else {
-      $rootScope.cart.data[pid] = {
+
+    var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+    if(bundle.offeringTypes && -1 === bundle.offeringTypes.indexOf("Transactions")){
+
+
+
+      var pr = {
           id: pid,
           name: bundle.productName,
           price: bundle.price,
           individualPurchaseEnabled: bundle.pinPad,
           pricingModel: bundle.pricingModel,
           productType: bundle.productType,
-          term: CONST.OWNED_CODE, //Owned
+          term: bundle.defaultPurchaseType, //Owned
           pmodel: null,
-          qty: "1"
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          productType: bundle.productType,
+          qty: 1
       };
+
+      var index = fdService.getCartProductIndex($rootScope.cart, pr);
+
+
+      if (-1 !== index){
+        pr = $rootScope.cart.data[index];
+        pr.qty++;
+        pr.price = bundle.price;
+        pr.defaultPrice = bundle.price;
+        if (pr.qty > 10) {
+          pr.qty = 10;
+        }
+
+        $rootScope.cart.data[index] = pr;
+      } else {
+        $rootScope.cart.data.push(pr);
+      }
+    } else {
+
+        if (-1 !== $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(bundle.productId)) {
+          return;
+        }
+
+        var pr = {
+          id: bundle.productId,
+          name: bundle.productName,
+          price: bundle.price,
+          type: bundle.productType,
+          term: bundle.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          parentProduct: {
+            id: family.productId,
+            name: family.productName,
+            rate: 0,
+            fee: 0,
+          },
+          qty: 1,
+        };
+
+        $rootScope.cart.transaction_products.push(pr);
+
     }
     
     fdService.validateCart($rootScope.cart)
       .success(function(data, status, headers, config) {
         $rootScope.cart.validation = data;
         $scope.cartChanged();
+        if(data.iscartvalid)
+            fdService.updatePricing();
       })
       .error(function(data, status, headers, config) {
         console.log('error');
@@ -170,6 +219,36 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
     $rootScope.cart = fdService.cartChanged($rootScope.cart);
   };
   
+
+  var _init = function(){
+    $scope.fid = $routeParams.fid;
+
+    if (!$scope.fid) {
+      $location.path('invalid-item');
+      return;
+    }
+
+    $rootScope.cart = fdService.getCart();
+
+    if ($rootScope.cart.total_qty) {
+//      $scope.showCheckout = true;
+    }
+
+    fdService.getProductOptions($scope.fid)
+      .success(function(data, status, headers, config) {
+        $scope.family = data;
+
+        if ($scope.family.options && $scope.family.options.length){
+          $scope.loadProduct($scope.family.productId);
+        }
+      })
+      .error(function(data, status, headers, config) {
+        $scope.family = [];
+//        $location.path('invalid-item');
+      });
+
+  };
+
   ///////////////// MAIN ////////////////////////////////
   _init();
   

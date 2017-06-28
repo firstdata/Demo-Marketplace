@@ -9,10 +9,13 @@ app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService'
    * @private
    */
   var _init = function(){
-
-    $rootScope.body_id = 'product-detail';
-
     $scope.id = $routeParams.id;
+    $rootScope.body_id = 'product-detail';
+    $scope.family = [];
+    $scope.faqs = [];
+    $scope.features = [];
+
+    $rootScope.cart = fdService.getCart();
 
     //Redirect if no product Id provided
     if (!$scope.id) {
@@ -20,15 +23,10 @@ app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService'
       return;
     }
 
-    $scope.family = [];
-    $scope.faqs = [];
-    $scope.features = [];
-
-    $rootScope.cart = fdService.getCart();
-
     fdService.getProductOptions($scope.id)
       .success(function(data, status, headers, config) {
         $scope.family = data;
+        $rootScope.recommendedProductName = $scope.family.productName;
         $scope.bundle_info = {};
         $scope.bundle_info.productName = $scope.family.productName;
 
@@ -65,8 +63,17 @@ app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService'
         $scope.includes = [];
         console.log('error')
       });
-  };
+      //Get Recommended products list.
+      fdService.getRecommendedBundles($scope.id)
+          .success(function(data, status, headers, config) {
+              $scope.recommended = data;
+          })
+          .error(function(data, status, headers, config) {
+              $scope.recommended = [];
+              console.log('error')
+          });
 
+  };
 
   /**
    * Add processing product to cart
@@ -75,28 +82,64 @@ app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService'
    */
   $scope.addToCart = function(family, product){
 
-    var fid = family.productId;
-    
-    if (!Object.keys(family).length) {
-      return;
-    }
     var cart = fdService.getCart();
-    
-    if (!cart.payment_types || fid != cart.payment_types.id) {
-      cart.payment_types = {
-          id: fid,
-          name: family.productName,
-          products: {},
-      };
-    }
-    cart.payment_types.products[product.productId] = {
+
+    var category = fdService.getCategoryFromSession();
+    var cardNotPresent = product.cardNotPresent ? true : false;
+
+    if (!family) {
+
+      if (-1 !== cart.transaction_products.map(function(e) { return e.id; }).indexOf(product.productId)) {
+        return;
+      }
+
+      var pr = {
         id: product.productId,
         name: product.productName,
         price: product.price,
         type: product.productType,
-        term: CONST.PURCHASE_CODE,
+        term: product.defaultPurchaseType,
+        category: category.name,
+        cardNotPresent: cardNotPresent,
+        parentProduct: {
+          id: null,
+          name: null,
+          rate: 0,
+          fee: 0,
+        },
         qty: 1,
+      };
+
+      cart.transaction_products.push(pr);
+
+
+    } else {
+        var fid = family.productId;
+
+        if (!Object.keys(family).length) {
+          return;
+        }
+
+        if (!cart.payment_types || fid != cart.payment_types.id) {
+          cart.payment_types = {
+              id: fid,
+              name: family.productName,
+              products: {},
+          };
+        }
+        cart.payment_types.products[product.productId] = {
+            id: product.productId,
+            name: product.productName,
+            price: product.price,
+            type: product.productType,
+            term: product.defaultPurchaseType,
+            category: category.name,
+            cardNotPresent: cardNotPresent,
+            qty: 1,
+        }
     }
+
+
 
     $rootScope.cart = fdService.cartChanged(cart);
     
@@ -104,13 +147,15 @@ app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService'
       .success(function(data, status, headers, config) {
         $rootScope.cart.validation = data;
         $rootScope.cart = fdService.cartChanged($rootScope.cart);
+        $scope.cartChanged();
+        if(data.iscartvalid)
+            fdService.updatePricing();
       })
       .error(function(data, status, headers, config) {
         console.log('error');
       });
     
     fdService.clearOrderId();
-    fdService.updatePricing();
 
     //Scroll to the cart in case of small screen
     if (window.matchMedia("(max-width: 740px)").matches) {
@@ -119,7 +164,6 @@ app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService'
         $anchorScroll();
       });
     }
-    
   };
 
   /**

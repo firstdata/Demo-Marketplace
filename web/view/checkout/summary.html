@@ -5,6 +5,7 @@
       <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Confirm Order</span></a>
     </div>
     <ul>
+      <li ng-if="cart.num_locations > 1"><a class="link" data-toggle="modal" data-target="#location-edit-warning">Locations</a></li>
       <li><a class="link" data-toggle="modal" data-target="#pricing-edit-warning">Transaction Information <i style="color: green;" class="fa fa-check"></i></a></li>
       <li><a class="link" href="#/checkout/shipping">Shipping Information</a></li>
       <li><a>Review Order</a></li>
@@ -18,15 +19,20 @@
       <div id="shipping-info" class="column-8 checkout-form">
         <form autocomplete="off">
           <h2 style="margin-top: 25pt;">Shipping Address <a href="#/checkout/shipping/" class="link-blue" style="font-size: 9pt; border: 2px solid; padding: 5px 13px; line-height: 22px; box-sizing: content-box; display: inline-block; height: 20px;">Edit</a></h2>
-          <p>{{cart.shippingAddress.company_name}}</p>
-          <p>{{cart.shippingAddress.name}}</p>
-          <p>{{cart.shippingAddress.address1}}{{cart.shippingAddress.address2 ? ', ' + cart.shippingAddress.address2 : ''}}</p>
-          <p>{{cart.shippingAddress.city}}, {{cart.shippingAddress.state}} {{cart.shippingAddress.zip}}</p>
-          <p>{{cart.shippingAddress.email}}</p>
-          <p>{{cart.shippingAddress.phone | tel}}</p>
-
-          <h2 style="margin-top: 25pt;">Shipping Option <a href="#/checkout/shipping" class="link-blue" style="font-size: 9pt; border: 2px solid; padding: 5px 13px; line-height: 22px; box-sizing: content-box; display: inline-block; height: 20px;">Edit</a></h2>
-          <p>{{CONST.SHIPPING_METHODS[cart.shipping_option_id].name}}</p>
+          <div ng-repeat="(ad_id, ad) in cart.shippingAddress track by $index">
+            <h3 ng-if="$index">Shipping Address {{$index + 1}}</h3>
+            <p>{{ad.company_name}}</p>
+            <p>{{ad.name}}</p>
+            <p>{{ad.address1}}{{ad.address2 ? ', ' + ad.address2 : ''}}</p>
+            <p>{{ad.city}}, {{ad.state}} {{ad.zip}}</p>
+            <p>{{ad.email}}</p>
+            <p>{{ad.phone | tel}}</p>
+            <br />
+          </div>
+          <div ng-if="cart.amount > 0 || cart.lease_amount > 0">
+            <h2 style="margin-top: 25pt;" >Shipping Option <a href="#/checkout/shipping" class="link-blue" style="font-size: 9pt; border: 2px solid; padding: 5px 13px; line-height: 22px; box-sizing: content-box; display: inline-block; height: 20px;">Edit</a></h2>
+            <p>{{shippingMethods[cart.shipping_option_id].price | currency}} {{shippingMethods[cart.shipping_option_id].name}}</p>
+          </div>
         </form>
       </div>
       <ng-include src="'templates/cart.tpl'"></ng-include>

@@ -14,7 +14,7 @@
 <div class="main-content">
   <section>
     <div class="container">
-      <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types, 'column-12': !(cart.total_qty || cart.payment_types)}">
+      <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types || cart.transaction_products.length, 'column-12': !(cart.total_qty || cart.payment_types || cart.transaction_products.length)}">
         <div class="column-3">
           <img ng-src="{{family.imageUrls[0] ? family.imageUrls[0] : placeholderImageUrl}}"/>
         </div>
@@ -26,39 +26,70 @@
         <div class="clearfix multiple" id="product-configuration-options" style="max-width: 800px;">
           <h3>{{family.productName}} product options</h3>
           <h4>Select all that apply</h4>
-          <div class="product-configuration-option column-3" ng-class="{'selected': p.productId == productId}" ng-repeat="p in family.options track by $index">
-            <a ng-click="loadProduct(p.productId)">
-              <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}">
-            </a>
-            <p>{{p.productName}}</p>
-            <a class="link-blue add-to-cart" ng-click="addToCart(p)">Add to Cart</a>
+          <div class="product-configuration-options">
+            <div class="product-configuration-option column-3" ng-class="{'selected': p.productId == productId}" ng-repeat="p in family.options track by $index">
+              <a class="link" data-toggle="modal" data-target="#include-{{p.productId}}">
+                <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}">
+              </a>
+              <p>{{p.productName}}</p>
+              <a class="link-blue add-to-cart" ng-click="addToCart(p, family)">Add to Cart</a>
+            </div>
           </div>
         </div>
 
-      <div class="column-12" ng-show="features.length">
-        <h3>Features</h3>
-        <ul>
-          <li ng-repeat="f in features">{{f}}</li>
-        </ul>
-      </div>
+        <div class="column-12" ng-show="features.length">
+          <h3>Features</h3>
+          <ul>
+            <li ng-repeat="f in features">{{f}}</li>
+          </ul>
+        </div>
       </div>
       <ng-include src="'templates/cart.tpl'"></ng-include>
     </div>
   </section>
   <!-- <ng-include src="'templates/included_products.tpl'"></ng-include> -->
-   <section ng-hide="specs | isEmpty">
-     <div class="container">
-       <h3>Hardware Specifications</h3>
-       <table id="product-specifications">
-         <tr ng-repeat="(key, sps) in specs">
-           <th>{{key}}</th>
-           <td>
-             <p ng-repeat="s in sps track by $index">{{s}}</p>
-           </td>
-         </tr>
-       </table>
-     </div>
-   </section>
-   <ng-include src="'templates/recommended_add.tpl'"></ng-include>
-   <ng-include src="'templates/faq.tpl'"></ng-include>
+  <section ng-hide="specs | isEmpty">
+    <div class="container">
+      <h3>Hardware Specifications</h3>
+      <table id="product-specifications">
+        <tr ng-repeat="(key, sps) in specs">
+          <th>{{key}}</th>
+          <td>
+            <p ng-repeat="s in sps track by $index">{{s}}</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+  <ng-include src="'templates/recommended_add.tpl'"></ng-include>
+  <ng-include src="'templates/faq.tpl'"></ng-include>
 </div><!-- end .content -->
+
+<!-- Modal box for details popup start-->
+
+<div class="modal fade" tabindex="-1" role="dialog" ng-attr-id="include-{{p.productId}}" ng-repeat="p in family.options">
+  <div class="vertical-alignment-helper">
+    <div class="modal-dialog vertical-align-center">
+      <div class="modal-content">
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
+          <h4 class="modal-title"><strong>{{p.productName}}</strong></h4>
+        </div>
+        <div class="modal-body row">
+          <div class="column-12 include-detail">
+            <div class="column-3">
+              <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}" />
+            </div>
+            <div class="column-9">
+              <h1>{{p.productName}}</h1>
+              <h3 class="green" ng-show="p.price">{{p.price|currency}}/mo</h3>
+              <p>{{p.productShortDescription}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- end modal -->

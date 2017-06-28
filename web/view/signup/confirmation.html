@@ -25,10 +25,21 @@
             </span>
             Thank You!
          </h1>
-        <p class="subhead">Your Application has been submitted.</p>
-        <p>Within 30 minutes you will receive an email from First Data. If your Application has been approved the email will include your Business Track login information. Business Track is where you can see your detailed transaction reporting.</p>
-        <br>
-        <p><a class="btn" ng-click="learnMore()">Learn more about First Data</a></p>
+        <div ng-show="!thankyouPageFlag">
+             <p class="subhead">Your Application has been submitted.</p>
+             <p><span ng-if="CONST.PLATFORM_NAME != 'key'">Within 30 minutes you will receive an email from {{BUSINESS_NAME}}.</span><span ng-if="CONST.PLATFORM_NAME == 'key'">You will receive an email from KeyBank shortly.</span> If your Application has been approved the email will include your Business Track login information. Business Track is where you can see your detailed transaction reporting.</p>
+             <br>
+             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'fdmarketplace'" ng-click="learnMore()">Learn more about First Data</a></p>
+             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'td'" ng-click="learnMore()">Learn more about TD Bank</a></p>
+             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'bams'" ng-click="learnMore()">Learn more about Bank Of America</a></p>
+             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'key'" ng-click="learnMore()">Learn more about KeyBank</a></p>
+        </div>
+        <div ng-show="thankyouPageFlag">
+            <p class="subhead">Your signature has been captured.</p>
+            <p>We are still waiting for other owners of your business to sign. Your merchant application will be submitted once all required signatures are submitted.</p>
+            <br>
+            <p>Regards,<br>First Data Merchant Services</p>
+         </div>
       </div>
     </div>
   </form>

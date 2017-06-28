@@ -5,6 +5,7 @@
       <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Transaction Information</span></a>
     </div>
     <ul>
+      <li ng-if="cart.num_locations > 1"><a class="link" href="#/multi-locations">Locations</a></li>
       <li><a>Transaction Information <i style="color: green;" class="fa fa-check"></i></a></li>
       <li><a style="color:#aaa;">Shipping Information</a></li>
       <li><a style="color:#aaa;">Confirm Order</a></li>
@@ -21,8 +22,8 @@
           <h4>Business Info</h4>
           <div class="form-element" >
             <label class="fancy-field" fancy-field for="mcccodes" ng-class="{'error': (transactionInfoForm.mcccodes.$touched && transactionInfoForm.mcccodes.$invalid)}">
-              <select name="mcccodes" id="mcccodes" name="mcccodes" ng-change="getMccTypes(transactionFormData.mccTypes)" ng-model="transactionFormData.mccTypes" ng-options="codes.industryDescription as codes.industryDescription for codes in mccCodes | orderBy:'industryDescription'" placeholder="How do you do business?" required>
-                <option value="">How do you do business?</option>
+              <select name="mcccodes" id="mcccodes" name="mcccodes" ng-change="getMccTypes(transactionFormData.mccTypes)" ng-model="transactionFormData.mccTypes" ng-options="codes.industryDescription as codes.industryDescription for codes in mccCodes | orderBy:'industryDescription'" placeholder="Select Industry Description" required>
+                <option value="">Select Industry Description</option>
               </select>
             </label>
           </div>
@@ -30,12 +31,19 @@
     
             <div class="form-element" ng-if="mccTypes" >
             <label class="fancy-field" fancy-field ng-class="{'error': (transactionInfoForm.mcctypes.$touched && transactionInfoForm.mcctypes.$invalid)}">
-              <select name="mcctypes" id="mcctypes" ng-options="types.mcc as types.mccList for types in mccTypes | orderBy:'mccList'" ng-model="transactionFormData.mcc" placeholder="Select Business Type" required ng-change="checkMisc99()">
-                <option value="">Select Business Type</option>
+              <select name="mcctypes" id="mcctypes" ng-options="types.mcc as types.mccList for types in mccTypes | orderBy:'mccList'" ng-model="transactionFormData.mcc" placeholder="Select MCC Description" required ng-change="checkMisc99()">
+                <option value="">Select MCC Description</option>
               </select>
             </label>
           </div>
-            <p ng-show="transactionInfoForm.mcctypes.$touched && transactionInfoForm.mcctypes.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Select the business organization type.</p>
+            <p ng-show="transactionInfoForm.mcctypes.$touched && transactionInfoForm.mcctypes.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Select the MCC Description type.</p>
+          <div class="form-element">
+            <label class="fancy-field" fancy-field ng-class="{'error': (transactionInfoForm.mcctypein.$touched && (transactionInfoForm.mcctypein.$invalid || transactionInfoForm.mcctypes.$invalid || transactionInfoForm.mcccodes.$invalid || !isMCCValid))}">
+              <input name="mcctypein" type="text" id="mcctypein" ng-model="mccTypeIn" required placeholder="OR type in MCC Code" ng-change="getMCCDetails()">
+            </label>
+          </div>
+          <p ng-show="transactionInfoForm.mcctypein.$touched && transactionInfoForm.mcctypein.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Please enter valid MCC Code.</p>
+          <p ng-show="transactionInfoForm.mcctypein.$touched && !transactionInfoForm.mcctypein.$error.required && (!isMCCValid || transactionInfoForm.mcctypes.$invalid || transactionInfoForm.mcccodes.$invalid)" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Please enter valid MCC Code.</p>
           <div class="form-element" ng-if="misc99" >
             <label class="fancy-field" fancy-field ng-class="{'error': (transactionInfoForm.mccAdditionalDetails.$touched && transactionInfoForm.mccAdditionalDetails.$invalid)}">
               <input  name="mccAdditionalDetails" type ="text" id="mccAdditionalDetails" ng-model="transactionFormData.mccAdditionalDetails"  required  placeholder="Additional Details">
@@ -44,42 +52,72 @@
           </div>
             <p ng-show="transactionInfoForm.mccAdditionalDetails.$touched && transactionInfoForm.mccAdditionalDetails.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter additional details.</p>
             <br>
-          <h4>Transaction Info</h4>
-          <div class="form-element" >
-            <label class="fancy-field" fancy-field ng-class="{'error': (transactionInfoForm.sales.$touched && transactionInfoForm.sales.$invalid)}">
-              <input name="sales" type="number"  ng-model="transactionFormData.annualVolume" min="1" required="required" placeholder="Est. or Actual Annual Gross Sales">
-            </label>
-          </div>
-            <p ng-show="transactionInfoForm.sales.$touched && transactionInfoForm.sales.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Est. or Actual Annual Gross Sales.</p>
-            <p ng-show="transactionInfoForm.sales.$touched && !transactionInfoForm.sales.$error.required && transactionInfoForm.sales.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Est. or Actual Annual Gross Sales.</p>
-    
+          <h4>Transaction Info <span class="super-small gray">(Across all locations)</span></h4>
+            <div class="form-element" >
+              <label class="fancy-field" fancy-field ng-class="{'error': (transactionInfoForm.sales.$touched && transactionInfoForm.sales.$invalid)}">
+                <input name="sales" type="text" format-num ng-model="transactionFormData.annualVolume" ng-min="1000" ng-max ="999999999.99" required="required" placeholder="Total Annual Sales Volume">
+              </label>
+            </div>
+            <p ng-show="transactionInfoForm.sales.$touched && transactionInfoForm.sales.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Total Annual Sales Volume.</p>
+            <p ng-show="transactionInfoForm.sales.$touched && !transactionInfoForm.sales.$error.required && (transactionInfoForm.sales.$error.ngMin || transactionInfoForm.sales.$error.ngMax)" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Annual Gross value cannot be lower than 1000 and higher than 999999999.99</p>
+            <p ng-show="transactionInfoForm.sales.$error.maxError" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Sum of Annual credit card volume, Annual Tele check volume, and Amex volume cannot be higher than Total Annual Sales Volume.</p>
+            <div class="form-element">
+              <label class="fancy-field" for="annualcardVolume" fancy-field ng-class="{'error': (transactionInfoForm.annualcardVolume.$touched && transactionInfoForm.annualcardVolume.$invalid)}">
+                <input name="annualcardVolume" type="text" format-num ng-model="transactionFormData.annualcardVolume" id="annualcardVolume" placeholder="Annual Credit Card Volume" required="required" ng-max="{{+transactionFormData.annualVolume}}" ng-change="checkAnnualSalesVolume()">
+              </label>
+            </div>
+            <p ng-show="transactionInfoForm.annualcardVolume.$touched && transactionInfoForm.annualcardVolume.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Annual Credit Card Volume.</p>
+            <p ng-show="transactionInfoForm.annualcardVolume.$touched && !transactionInfoForm.annualcardVolume.$error.required && transactionInfoForm.annualcardVolume.$error.number" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Annual Credit Card Volume.</p>
+            <p ng-show="transactionInfoForm.annualcardVolume.$touched && !transactionInfoForm.annualcardVolume.$error.required && transactionInfoForm.annualcardVolume.$error.ngMax" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Annual Credit Card Volume should be lesser than Total Annual Sales Volume.</p>
+            <div class="form-element" ng-if="isTeleCheck">
+              <label class="fancy-field" for="telecheckVolume" fancy-field ng-class="{'error': (transactionInfoForm.telecheckVolume.$touched && transactionInfoForm.telecheckVolume.$invalid)}">
+                <input name="telecheckVolume" type="text" format-num ng-model="transactionFormData.telecheckVolume" id="telecheckVolume" placeholder="Annual TeleCheck Volume" required="required" ng-max="{{+transactionFormData.annualVolume}}" ng-change="checkAnnualSalesVolume()">
+              </label>
+            </div>
+            <p ng-show="transactionInfoForm.telecheckVolume.$touched && transactionInfoForm.telecheckVolume.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Annual TeleCheck Volume.</p>
+            <p ng-show="transactionInfoForm.telecheckVolume.$touched && !transactionInfoForm.telecheckVolume.$error.required && transactionInfoForm.telecheckVolume.$error.number" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Annual TeleCheck Volume.</p>
+            <p ng-show="transactionInfoForm.telecheckVolume.$touched && !transactionInfoForm.telecheckVolume.$error.required && transactionInfoForm.telecheckVolume.$error.ngMax" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Annual TeleCheck Volume should be lesser than Total Annual Sales Volume.</p>
             <div class="form-element" >
               <label class="fancy-field" fancy-field ng-class="{'error': (transactionInfoForm.ticket.$touched && transactionInfoForm.ticket.$invalid)}">
-                <input name="ticket" type="number"  ng-model="transactionFormData.averageTicket" min="1" max="9999.99" required="required" placeholder="Est. or Actual Avg. Ticket Size">
+                <input name="ticket" type="text" format-num ng-change="avgTicketChanged()" ng-model="transactionFormData.averageTicket" ng-min="1" ng-max="99999.99" required="required" placeholder="Est. or Actual Avg. Ticket Size">
               </label>
             </div>
             <p ng-show="transactionInfoForm.ticket.$touched && transactionInfoForm.ticket.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Est. or Actual Avg. Ticket Size.</p>
             <p ng-show="transactionInfoForm.ticket.$touched && !transactionInfoForm.ticket.$error.required && transactionInfoForm.$error.pattern" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Est. or Actual Avg. Ticket Size.</p>
-            <p ng-show="transactionInfoForm.ticket.$touched && !transactionInfoForm.ticket.$error.required && transactionInfoForm.ticket.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i>Est. or Actual Avg. Ticket Size cannot be higher than 9999.99 and lower than 1.</p>
+            <p ng-show="transactionInfoForm.ticket.$touched && !transactionInfoForm.ticket.$error.required && transactionInfoForm.ticket.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i>Est. or Actual Avg. Ticket Size cannot be higher than 99999.99 and lower than 1.</p>
             <div class="form-element">
               <label class="fancy-field" for="highestTicket" fancy-field ng-class="{'error': (transactionInfoForm.highestTicket.$touched && transactionInfoForm.highestTicket.$invalid)}">
-                <input name="highestTicket" type="number" ng-model="transactionFormData.highestTicket" id="highestTicket" min="{{transactionFormData.averageTicket +1}}" max="{{transactionFormData.annualVolume -1}}" placeholder="Est. or Actual Highest Ticket Size" required="required">
+                <input name="highestTicket" type="text" format-num ng-model="transactionFormData.highestTicket" id="highestTicket" ng-min="{{+transactionFormData.averageTicket +1}}" ng-max="{{+transactionFormData.annualVolume -1}}" placeholder="Est. or Actual Highest Ticket Size" required="required">
               </label>
             </div>
-          <p ng-show="transactionInfoForm.highestTicket.$touched && transactionInfoForm.highestTicket.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Est. or Actual Highest Ticket Size.</p>
-          <p ng-show="transactionInfoForm.highestTicket.$touched && !transactionInfoForm.highestTicket.$error.required && transactionInfoForm.highestTicket.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Est. or Actual Highest Ticket Size.</p>
-          <p ng-show="transactionInfoForm.highestTicket.$touched && !transactionInfoForm.highestTicket.$error.required && transactionInfoForm.highestTicket.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Highest Ticket Size should be higher than Average ticket and lesser than Annual sales.</p>
+            <p ng-show="transactionInfoForm.highestTicket.$touched && transactionInfoForm.highestTicket.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Est. or Actual Highest Ticket Size.</p>
+            <p ng-show="transactionInfoForm.highestTicket.$touched && !transactionInfoForm.highestTicket.$error.required && transactionInfoForm.highestTicket.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Est. or Actual Highest Ticket Size.</p>
+            <p ng-show="transactionInfoForm.highestTicket.$touched && !transactionInfoForm.highestTicket.$error.required && transactionInfoForm.highestTicket.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Highest Ticket Size should be higher than Average ticket and lesser than Total Annual Sales Volume.</p>
             <br>
-            <div id="amex-volume-fields" ng-if="transactionFormData.annualVolume >= 1000000"><!-- show only if #gross-sales > 1M -->
-              <h4>American Express</h4>
+
+            <div id="amex-volume-fields" ng-if="(transactionFormData.annualcardVolume >= 1000000 && isAmexPresent) || (transactionFormData.annualcardVolume >= 1000000 && isSwipedNonSwiped)"><!-- show only if #gross-sales > 1M -->
+              <h4>American Express <span class="super-small gray">(Across all locations)</span></h4>
               <div class="form-element">
                 <label class="fancy-field active" for="amexVolume" fancy-field  ng-class="{'error': (transactionInfoForm.amexVolume.$touched && transactionInfoForm.amexVolume.$invalid)}">
-                  <input name="amexVolume" type="number" ng-model="transactionFormData.amexVolume" id="amexVolume" placeholder="Est. or Actual Annual American Express Volume" class="hasvalue" required="required">
+                  <input name="amexVolume" type="text" format-num ng-model="transactionFormData.amexVolume" id="amexVolume" placeholder="Est. or Actual Annual American Express Volume" class="hasvalue" required="required" ng-max="{{+transactionFormData.annualcardVolume}}" ng-change="checkAnnualSalesVolume()">
                 </label>
               </div>
               <p ng-show="transactionInfoForm.amexVolume.$touched && transactionInfoForm.amexVolume.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter Est. or Actual Annual American Express Volume.</p>
-              <p ng-show="transactionInfoForm.amexVolume.$touched && !transactionInfoForm.amexVolume.$error.required && transactionInfoForm.amexVolume.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Est. or Actual Annual American Express Volume.</p>
+              <p ng-show="transactionInfoForm.amexVolume.$touched && !transactionInfoForm.amexVolume.$error.required && transactionInfoForm.amexVolume.$error.number" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid Est. or Actual Annual American Express Volume.</p>
+              <p ng-show="transactionInfoForm.amexVolume.$touched && !transactionInfoForm.amexVolume.$error.required && transactionInfoForm.amexVolume.$error.ngMax" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> American Express Volume should be lesser than Annual Credit Card Volume.</p>
               <p class="small">Required if processing over $1M annually.</p>
+
+              <!--Start: Adding Amex Member ID-->
+              <div class="form-element" ng-if="(transactionFormData.amexVolume >= 1000000 && isAmexPresent) || (transactionFormData.amexVolume >= 1000000 && isSwipedNonSwiped)">
+                <label class="fancy-field active" for="amexMemberId" fancy-field  ng-class="{'error': (transactionInfoForm.amexMemberId.$touched && transactionInfoForm.amexMemberId.$invalid)}">
+                  <input name="amexMemberId" type="text" ng-model="transactionFormData.amexMemberId" id="amexMemberId" placeholder="American Express Member ID" class="hasvalue" required="required"  maxlength="10" ng-pattern="'[0-9]*'" ng-minlength="10" ng-maxlength="10">
+                </label>
+              </div>
+              <p ng-show="transactionInfoForm.amexMemberId.$touched && transactionInfoForm.amexMemberId.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter American Express Member ID.</p>
+              <p ng-show="transactionInfoForm.amexMemberId.$touched && !transactionInfoForm.amexMemberId.$error.required && transactionInfoForm.amexMemberId.$invalid" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid American Express Member ID.</p>
+              <!--End: Adding Amex Member ID-->
+
+
             </div>
         </form>
       </div>

@@ -1,0 +1,212 @@
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+  <div class="breadcrumb-inner container">
+    <div class="breadcrumb-mobile">
+      <a id="mobile-breadcrumb-toggle" class="current"><i class="fa fa-chevron-down"></i> <span>Owner & Business Info</span></a>
+    </div>
+    <ul>
+      <li><a class="link" href="#/signup/owner">Owner & Business Info</a></li>
+      <li><a class="link" href="#/signup/location">Location Info</a></li>
+      <li><a class="current">Advanced Setup</a></li>
+      <li><a style="color:#aaa;">Merchant Agreement</a></li>
+      <li><a style="color:#aaa;">Finish</a></li>
+    </ul>
+  </div>
+</div>
+<style>div.error{display:block}</style>
+<div id="signup-content" class="main-content">
+    <form name="signupForm" novalidate style="max-width:100%" autocomplete="off" id="signupForm">
+        <div class="container">
+            <h1 style="margin-top:20px">Advanced Setup</h1>
+            <span class="subhead">Make modifications to your experience by adjusting your preferences.</span>
+            <p id="form-error" ng-show="form_error">Your form cannot be submitted. Please check the fields highlighted in red. Make sure all fields are completed and your information is correct.</p>
+            <br>
+            <div class="form-group clearfix margin-top">
+              <h3>Statement</h3>
+              <p>Accessible by mail, email or online, statements provide a comprehensive record of submission, chargebacks, funding info and fees.</p> <br>
+
+              <div class="column-6">
+                    <div class="form-element">
+                        <label class="fancy-field active" for="statement-type"  fancy-field ng-class="{'error': (signupForm.statementType.$touched && signupForm.statementType.$invalid)}">
+                            <select id="statement-type" class="hasvalue" placeHolder="Statement Type" name="statementType" ng-model="formData.statementType" required="required">
+                                <option value="">Statement Type</option>
+                                <option value="F">Detail</option>
+                                <option value="G">Summary</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.statementType.$touched && signupForm.statementType.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element">
+                        <label class="fancy-field active" for="statement-delivery-type" fancy-field ng-class="{'error': (signupForm.statementDeliveryType.$touched && signupForm.statementDeliveryType.$invalid)}">
+                        <select id="statement-delivery-type" class="hasvalue" placeHolder="Statement Delivery Type" name="statementDeliveryType" ng-model="formData.statementDeliveryType" required="required">
+                            <option value="">Statement Delivery Type</option>
+                            <option>Email</option>
+                        </select>
+                    </label>
+                        <p ng-show="signupForm.statementDeliveryType.$touched && signupForm.statementDeliveryType.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+
+                    <div class="form-element"> <label class="fancy-field active" for="statement-delivery-email" fancy-field ng-class="{'error': (signupForm.statementDeliveryEmail.$touched && signupForm.statementDeliveryEmail.$invalid) || (signupForm.statementDeliveryEmail.$touched && signupForm.statementDeliveryEmail.$error.pattern)}">
+                        <input type="email" id="statement-delivery-email" class="hasvalue" placeholder="Email Address for Statements" ng-pattern="emailPattern" ng-required="formData.statementDeliveryType=='Email'" name="statementDeliveryEmail" ng-model="formData.statementDeliveryEmail" ng-blur="validateBusiness()">
+                    </label>
+                        <p ng-show="signupForm.statementDeliveryEmail.$touched && signupForm.statementDeliveryEmail.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter email address.</p>
+                        <p ng-show="signupForm.statementDeliveryEmail.$touched && signupForm.statementDeliveryEmail.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email format(xyz@gmail.com).</p>
+                        <p ng-show="signupForm.statementDeliveryEmail.$error.emailnotValid && !signupForm.statementDeliveryEmail.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email.</p>
+                    </div>
+                </div>
+                <div class="column-6">
+                  <div class="form-element"> <label class="fancy-field active" for="electronic-1099" fancy-field ng-class="{'error': (signupForm.electronic1099.$touched && signupForm.electronic1099.$invalid)}">
+                    <select id="electronic-1099" class="hasvalue" placeholder="Access Form 1099-K electronically" name="electronic1099" ng-model="formData.electronic1099" required="required">
+                      <option value="">Access Form 1099-K electronically</option>
+                      <option>Yes</option>
+                      <option>No</option>
+                    </select>
+                  </label>
+                    <p ng-show="signupForm.electronic1099.$touched && signupForm.electronic1099.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a option.</p>
+                  </div>
+                  <div class="form-element"> <label class="fancy-field active" for="electronic-1099-email" fancy-field ng-class="{'error': (signupForm.electronic1099Email.$touched && signupForm.electronic1099Email.$invalid)}">
+                    <select id="electronic-1099-email" class="hasvalue" placeholder="Send Form 1099-K to same email as Statements" name="electronic1099Email" ng-model="formData.electronic1099Email" required="required">
+                      <option value="">Send Form 1099-K to same email as Statements</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </label>
+                    <p ng-show="signupForm.electronic1099Email.$touched && signupForm.electronic1099Email.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a option.</p>
+                  </div>
+                  <div class="form-element" ng-if="formData.electronic1099Email == 'No'" >  <label class="fancy-field active" for="emailAddressFor1099k" fancy-field ng-class="{'error': (signupForm.emailAddressFor1099k.$touched && signupForm.emailAddressFor1099k.$invalid) || (signupForm.emailAddressFor1099k.$touched && signupForm.emailAddressFor1099k.$error.pattern)}">
+                    <input type="email" id="electronic-1099-email-address" class="hasvalue" placeholder="Email Address for Electronic 1099" ng-pattern="emailPattern" required="required" id="emailAddressFor1099k" name="emailAddressFor1099k" ng-model="formData.emailAddressFor1099k" ng-blur="validate1099kEmail()">
+                  </label>
+                    <p ng-show="signupForm.emailAddressFor1099k.$touched && signupForm.emailAddressFor1099k.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter email address.</p>
+                    <p ng-show="signupForm.emailAddressFor1099k.$touched && signupForm.emailAddressFor1099k.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email format(xyz@gmail.com).</p>
+                      <p ng-show="signupForm.emailAddressFor1099k.$error.emailnotValid && !signupForm.emailAddressFor1099k.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email.</p>
+                  </div>
+                </div>
+            </div>
+            <div class="form-group clearfix">
+                <h3>Cardholder Disputes</h3>
+                <p>Respond to chargeback/retrieval disputes utilizing our online workflow management response tool.</p> <br>
+
+                <div class="column-6">
+
+                    <div class="form-element">
+                      <label class="fancy-field active" for="chargeback-address" fancy-field ng-class="{'error': (signupForm.chargebackAddress.$touched && signupForm.chargebackAddress.$invalid)}">
+                      <select id="chargeback-address" class="hasvalue" placeholder="Send chargebacks and retrievals to" name="chargebackAddress" ng-model="formData.chargebackAddress" required="required">
+                        <option value="">Send chargebacks and retrievals to</option>
+                        <option value="0">None</option>
+                        <option value="1">Business Address</option>
+                        <option value="2">Owner Address</option>
+                      </select>
+                    </label>
+                      <p ng-show="signupForm.chargebackAddress.$touched && signupForm.chargebackAddress.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a chargeback address.</p>
+                    </div>
+                    <div class="form-element">
+                      <label class="fancy-field active" for="chargebackDelivery" fancy-field>
+                        <select id="chargebackDelivery" placeholder="Chargeback Delivery Type" class="hasvalue" ng-model="formData.chargebackDelivery" name="chargebackDelivery" required="required">
+                          <option value="">Chargeback Delivery Type</option>
+                          <option>Mail</option>
+                          <option>Fax</option>
+                          <option>eIDS</option>
+                        </select>
+                      </label>
+                      <p ng-show="signupForm.chargebackDelivery.$touched && signupForm.chargebackDelivery.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a Chargeback Delivery Type.</p>
+                    </div>
+                </div>
+                <div class="column-6">
+                    <div class="form-element" ng-if="formData.chargebackDelivery == 'Fax'">
+                        <label class="fancy-field active" for="faxNumber" fancy-field ng-class="{'error': (signupForm.faxNumber.$touched && signupForm.faxNumber.$invalid)}">
+                            <input type="tel" id="faxNumber" format-phone name="faxNumber" ng-model="formData.faxNumber" ng-pattern="phoneNumberPattern" placeholder="Fax Number" required="required" minlength="14" maxlength="14">
+                        </label>
+                        <p ng-show="signupForm.faxNumber.$touched && signupForm.faxNumber.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please enter Fax number.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group clearfix">
+              <h3>Training</h3>
+              <p>Provide information for terminal configuration and training.</p> <br>
+              <div class="column-6">
+                <div class="form-element">
+                    <label class="fancy-field" fancy-field="" for="trainingProvider" ng-class="{'error': signupForm.trainingProvider.$touched && signupForm.trainingProvider.$invalid}">
+                        <select id="trainingProvider" required="required" placeholder="Training Provider" name="trainingProvider" ng-model="formData.trainingProvider">
+                            <option value="">Training Provider</option>
+                            <option value="INSTALLER">INSTALLER WILL TRAIN</option>
+                            <option value="MAG">MAG WILL TRAIN</option>
+                            <option value="OSR">SALES REP WILL TRAIN</option>
+                            <option value="SELF">NO MERCHANT TRAINING</option>
+                        </select>
+                    </label>
+                    <p ng-show="signupForm.trainingProvider.$touched && signupForm.trainingProvider.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Select Training Provider.</p>
+                </div>
+                <div class="form-element">
+                  <label class="fancy-field" fancy-field="" for="trainingContactPhone" ng-class="{'error': signupForm.trainingContactPhone.$touched && signupForm.trainingContactPhone.$invalid}">
+                    <input type="tel" id="trainingContactPhone" format-phone name="trainingContactPhone" ng-model="formData.trainingContactPhone" ng-pattern="phoneNumberPattern" placeholder="Contact Phone" required="required" minlength="14" maxlength="14">
+                  </label>
+                    <p ng-show="signupForm.trainingContactPhone.$touched && signupForm.trainingContactPhone.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter Phone.</p>
+                    <p ng-show="signupForm.trainingContactPhone.$touched && signupForm.trainingContactPhone.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter valid phone number.</p>
+                    <p ng-show="signupForm.trainingContactPhone.$touched && !signupForm.trainingContactPhone.$error.pattern && signupForm.trainingContactPhone.$error.minlength " class="form-error-detail"><i class="fa fa-info-circle"></i> Enter valid phone number.</p>
+                </div>
+              </div>
+              <div class="column-6">
+                <div class="form-element">
+                      <label class="fancy-field" fancy-field="" for="preferredTrainingTime" ng-class="{'error': signupForm.preferredTrainingTime.$touched && signupForm.preferredTrainingTime.$invalid}">
+                          <select id="preferredTrainingTime" required="required" placeholder="Preferred training time" name="preferredTrainingTime" ng-model="formData.preferredTrainingTime">
+                              <option value="">Preferred training time</option>
+                              <option value="09:00AM-10:00AM">9:00AM - 10:00AM</option>
+                              <option value="10:00AM-11:00AM">10:00AM - 11:00AM</option>
+                              <option value="11:00AM-12:00PM">11:00AM - 12:00PM</option>
+                              <option value="12:00PM-01:00PM">12:00PM - 1:00PM</option>
+                              <option value="01:00PM-02:00PM">1:00PM - 2:00PM</option>
+                              <option value="02:00PM-03:00PM">2:00PM - 3:00PM</option>
+                              <option value="03:00PM-04:00PM">3:00PM - 4:00PM</option>
+                              <option value="04:00PM-05:00PM">4:00PM - 5:00PM</option>
+                          </select>
+                      </label>
+                      <p ng-show="signupForm.preferredTrainingTime.$touched && signupForm.preferredTrainingTime.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Select Training Time.</p>
+                </div>
+              </div>
+            </div>
+            <div class="form-group clearfix">
+                <h3>Third Party Processor</h3>
+                <p>Any software used for storing, transmitting, or processing card transactions or authorized requests.</p> <br>
+                <div class="column-6">
+                    <div class="form-element">
+                        <label class="fancy-field active" fancy-field="" for="thirdPartyProcessor" ng-class="{'error': signupForm.thirdPartyProcessor.$touched && signupForm.thirdPartyProcessor.$invalid}">
+                            <select id="thirdPartyProcessor" class="hasvalue" required="required" placeholder="Third Party Processor (TPP)" name="thirdPartyProcessor" ng-model="formData.thirdPartyProcessor">
+                                <option value="placeholder" disabled="">Third Party Processor (TPP)</option>
+                                <option value="00" selected="">None</option>
+                                <option value="01">Yahoo</option>
+                                <option value="02">Authorize.net</option>
+                                <option value="03">CyberSource</option>
+                                <option value="04">Verifone</option>
+                                <option value="05">Merchant Link</option>
+                                <option value="06">Shift 4</option>
+                                <option value="07">Apriva</option>
+                                <option value="08">FIS</option>
+                                <option value="09">Siz Payment Services Group</option>
+                                <option value="10">Verisign</option>
+                                <option value="99">Other</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="form-element" ng-if="formData.thirdPartyProcessor == 99">
+                        <label class="fancy-field active" for="thirdPartyProcessorName" fancy-field ng-class="{'error': (signupForm.thirdPartyProcessorName.$touched && signupForm.thirdPartyProcessorName.$invalid)}">
+                            <input type="text" id="thirdPartyProcessorName" name="thirdPartyProcessorName" ng-model="formData.thirdPartyProcessorName" placeholder="TPP Name" required="required">
+                        </label>
+                        <p ng-show="signupForm.thirdPartyProcessorName.$touched && signupForm.thirdPartyProcessorName.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please enter TPP name.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.thirdPartyProcessor != 00">
+                        <label class="fancy-field active" for="thirdPartyProcessorSoftware" fancy-field ng-class="{'error': (signupForm.thirdPartyProcessorSoftware.$touched && signupForm.thirdPartyProcessorSoftware.$invalid)}">
+                            <input type="text" id="thirdPartyProcessorSoftware" name="thirdPartyProcessorSoftware" placeholder="TPP Software" ng-model="formData.thirdPartyProcessorSoftware" required="required">
+                        </label>
+                        <p ng-show="signupForm.thirdPartyProcessorSoftware.$touched && signupForm.thirdPartyProcessorSoftware.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please enter TPP Software name.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group form-actions column-12 align-center">
+              <a class="btn submit" ng-class="{'disabled': clickedSubmit || !signupForm.$valid}" style="margin: 0 auto;" ng-click="submitForm()"><i ng-show="clickedSubmit" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>Continue</a>
+            </div>
+
+        </div>
+    </form>
+</div>

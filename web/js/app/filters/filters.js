@@ -97,7 +97,7 @@ app.filter('monthName', [function() {
  */
 app.filter('isEmpty', [function() {
   return function (obj) {
-     return !Object.keys(obj).length;
+     return !obj || !Object.keys(obj).length;
   }
 }]);
 
@@ -153,7 +153,7 @@ app.filter('tel', function () {
 
       number = number.slice(0, 3) + '-' + number.slice(3);
 
-      return (country + " " + city + " " + number).trim();
+      return (country + "("+ city + ") " + number).trim();
   };
 });
 
@@ -162,7 +162,7 @@ app.filter('tel', function () {
  */
 app.filter('lengthOfObject', function() {
   return function(obj) {
-    if ('object' !== typeof obj) {
+    if ('object' !== typeof obj || obj === null) {
       return null;
     }
     return Object.keys(obj).length;
@@ -380,5 +380,28 @@ app.filter('orderByObj', function() {
       newItems[filtered[i][field]] = filtered[i];
     }
     return newItems;
+  };
+});
+
+app.filter('to_trusted', ['$sce', function($sce){
+  return function(text) {
+    return $sce.trustAsHtml(text);
+  };
+}]);
+
+app.filter('orderByParentOrder', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    for(var i=0; i<filtered.length;i++){
+        filtered[i].parentOrder = filtered[i][0].parentOrder;
+    }
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
   };
 });

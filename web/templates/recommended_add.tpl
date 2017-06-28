@@ -7,7 +7,7 @@
       <a class="link-blue" ng-click="addToCart(b)" data-bid="{{b.productId}}">Add to Cart</a>
     </div>
     <div class="product-accessory column-2" ng-show="recommendedBundles.length > 6">
-      <a class="link-blue" href="#/products/recommended/{{pid}}"><img src="img/more-item.jpg"></a>
+      <a class="link-blue" href="#/products/{{pid}}/recommended-products"><img ng-src="{{ASSETS_FOLDER}}/img/more-item.jpg"></a>
     </div>
   </div>
 </section>

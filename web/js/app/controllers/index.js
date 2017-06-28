@@ -12,7 +12,15 @@ app.controller('IndexCtrl', ['$scope', '$rootScope', '$filter', '$location', '$a
 
     $rootScope.wrapperClass = 'home';
     $rootScope.body_id = 'shop';
+
+    $rootScope.show_search = true;
+
+    $scope.heroBundles = [];
+    $scope.alacarteBundles = [];
     $scope.categories = [];
+    $scope.mcc_code = null;
+    $scope.mcc_codes = [];
+    $scope.guideMeOnly = false;
 
     fdService.getCategories()
       .success(function(data, status, headers, config) {
@@ -34,14 +42,32 @@ app.controller('IndexCtrl', ['$scope', '$rootScope', '$filter', '$location', '$a
     });
   };
 
+  $scope.filterHero = function(p){
+    if (p['tags']) {
+      if (p['tags'].indexOf('HOME') != -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   /**
    * Change active category
    * @param {Object} category
    */
-  $scope.changeCategory = function(category){
-    fdService.storeCategoryInSession(category);
-    $location.path('/products/c');
-  };
+  /*$scope.changeCategory = function(id){
+    fdService.getCategory(id)
+      .success(function(data, status, headers, config) {
+        fdService.storeCategoryInSession(data);
+        $location.path('/products/c');
+      })
+      .error(function(data, status, headers, config) {
+      });
+  };*/
+    $scope.changeCategory = function(category){
+      fdService.storeCategoryInSession(category);
+      $location.path('/products/c');
+    };
 
   ///////////////// MAIN ////////////////////////////////
 

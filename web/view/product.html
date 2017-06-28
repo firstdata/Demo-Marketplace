@@ -6,7 +6,7 @@
     </div>
     <ul>
       <li><a class="link" href="#/">Shop</a></li>
-      <li><a class="link" href="#/products/c">Products</a></li>
+      <li><a class="link" href="#/products/c">Products <span class="gray small">({{category.name}})</span></a></li>
       <li><a>{{bundle_info.productName}}</a></li>
     </ul>
   </div>
@@ -14,8 +14,7 @@
 <div class="main-content">
  <section>
    <div class="container">
-   
-     <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types, 'column-12': !(cart.total_qty || cart.payment_types)}">
+     <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types || cart.transaction_products.length, 'column-12': !(cart.total_qty || cart.payment_types || cart.transaction_products.length)}">
        <div class="column-3">
           <img ng-src="{{cimage}}"/>
           <div id="product-images">
@@ -28,6 +27,7 @@
          
          <p>{{bundle_info.productLongDescription}}</p>
          <div class="shop-product-actions">
+           <any ng-show="bundle_info.video_id.length"><a class="link-bold" add-video-modal="#video-{{bundle_info.productId}}">Watch Video</a><span>|</span></any>
            <a class="link-bold" id="add-to-cart" ng-click="addToCart()">Add to Cart</a>
            <!-- <span>|</span>
            <a ng-if="min_lease_amt" class="link-bold" id="lease-now" ng-click="leaseProduct(bundle_info)">Lease Now</a> -->
@@ -72,5 +72,6 @@
   </section>
   <ng-include src="'templates/recommended_add.tpl'"></ng-include>
   <ng-include src="'templates/faq.tpl'"></ng-include>
+  <div ng-if="bundle_info.productId"><ng-include src="'templates/video.tpl'" ng-init="bundle=bundle_info"></ng-include></div>
 </div><!-- end .content -->
 

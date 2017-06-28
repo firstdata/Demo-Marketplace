@@ -5,6 +5,7 @@
       <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Shipping Information</span></a>
     </div>
     <ul>
+      <li ng-if="cart.num_locations > 1"><a class="link" data-toggle="modal" data-target="#location-edit-warning">Locations</a></li>
       <li><a class="link backButtonClass" data-toggle="modal" data-target="#pricing-edit-warning">Transaction Information <i style="color: green;" class="fa fa-check"></i></a></li>
       <li><a class="link" href="#/checkout/shipping">Shipping Information</a></li>
       <li><a>Review Order</a></li>
@@ -12,6 +13,7 @@
     </ul>
   </div>
 </div>
+
 <div class="main-content">
   <section style="margin-top: 40px;">
     <div class="container">
@@ -20,394 +22,147 @@
           <h2>Shipping Address</h2>
           <div class="form-group">
             <p id="form-error" ng-show="form_error">Your form cannot be submitted. Please check the fields highlighted in red. Make sure all required fields are completed and your information is correct.</p>
-            <div class="form-group address" id="address-1">
-             <div class="address-details address-details-1">
-               <p>Ship the following item(s) to this address:</p>
-               <ul style="margin: 10px 10px 20px 0;">
-                 <li ng-repeat="(key, p) in cart.data"><input type="checkbox" checked="true" disabled="true" /> <label>{{p.name}}</label></li>
-               </ul>
-             </div>
-             <div class="form-element">
-               <label class="fancy-field" fancy-field  ng-class="{'error': shippingForm.company_name.$touched && shippingForm.company_name.$invalid}">
-                <input type="text" placeholder="Company Name" ng-model="cart.shippingAddress.company_name" name="company_name" ng-minlength="2" ng-maxlength="24"  ng-pattern="companyPattern" required="required" />
-               </label>
-               <p ng-show="shippingForm.company_name.$touched && shippingForm.company_name.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
-               <p ng-show="shippingForm.company_name.$touched && shippingForm.company_name.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Company Name is required.</p>
-                 <p ng-show="shippingForm.company_name.$touched && shippingForm.company_name.$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Company name must be of at least 2 characters.</p>
-                 <p ng-show="shippingForm.company_name.$touched && shippingForm.company_name.$error.maxlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Company name must be less than 25 characters.</p>
-             </div>
-             <div class="form-element">
-              <div class="column-6" style="padding:0 1em 0 0;">
-                <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.firstname.$touched && shippingForm.firstname.$invalid}">
-                  <input type="text" placeholder="First Name" name="firstname" ng-model="cart.shippingAddress.firstname" ng-pattern="'[a-zA-Z ]+'" ng-minlength="2" ng-maxlength="24" required="required"  ng-change="cart.shippingAddress.name = cart.shippingAddress.firstname + ' ' + cart.shippingAddress.lastname">
-                </label>
+            <div class="form-group address" ng-repeat="(ad_id, ad) in cart.shippingAddress track by $index">
+              <div class="address-details address-details-1">
+                <h3 ng-if="$index">Shipping Address {{$index + 1}} <a class="small link remove-address" ng-click="removeAddress($index)">Remove</a></h3>
+                <p>Ship the following item(s) to this address:</p>
+                <ul style="margin: 10px 10px 20px 0;">
+                  <ng-repeat ng-repeat="(key, p) in shippingProdsCart.data track by $index">
+                    <li ng-hide="p.term == 'O'">
+                      <label class="custom-input custom-input-radiocheckbox"><input type="radio" name="radio{{$index}}" ng-click="productAddressSelected(p, ad, $parent.$index, $index)" ng-model="shipping_prods[$parent.$index][$index]" ng-value="shipping_prods_value[$parent.$index][$index]"/>{{p.name}} <br><div class="custom-input-anchor"></div></label>
+                    </li>
+                  </ng-repeat>
+                </ul>
               </div>
-              <div class="column-6" style="padding:0 0 0 0;">
-                <label class="fancy-field" fancy-field  ng-class="{'error': shippingForm.lastname.$touched && shippingForm.lastname.$invalid}">
-                  <input type="text" placeholder="Last Name" name="lastname" ng-model="cart.shippingAddress.lastname" ng-pattern="'[a-zA-Z ]+'" ng-minlength="2" ng-maxlength="24" required="required" ng-change="cart.shippingAddress.name = cart.shippingAddress.firstname + ' ' + cart.shippingAddress.lastname">
+              <div class="form-element">
+                <label class="fancy-field" fancy-field  ng-class="{'error': shippingForm['company_name_' + ad_id].$touched && shippingForm['company_name_' + ad_id].$invalid}">
+                  <input type="text" placeholder="Company Name" ng-model="ad.company_name" name="company_name_{{ad_id}}" ng-minlength="2" ng-maxlength="24"  ng-pattern="companyPattern" required="required" />
                 </label>
+
+                <p ng-show="shippingForm['company_name_' + ad_id].$touched && shippingForm['company_name_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
+                <p ng-show="shippingForm['company_name_' + ad_id].$touched && shippingForm['company_name_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Company Name is required.</p>
+                <p ng-show="shippingForm['company_name_' + ad_id].$touched && shippingForm['company_name_' + ad_id].$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Company name must be of at least 2 characters.</p>
+                <p ng-show="shippingForm['company_name_' + ad_id].$touched && shippingForm['company_name_' + ad_id].$error.maxlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Company name must be less than 25 characters.</p>
               </div>
-                 <p ng-show="shippingForm.firstname.$touched && shippingForm.firstname.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> First Name can only contain letters.</p>
-                 <p ng-show="shippingForm.firstname.$touched && shippingForm.firstname.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> First Name is required.</p>
-                 <p ng-show="shippingForm.firstname.$touched && shippingForm.firstname.$error.maxlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Maximum length for First name is 24 characters.</p>
-                 <p ng-show="shippingForm.lastname.$touched && shippingForm.lastname.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Last Name can only contain letters.</p>
-                 <p ng-show="shippingForm.lastname.$touched && shippingForm.lastname.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Last Name is required.</p>
-                 <p ng-show="shippingForm.lastname.$touched && shippingForm.lastname.$error.maxlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Maximum length for Last name is 24 characters.</p>
-              
-             </div>
-             <div class="form-element">
-               <div class="column-9" style="padding:0;">
-                 <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.address1.$touched && shippingForm.address1.$invalid}">
-                  <input type="text" name="address1" placeholder="Street Address" ng-model="cart.shippingAddress.address1" maxlength="24" required="required" ng-class="{'error': shippingForm.address1.$touched && shippingForm.address1.$invalid}" ng-pattern="addressPattern" />
-                </label>
-               </div>
-               <div class="column-3" style="padding-right:0; padding-bottom:0; padding-top:0;">
-                 <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.address2.$touched && shippingForm.address2.$invalid}">
-                  <input type="text" name="address2" placeholder="optional" ng-model="cart.shippingAddress.address2" maxlength="24"  ng-pattern="addressPattern" />
-                </label>
-               </div>
-               <p ng-show="shippingForm.address1.$touched && shippingForm.address1.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
-               <p ng-show="shippingForm.address1.$touched && shippingForm.address1.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Street Address is required.</p>
-               <p ng-show="shippingForm.address2.$touched && shippingForm.address2.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
-             </div>
-             <div class="form-element">
-               <div class="column-3" style="padding:0 1em 0 0;">
-                 <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.zip.$dirty && (shippingForm.zip.$invalid || cart.taxPercent == -2)}">
-                  <input type="text" name="zip" placeholder="ZIP" ng-model="cart.shippingAddress.zip" ng-change="lookupZip()" maxlength="5" ng-pattern="'[0-9]*'" ng-minlength="5" ng-maxlength="5" required="required"  />
-                </label>
-               </div>
-               <div class="column-4" style="padding:0;">
-                 <label class="fancy-field" fancy-field for="state"  ng-class="{'error': shippingForm.state.$touched && shippingForm.state.$invalid}">
-                  <select placeholder="State" ng-model="cart.shippingAddress.state" name="state" ng-options="state.abbr as state.name for state in states_list" name="state" required="required">
-                    <option value="">State</option>
-                  </select>
-                </label>
-               </div>
-               <div class="column-5" style="padding:0 0 0 1em;">
-                 <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.city.$touched && shippingForm.city.$invalid}">
-                  <input type="text" name="city" placeholder="City" ng-model="cart.shippingAddress.city" ng-change="getTaxes()" maxlength="18" ng-pattern="'[ a-zA-Z]+'" required="required"  />
-                </label>
-               </div>
+              <div class="form-element">
+                <div class="column-6" style="padding:0 1em 0 0;">
+                  <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['firstname_' + ad_id].$touched && shippingForm['firstname_' + ad_id].$invalid}">
+                    <input type="text" placeholder="First Name" name="firstname_{{ad_id}}" ng-model="ad.firstname" ng-pattern="'[a-zA-Z ]+'" ng-minlength="2" ng-maxlength="24" required="required"  ng-change="setFullName(ad_id)">
+                  </label>
+                </div>
+                <div class="column-6" style="padding:0 0 0 0;">
+                  <label class="fancy-field" fancy-field  ng-class="{'error': shippingForm['lastname_' + ad_id].$touched && shippingForm['lastname_' + ad_id].$invalid}">
+                    <input type="text" placeholder="Last Name" name="lastname_{{ad_id}}" ng-model="ad.lastname" ng-pattern="'[a-zA-Z ]+'" ng-minlength="2" ng-maxlength="24" required="required" ng-change="setFullName(ad_id)">
+                  </label>
+                </div>
+                <p ng-show="shippingForm['firstname_' + ad_id].$touched && shippingForm['firstname_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> First Name can only contain letters.</p>
+                <p ng-show="shippingForm['firstname_' + ad_id].$touched && shippingForm['firstname_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> First Name is required.</p>
+                <p ng-show="shippingForm['firstname_' + ad_id].$touched && shippingForm['firstname_' + ad_id].$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Minimum length for First name is 2 characters.</p>
+                <p ng-show="shippingForm['lastname_' + ad_id].$touched && shippingForm['lastname_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Last Name can only contain letters.</p>
+                <p ng-show="shippingForm['lastname_' + ad_id].$touched && shippingForm['lastname_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Last Name is required.</p>
+                <p ng-show="shippingForm['lastname_' + ad_id].$touched && shippingForm['lastname_' + ad_id].$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Minimum length for Last name is 2 characters.</p>
+                <p ng-show="shippingForm['firstname_' + ad_id].$error.max_length || shippingForm['lastname_' + ad_id].$error.max_length" class="form-error-detail"><i class="fa fa-info-circle"></i> Maximum length for Full Name is 24 characters.</p>
 
+              </div>
+              <div class="form-element">
+                <div class="column-9" style="padding:0;">
+                  <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['address1_' + ad_id].$touched && shippingForm['address1_' + ad_id].$invalid}">
+                    <input type="text" name="address1_{{ad_id}}" placeholder="Street Address" ng-model="ad.address1" maxlength="24" required="required" ng-class="{'error': shippingForm.address1.$touched && shippingForm.address1.$invalid}" ng-pattern="addressPattern" />
+                  </label>
+                </div>
+                <div class="column-3" style="padding-right:0; padding-bottom:0; padding-top:0;">
+                  <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['address2_' + ad_id].$touched && shippingForm['address2_' + ad_id].$invalid}">
+                    <input type="text" name="address2_{{ad_id}}" placeholder="optional" ng-model="ad.address2" maxlength="24"  ng-pattern="addressPattern" />
+                  </label>
+                </div>
 
-               <p ng-show="shippingForm.zip.$dirty && shippingForm.zip.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> ZIP can only contain numbers.</p>
-               <p ng-show="shippingForm.zip.$dirty && shippingForm.zip.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> ZIP is required.</p>
-               <p ng-show="shippingForm.zip.$dirty && shippingForm.zip.$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> ZIP is invalid.</p>
-               <p ng-show="shippingForm.city.$touched && shippingForm.city.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> City can only contain letters.</p>
-                 <p ng-show="shippingForm.state.$touched && shippingForm.state.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> State is required.</p>
-               <p ng-show="shippingForm.city.$touched && shippingForm.city.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> City is required.</p>
+                <p ng-show="shippingForm['address1_' + ad_id].$touched && shippingForm['address1_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
+                <p ng-show="shippingForm['address1_' + ad_id].$touched && shippingForm['address1_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Street Address is required.</p>
+                <p ng-show="shippingForm['address2_' + ad_id].$touched && shippingForm['address2_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
+              </div>
 
-             </div>
-             <div class="form-element">
-               <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.email.$touched && shippingForm.email.$invalid}">
-                <input type="email" name="email" placeholder="Email Address" ng-model="cart.shippingAddress.email" maxlength="50" required="required"  ng-pattern="'[-a-zA-Z0-9@_\.]+'" />
-              </label>
-               <p ng-show="shippingForm.email.$touched && shippingForm.email.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address cannot contain special characters.</p>
-               <p ng-show="shippingForm.email.$touched && shippingForm.email.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is required.</p>
-               <p ng-show="shippingForm.email.$touched && shippingForm.email.$error.email" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is invalid.</p>
-             </div>
-             <div class="form-element">
-               <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.email2.$touched && shippingForm.email2.$invalid}">
-                <input type="email" placeholder="Re-Enter Email Address" ng-paste="$event.preventDefault()" name="email2" ng-model="cart.shippingAddress.email2" compare-to="cart.shippingAddress.email" required="required" maxlength="50" ng-class="{'error': shippingForm.email2.$touched && shippingForm.email2.$invalid}" ng-pattern="'[-a-zA-Z0-9@_\.]+'" />
-               </label>
-               <p ng-show="shippingForm.email2.$touched && shippingForm.email2.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address cannot contain special characters.</p>
-               <p ng-show="shippingForm.email2.$touched && shippingForm.email2.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is required.</p>
-               <p ng-show="shippingForm.email2.$touched && shippingForm.email2.$error.email" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is invalid.</p>
-               <p ng-show="shippingForm.email2.$touched && shippingForm.email2.$error.compareTo" class="form-error-detail"><i class="fa fa-info-circle"></i> Emails must match.</p>
-             </div>
-             <div class="form-element">
-               <label class="fancy-field" fancy-field ng-class="{'error': shippingForm.phone.$touched && shippingForm.phone.$invalid}" >
-                <input type="tel" name="phone" placeholder="Phone Number" format-phone ng-model="cart.shippingAddress.phone" ng-pattern="phoneNumberPattern" ng-minlength="10" maxlength="14" required="required" />
-               </label>
-               <p ng-show="shippingForm.phone.$touched && shippingForm.phone.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Phone Number can only contain numbers.</p>
-               <p ng-show="shippingForm.phone.$touched && shippingForm.phone.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Phone Number is required.</p>
-               <p ng-show="shippingForm.phone.$touched && shippingForm.phone.$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Phone Number is invalid.</p>
-             </div>
-           </div>
+              <div class="form-element">
+                <div class="column-3" style="padding:0 1em 0 0;">
+                  <label class="fancy-field" fancy-field ng-class="{'error': (shippingForm['zip_' + ad_id].$dirty || shippingForm['zip_' + ad_id].$touched) && (shippingForm['zip_' + ad_id].$invalid || cart.taxPercent == -2)}">
+                    <input type="text" name="zip_{{ad_id}}" placeholder="ZIP" ng-model="ad.zip" ng-change="lookupZip($index)" maxlength="5" ng-pattern="'[0-9]*'" ng-minlength="5" ng-maxlength="5" required="required"  />
+                  </label>
+                </div>
+
+                <div class="column-4" style="padding:0;">
+                  <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['state_' + ad_id].$touched && shippingForm['state_' + ad_id].$invalid}">
+                    <select placeholder="State" ng-model="ad.state" name="state_{{ad_id}}" ng-options="state.abbr as state.name for state in states_list" name="state" required="required">
+                      <option value="">State</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="column-5" style="padding:0 0 0 1em;">
+                  <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['city_' + ad_id].$touched && shippingForm['city_' + ad_id].$invalid}">
+                    <input type="text" name="city_{{ad_id}}" placeholder="City" ng-model="ad.city" ng-change="getTaxes()" maxlength="24" ng-pattern="'[ a-zA-Z]+'" required="required"  />
+                  </label>
+                </div>
+                <p ng-show="(shippingForm['zip_' + ad_id].$dirty || shippingForm['zip_' + ad_id].$touched) && shippingForm['zip_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> ZIP can only contain numbers.</p>
+                <p ng-show="(shippingForm['zip_' + ad_id].$dirty || shippingForm['zip_' + ad_id].$touched) && shippingForm['zip_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> ZIP is required.</p>
+                <p ng-show="(shippingForm['zip_' + ad_id].$dirty || shippingForm['zip_' + ad_id].$touched) && shippingForm['zip_' + ad_id].$error.minlength || shippingForm['zip_' + ad_id].$error.zipnotValid"  class="form-error-detail"><i class="fa fa-info-circle"></i> ZIP is invalid.</p>
+                <p ng-show="(shippingForm['zip_' + ad_id].$dirty || shippingForm['zip_' + ad_id].$touched) && shippingForm['zip_' + ad_id].$error.no_tax" class="form-error-detail"><i class="fa fa-info-circle"></i> Zip Code and City do not match.</p>
+                <p ng-show="shippingForm['city_' + ad_id].$touched && shippingForm['city_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> City can only contain letters.</p>
+                <p ng-show="shippingForm['state_' + ad_id].$touched && shippingForm['state_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> State is required.</p>
+                <p ng-show="shippingForm['city_' + ad_id].$touched && shippingForm['city_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> City is required.</p>
+
+              </div>
+              <div class="form-element">
+                <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['email_' + ad_id].$touched && shippingForm['email_' + ad_id].$invalid}">
+                  <input type="email" name="email_{{ad_id}}" placeholder="Email Address" ng-model="ad.email" ng-minlength="7" maxlength="70" required="required"  ng-pattern="emailPattern" ng-blur="validateBusiness($index)" />
+                </label>
+                <p ng-show="shippingForm['email_' + ad_id].$touched && shippingForm['email_' + ad_id].$error.pattern || shippingForm['email_' + ad_id].$touched && shippingForm['email_' + ad_id].$error.email" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email format(xyz@gmail.com).</p>
+                <p ng-show="shippingForm['email_' + ad_id].$touched && shippingForm['email_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is required.</p>
+                <p ng-show="shippingForm['email_' + ad_id].$touched && shippingForm['email_' + ad_id].$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter valid Email Address</p>
+                <p ng-show="shippingForm['email_' + ad_id].$error.emailnotValid && !shippingForm['email_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email.</p>
+
+              </div>
+              <div class="form-element">
+                <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['email2_' + ad_id].$touched && shippingForm['email2_' + ad_id].$invalid}">
+                  <input type="email" placeholder="Re-Enter Email Address" ng-paste="$event.preventDefault()" name="email2_{{ad_id}}" ng-model="ad.email2" compare-to="ad.email" required="required" maxlength="70" ng-class="{'error': shippingForm.email2.$touched && shippingForm.email2.$invalid}" ng-pattern="emailPattern" />
+                </label>
+                <p ng-show="shippingForm['email2_' + ad_id].$touched && shippingForm['email2_' + ad_id].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email format(xyz@gmail.com).</p>
+                <p ng-show="shippingForm['email2_' + ad_id].$touched && shippingForm['email2_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is required.</p>
+                <p ng-show="shippingForm['email2_' + ad_id].$touched && shippingForm['email2_' + ad_id].$error.email" class="form-error-detail"><i class="fa fa-info-circle"></i> Email Address is invalid.</p>
+                <p ng-show="shippingForm['email2_' + ad_id].$touched && shippingForm['email2_' + ad_id].$error.compareTo" class="form-error-detail"><i class="fa fa-info-circle"></i> Emails must match.</p>
+                <p ng-show="shippingForm['email2_' + ad_id].$error.emailnotValid && !shippingForm['email2_' + ad_id].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter a valid email.</p>
+
+              </div>
+              <div class="form-element">
+                <label class="fancy-field" fancy-field ng-class="{'error': shippingForm['phone_' + ad_id].$touched && shippingForm['phone_' + ad_id].$invalid}" >
+                  <input type="tel" name="phone_{{ad_id}}" placeholder="Phone Number" format-phone ng-model="ad.phone" ng-pattern="phoneNumberPattern" ng-minlength="14" maxlength="14" required="required" />
+                </label>
+                <p ng-show="shippingForm['phone_' + ad_id].$touched && shippingForm['phone_' + ad_id].$error.pattern && !shippingForm['phone_' + ad_id].$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid phone number.</p>
+                <p ng-show="shippingForm['phone_' + ad_id].$touched && !shippingForm['phone_' + ad_id].$error.pattern && !shippingForm['phone_' + ad_id].$error.required && shippingForm['phone_' + ad_id].$error.minlength " class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Enter valid phone number.</p>
+                <p ng-show="shippingForm['phone_' + ad_id].$touched && shippingForm['phone_' + ad_id].$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Phone Number is required.</p>
+              </div>
+              <br>
+            </div>
           </div>
-          <h2 style="margin-top: 25pt;">Shipping Options</h2>
-           <div class="form-group">
-             <div class="form-element">
-               <p>Please select a shipping option</p>
-               <br>
-                 <div><input type="radio" ng-change="shippingMethodChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="1" /><label>{{CONST.SHIPPING_METHODS[1].name}}</label></div>
-             </div>
-           </div>
-         </form>
-       </div>
-       <ng-include src="'templates/cart.tpl'"></ng-include>
-     </div>
-   </section>
- 
+          <div id="add-another-address">
+            <a class="link add-address" ng-if="cart.shippingAddress.length < cart.num_locations_selected" ng-click="addAddress()"><strong><i class="fa fa-plus"></i> Add another address</strong></a>
+            <p class="small">When shipping items to different locations additional shipping charges may apply.</p>
+          </div>
+          <div class="form-group" ng-if="cart.amount > 0 || cart.lease_amount > 0">
+            <h2 style="margin-top: 25pt;">Shipping Options</h2>
+            <div class="form-element">
+              <p>Please select a shipping option</p>
+              <br>
+              <!--<div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="1" /><label>{{CONST.SHIPPING_METHODS[1].name}}</label></div>-->
+              <!--<div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="2" /><label>{{CONST.SHIPPING_METHODS[2].name}}</label></div>
+              <div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="3" /><label>{{CONST.SHIPPING_METHODS[3].name}}</label></div>
+              <div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="4" /><label>{{CONST.SHIPPING_METHODS[4].name}}</label></div> -->
+              <div ng-repeat="method in  shippingMethods track by $index"><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="{{$index+1}}" /><label>{{method.price | currency}} {{method.name}}</label></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <ng-include src="'templates/cart.tpl'"></ng-include>
+    </div>
+  </section>
+
 </div><!-- end .content -->
 <ng-include src="'templates/transaction-info-warning.tpl'"></ng-include>
-
-
-<!-- View Fees Modal -->
-<div class="modal fade include-detail-modal" tabindex="-1" role="dialog" id="view-fees-modal">
-    <div class="vertical-alignment-helper">
-        <div class="modal-dialog vertical-align-center">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
-                    <h4 class="modal-title">Rates and Fees</strong></h4>
-                </div>
-                <div class="modal-body row">
-                    <div class="rates-details-modal">
-                        <div class="column-6">
-                            <table class="table rates">
-                                <thead>
-                                <tr>
-                                    <th colspan="3">
-                                        <h3 style="margin-bottom:0;">Rates - Tier 3</h3>
-                                        <strong>2.16% + $0.29 is the qualified rate</strong>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td><strong>Description</strong></td>
-                                    <td class="align-right"><strong>Rate (%)</strong></td>
-                                    <td class="align-right"><strong>Fee ($)</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>Qualified Credit</td>
-                                    <td class="align-right"><span>2.162</span></td>
-                                    <td class="align-right"><span>0.29</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa International Svc Fee Enhanced</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Mid Qualified Non Pin Debit</td>
-                                    <td class="align-right"><span>2.472</span></td>
-                                    <td class="align-right"><span>0.29</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Mid Qualified Credit</td>
-                                    <td class="align-right"><span>2.472</span></td>
-                                    <td class="align-right"><span>0.29</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Non Qualified Credit</td>
-                                    <td class="align-right"><span>3.385</span></td>
-                                    <td class="align-right"><span>0.29</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Qualified Non Pin Debit</td>
-                                    <td class="align-right"><span>2.063</span></td>
-                                    <td class="align-right"><span>0.29</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Non Qualified Non Pin Debit</td>
-                                    <td class="align-right"><span>2.525</span></td>
-                                    <td class="align-right"><span>0.29</span></td>
-                                </tr>
-                                <tr>
-                                    <td>069-AMEX VOICE ADDR VERIF</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.10</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC/V/Discover/Amex Chargeback Fees</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC/V/Discover AVS Fees</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC/V/Discover/Amex Voice Authorization Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC/V/Discover Access Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa US Debit Transaction Integrity Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>PAYPAL ENABLEMENT</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                <tr>
-                                    <td>22G-Discover International Processing Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Discover Internal Svs Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td>47P-VISA BASE II ACQ VOUCHER FEE</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.0195</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa International Service Fee</td>
-                                    <td class="align-right"><span>0</span></td>
-                                    <td class="align-right"></td>
-                                </tr>
-                                <tr>
-                                    <td>47N-VISA BASE II SYS FILE FEE</td>
-                                    <td class="align-right"><span>0</span></td>
-                                    <td class="align-right"><span>0.0018</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa Zero Amount Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>47O-VISA BASE II ACQ VOUCHER DEBIT</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0.0155</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa Misuse of Auth Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa Zero Floor Limit Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa Partial Authorization Transaction Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Visa Fixed Acquirer Network Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC License Volume Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC Cross Border Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC Processing Integrity Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC US Account Status Inquiry Svs Interregional Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MC US Account Status Inquiry Svs Intrarregional Fee</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>11M-MC CVC2 FEE</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>American Express Qualified Credit</td>
-                                    <td class="align-right"><span>0.55</span></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>286-American Express Network Fee</td>
-                                    <td class="align-right"><span>0.15</span></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                <tr>
-                                    <td>57B Amex Interchange</td>
-                                    <td class="align-right"></td>
-                                    <td class="align-right"><span>0</span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="column-6">
-                            <table class="table rates">
-                                <thead>
-                                <tr>
-                                    <th colspan="3">
-                                        <h3 style="margin-bottom:0;">Rates - Applies to all</h3>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td><strong>Description</strong></td>
-                                    <td class="align-right"><strong>Rate (%)</strong></td>
-                                    <td class="align-right"><strong>Fee ($)</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>ACH Reject Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Addr. Verification Local Auth. Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Addr. Verification Wats Auth. Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Addr. Verification Regional Auth. Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Addr. Verification 950 Call Auth. Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Minimum Processing Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Batch Settlement Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>PCI Non-Validation</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Early Termination Fee</td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                    <td class="align-right"><span>TBD</span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<ng-include src="'templates/multi-locations-warning.tpl'"></ng-include>

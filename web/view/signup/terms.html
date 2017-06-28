@@ -1,0 +1,532 @@
+<style>
+    .row hr {
+        border-top: 1px dashed #ccc;
+        margin: 5px 0;
+    }
+
+    .inner-header {
+        background: #eee;
+    }
+
+    div.not-applicable {
+        display: none;
+    }
+    .viewSignature {
+        border: 3px solid orange;
+        min-height: 160px;
+        margin-top: 5px;
+        background: #fffbd3;
+    }
+    .disabledSign {
+        pointer-events: none;
+    }
+</style>
+<div id="full_body">
+    <div id="esignature-optin" class="clearfix" style="display: none;">
+        <i class="fa fa-long-arrow-right fa-3x float-left orange" aria-hidden="true"></i>
+        <div class="float-left checkbox">
+            <input id="esignature-optin-check" type="checkbox">
+            <label for="esignature-optin-check">
+                I agree to electronic records and e-signature.
+            </label>
+        </div>
+        <a class="button float-right" id="esignature-optin-button" style="display:none;">Continue</a>
+    </div>
+    <div id="esignature-optin-overlay" class="fade"></div>
+
+    <div id="sales-overlay" class="fade"></div>
+
+    <div id="signature-helper" class="align-center" ng-if="totalSigns && !showSignatures">
+        <p class="red"><strong>Signature Required</strong></p>
+        <p class="red">Section(s):
+            <a class="signature-required-section" ng-repeat="(key,sign) in signatureRefs" ng-click="gotoAnchor('section' + sign.sectionNum)">{{sign.sectionNum}}<i class="fa fa-check" ng-if="isSigned(sign.idx)"></i> </a>
+            <!--<a class="signature-required-section" ng-click="gotoAnchor('section' + (fixedSectionsLength + dynamicSectionsLength + 1))">{{fixedSectionsLength + dynamicSectionsLength + 1}}<i class="fa fa-check" ng-if="!signature3Empty || signature_texts[3]"></i></a>-->
+        </p>
+    </div>
+
+    <div id="breadcrumb-anchor"></div>
+    <div id="breadcrumb" ng-show="!ownerID && !showSignatures">
+        <div class="breadcrumb-inner container">
+            <div class="breadcrumb-mobile">
+                <a id="mobile-breadcrumb-toggle" class="current"><i class="fa fa-chevron-down"></i> <span>Merchant Agreement</span></a>
+            </div>
+            <ul>
+                <li><a class="link" data-toggle="modal" data-target="#leave-agreement-modal" ng-click="gotoAddress = 'signup/owner'">Owner & Business Info</a></li>
+                <li><a class="link" data-toggle="modal" data-target="#leave-agreement-modal" ng-click="gotoAddress = 'signup/location'">Location Info</a></li>
+                <li><a class="link" data-toggle="modal" data-target="#leave-agreement-modal" ng-click="gotoAddress = 'signup/setup'">Advanced Setup</a></li>
+                <li><a class="current">Merchant Agreement</a></li>
+                <!--             <li><a style="color:#aaa;">Verify Identity</a></li> -->
+                <li><a style="color:#aaa;">Finish</a></li>
+            </ul>
+            <hr>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <iframe id="threatmetrix" height="0%" src="" style="color:rgb(0,0,0); float:left; position:absolute; top:-200px; left:-200px; border:0px;" width="0%"></iframe>
+        <div class="container clearfix margin-top align-center">
+            <h1>Merchant Processing Agreement</h1>
+            <p class="subhead">Please review the information below and sign where required.</p>
+        </div>
+        <hr>
+        <div class="container align-right clearfix">
+            <img class="float-right" src="{{logo}}" height="36pt">
+        </div>
+        <section class="container terms-section">
+            <h2><span class="terms-section-index">1.</span> Business Information</h2>
+            <div class="row">
+                <div class="column-6">
+                    <div class="mpa-item" ng-repeat="info in businessinformationArr | limitTo:12:0">
+                        <label class="column-6">{{info}}</label> <span class="column-6">{{businessinformation[info]}}</span>
+                    </div>
+                </div>
+                <div class="column-6">
+                    <div class="mpa-item" ng-repeat="info in businessinformationArr | limitTo:12:12">
+                        <label class="column-6">{{info}}</label> <span class="column-6">{{businessinformation[info]}}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Owner Information -->
+        <section class="container margin-top terms-section">
+            <h2><span class="terms-section-index">2.</span> Owner Information</h2>
+            <div class="row" ng-repeat="owner in ownerinformation track by $index">
+                <div class="clearfix">
+                    <div class="column-12 inner-header" style="padding-bottom: 0;">
+                        <h3>Owner {{$index+1}}</h3>
+                    </div>
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="item in getElements(owner) | limitTo:4:0">
+                            <label class="column-6">{{item}}</label> <span class="column-6">{{owner[item]}}</span>
+                        </div>
+                    </div>
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="item in getElements(owner) | limitTo:10:4">
+                            <label class="column-6">{{item}}</label> <span class="column-6">{{owner[item]}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3. Locations -->
+        <section class="container margin-top terms-section">
+            <h2><span class="terms-section-index">3.</span> Locations</h2>
+            <div class="row" ng-repeat="location in locations track by $index">
+                <div class="clearfix">
+                    <div class="column-12 inner-header" style="padding-bottom: 0;">
+                        <h3>Location {{$index+1}}</h3>
+                    </div>
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="item in getElements(location.Location) | limitTo:6:0">
+                            <label class="column-6">{{item}}</label> <span class="column-6">{{location.Location[item]}}</span>
+                        </div>
+                    </div>
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="item in getElements(location.Location) | limitTo:getElements(location.Location).length:6">
+                            <label class="column-6">{{item}}</label> <span class="column-6">{{location.Location[item]}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="location.Timeframe_To_Delivery">
+                    <hr>
+                    <div class="clearfix">
+                        <h4 class="column-12" style="padding-bottom: 0;">Time frame from transaction to delivery</h4>
+                        <div class="column-6">
+                            <div class="mpa-item" ng-repeat="(key,value) in location.Timeframe_To_Delivery">
+                                <label class="column-6">{{key}}</label> <span class="column-6">{{value}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="clearfix">
+                    <h4 class="column-12" style="padding-bottom: 0;">Financial Data</h4>
+                    <div class="column-6">
+                        <table class="table fees">
+                            <tbody>
+                            <tr>
+                                <th colspan="2">Total Annual Volume</th>
+                            </tr>
+                            <tr ng-repeat="(key,value) in location.Financial_Data.TOTAL_ANNUAL_VOLUME">
+                                <td>{{key}}</td>
+                                <td class="align-right bold"><span>{{value}}</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="column-6">
+                        <table class="table fees">
+                            <tbody>
+                            <tr>
+                                <th colspan="2">Transaction Type</th>
+                            </tr>
+                            <tr ng-repeat="(key,value) in location.Financial_Data.TRANSACTION_TYPE">
+                                <td>{{key}}</td>
+                                <td class="align-right bold"><span>{{value}}</span></td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th colspan="2">Swiped vs. Keyed</th>
+                            </tr>
+                            <tr ng-repeat="(key,value) in location.Financial_Data['SWIPED_VS._KEYED']">
+                                <td>{{key}}</td>
+                                <td class="align-right bold"><span>{{value}}</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <hr>
+                <div class="clearfix">
+                    <div class="column-12">
+                        <h4>Transaction Rates & Fees</h4>
+                        <p class="small">{{location.Pricing_Tier_Description}}</p>
+                        <table class="table fees">
+                            <tbody>
+                            <tr>
+                                <th></th>
+                                <th class="align-right">Discount Rate + Transaction Fee</th>
+                            </tr>
+                            <tr ng-repeat="transaction in location['Transaction_Rates_&_Fees']">
+                                <td>{{transaction['name']}}</td>
+                                <td class="align-right bold"><span>{{transaction['value']}}</span></td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                        <div ng-if="location['American_Express_Rates_&_Fees'] != undefined">
+                            <h4>American Express (Interchange Plus)</h4>
+                            <table class="table fees">
+                                <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th class="align-right">Discount Rate + Transaction Fee</th>
+                                </tr>
+                                <tr ng-repeat="transaction in location['American_Express_Rates_&_Fees']">
+                                    <td>{{transaction['name']}}</td>
+                                    <td class="align-right bold"><span>{{transaction['value']}}</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="small"> Interchange Rates are variable and are determined by how your transactions clear. Please see your Interchange Rate Schedule, Interchange Qualification Matrix and American Express OptBlue® Guide for Interchange Rates & Dues/Assessments and qualification criteria as of the date of this Application. The Interchange Rates and Dues/Assessments are subject to change. American Express OptBlue® has Program Pricing which is not Interchange and which is subject to change.</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="clearfix">
+                    <h4 class="column-12" style="padding-bottom: 0;">Banking & Funding Information</h4>
+                    <div class="column-6" ng-repeat="bank in location['Banking_&_Funding_Information'].Bank_Accounts">
+                        <div class="mpa-item">
+                            <label class="column-6">ABA #</label> <span class="column-6">{{bank['ABA_#']}}</span>
+                        </div>
+                        <div class="mpa-item">
+                            <label class="column-6">DDA #</label> <span class="column-6">{{bank['DDA_#']}}</span>
+                        </div>
+                    </div>
+                    <div class="column-6">
+                        <div class="mpa-item">
+                            <label class="column-6">Deduct Fees</label> <span class="column-6">{{location['Banking_&_Funding_Information'].Deduct_Fees}}</span>
+                        </div>
+                        <div class="mpa-item">
+                            <label class="column-6">Bank Will Fund</label> <span class="column-6">{{location['Banking_&_Funding_Information'].Bank_Will_Fund}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="clearfix">
+                    <h4 class="column-12" style="padding-bottom: 0;">Equipment Details</h4>
+                    <div class="column-12">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Model Code and Name</th>
+                                <th>Unit Price w/o Tax and S&H</th>
+                                <th>QTY</th>
+                                <th>Purchase Type</th>
+                                <th>Equipment Type</th>
+                                <th>Industry Type</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="bold" ng-repeat="eq in location.Equipment">
+                                <td><span>{{eq.modelName}}</span></td>
+                                <td><span>{{eq.unitPrice}}</span></td>
+                                <td><span>{{eq.quantity}}</span></td>
+                                <td><span>{{eq.fullNameTerm}}</span></td>
+                                <td><span>{{eq.equipmentType}}</span></td>
+                                <td><span>{{eq.industryType}}</span></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                        <p class="small">See Equipment Lease Agreement for the Terms and Conditions governing your Leased equipment.</p><br>
+                    </div>
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="ship in getElements(location.Product_Details)">
+                            <label class="column-6">{{ship}}</label> <span class="column-6">{{location.Product_Details[ship]}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="container margin-top terms-section">
+            <h2><span class="terms-section-index">4.</span> Payments Accepted</h2>
+            <div class="row">
+
+                <div class="clearfix">
+                    <div class="column-6" ng-repeat="ent in entitlements">
+                        <div class="mpa-item">
+                            <label class="column-6">{{ent}}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 5. Fee Schedule -->
+        <section class="container margin-top terms-section">
+            <h2><span class="terms-section-index">5.</span> Fee Schedule</h2>
+            <div class="row">
+                <div class="clearfix">
+                    <div class="clearfix mpa-legal-copy">
+                        <p ng-bind-html="feeSchedule.Section_Text | to_trusted"></p>
+                    </div>
+                    <div class="column-12 mpa-two-columns" id="mpa-fees">
+                        <table class="table fees">
+                            <tbody ng-repeat="(key,values) in feeSchedule.Fee_Schedule">
+                            <tr>
+                                <th colspan="2">{{key}}</th>
+                            </tr>
+                            <tr ng-repeat="product in values">
+                                <td>{{product.name}}
+                                    <p class="small">{{product.subtext}}</p>
+                                </td>
+                                <td class="align-right bold"><span>{{product.value}}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Dynamic MPA sections -->
+        <section class="container margin-top terms-section" ng-repeat="(key,section) in componentsData" id="section{{fixedSectionsLength + $index + 1}}">
+            <h2><span class="terms-section-index">{{fixedSectionsLength + $index + 1}}.</span> {{section.title}}</h2>
+            <div class="row">
+                <div class="clearfix mpa-legal-copy">
+                    <p ng-bind-html="section.value | to_trusted"></p>
+                </div>
+                <div class="column-6" ng-repeat="sign in section.signs">
+                    <div ng-if="sign.signature != 'NA'" class="mpa-signature-container" ng-class="{'disabledSign': sign.readOnly}">
+                        <strong>{{sign.aboveText}}</strong>
+                        <div class="signature-image-container" ng-if="sign.signature" ng-class="{'signed': signature_texts[sign.idx]}">
+                            <img ng-if="sign.signature != 'NA'" ng-src="data:image/png;base64,{{sign.signature}}" />
+                        </div>
+                        <div class="signature-box" ng-if="!sign.signature && showSignBox()" ng-class="{'signed': !{{'signature'+sign.idx+'Empty'}}, required : !sign.readOnly}">
+                            <canvas ng-attr-id="signature{{sign.idx}}" ng-mousemove="canMouseUp(sign.idx)" my-touchend="canMouseUp(sign.idx)" sketch></canvas>
+                            <span ng-show="{{'signature'+sign.idx+'Empty'}}">Please sign in the box with mouse or finger.</span>
+                            <a class="button" ng-hide="{{'signature'+sign.idx+'Empty'}}" ng-click="resetCanvas(sign.idx)">Clear Signature</a>
+                        </div>
+                        <div class="signature-box" ng-if="!showSignBox() && !sign.signature" ng-class="{'signed': signature_texts[sign.idx], required : !sign.readOnly}">
+                            <div class="signature-input-wrapper">
+                                <input ng-attr-id="type-signature-{{sign.idx}}" type="text" ng-model="signature_texts[sign.idx]" value="" ng-change="signTextChanged(sign.idx)" />
+                            </div>
+                            <img ng-show="!signature_texts[sign.idx] && !sign.readOnly" src="/img/sign-here-tab.png" class="sign-here" width="150px" />
+                            <span>Please sign by typing your name into the box.</span>
+                        </div>
+                        <div class="clearfix">
+                            <div class="column-6"><strong>{{sign.name}}</strong> (<span>{{sign.title}}</span>)</div>
+                            <div class="column-6 align-right">{{ getSignDate(sign.idx) | date:'MM-dd-yyyy'}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Last section. Confirmation -->
+        <section class="container margin-top terms-section" id="section{{fixedSectionsLength + dynamicSectionsLength + 1}}">
+            <h2 class="margin-top"><span class="terms-section-index">{{fixedSectionsLength + dynamicSectionsLength + 1}}.</span> Confirmation</h2>
+            <div class="row">
+                <div class="clearfix">
+                    <div class="column-6">
+                        <h4>Processor Information</h4>
+                        <div class="mpa-item">
+                            <label class="column-6">Name</label> <span class="column-6">{{confirmation.PROCESSOR_INFORMATION.Name}}</span>
+                        </div>
+                        <div class="mpa-item">
+                            <label class="column-6">Address</label> <span class="column-6">{{confirmation.PROCESSOR_INFORMATION.Address}}</span>
+                        </div>
+                        <div class="mpa-item">
+                            <label class="column-6">URL</label> <span class="column-6">{{confirmation.PROCESSOR_INFORMATION.URL}}</span>
+                        </div>
+                        <div class="mpa-item">
+                            <label class="column-6">Customer Service #</label> <span class="column-6">{{confirmation.PROCESSOR_INFORMATION['Customer_Service_#']}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix mpa-legal-copy">
+                    <p ng-bind-html="confirmation.AGREEMENT.Agreement | to_trusted"></p>
+                </div>
+                <div class="clearfix mpa-legal-copy">
+                    <p><strong>Information about Bank:</strong></p>
+                    <p ng-bind-html="confirmation.AGREEMENT.Information_about_Bank | to_trusted"></p>
+                </div>
+                <div class="clearfix mpa-legal-copy">
+                    <p><strong>Your Responsibilities:</strong></p>
+                    <p ng-bind-html="confirmation.AGREEMENT.Your_Responsibilities | to_trusted"></p>
+
+                </div>
+                <div class="clearfix mpa-legal-copy">
+                    <p><strong>By signing below, you:</strong></p>
+                    <p ng-bind-html="confirmation.AGREEMENT.By_signing_below_you | to_trusted"></p>
+                </div>
+                <div class="clearfix mpa-legal-copy">
+                    <p><strong>NO SALES REPRESENTATIVE IS AUTHORIZED TO ACCEPT OR AGREE TO ANY ALTERATIONS TO THIS AGREEMENT.</strong></p>
+                </div>
+                <br>
+                <div class="clearfix">
+                    <div class="column-6" ng-if="signs['CONFIRMATION'] != undefined" ng-repeat="sign in signs.CONFIRMATION">
+                        <div class="mpa-signature-container" ng-class="{'disabledSign': sign.readOnly}">
+                            <strong>{{sign.aboveText}}</strong>
+                            <div class="signature-image-container" ng-if="sign.signature" ng-class="{'signed': signature_texts[sign.idx]}">
+                                <img ng-src="data:image/png;base64,{{sign.signature}}" />
+                            </div>
+                            <div class="signature-box" ng-if="!sign.signature && showSignBox()" ng-class="{'signed': !{{'signature'+sign.idx+'Empty'}}, required : !sign.readOnly}">
+                                <canvas ng-attr-id="signature{{sign.idx}}" ng-mousemove="canMouseUp(sign.idx)" my-touchend="canMouseUp(sign.idx)" sketch></canvas>
+                                <span ng-show="{{'signature'+sign.idx+'Empty'}}">Please sign in the box with mouse or finger.</span>
+                                <a class="button" ng-hide="{{'signature'+sign.idx+'Empty'}}" ng-click="resetCanvas(sign.idx)">Clear Signature</a>
+                            </div>
+                            <div class="signature-box" ng-if="!showSignBox() && !sign.signature" ng-class="{'signed': signature_texts[sign.idx], required : !sign.readOnly}">
+                                <div class="signature-input-wrapper">
+                                    <input ng-attr-id="type-signature-{{sign.idx}}" type="text" ng-model="signature_texts[sign.idx]" value="" ng-change="signTextChanged(sign.idx)" />
+                                </div>
+                                <img ng-show="!signature_texts[sign.idx] && !sign.readOnly" src="/img/sign-here-tab.png" class="sign-here" width="150px" />
+                                <span>Please sign by typing your name into the box.</span>
+                            </div>
+                            <div class="clearfix">
+                                <div class="column-6"><strong>{{sign.name}}</strong> (<span>{{sign.title}}</span>)</div>
+                                <div class="column-6 align-right">{{ getSignDate(sign.idx) | date:'MM-dd-yyyy'}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lease section -->
+        <section class="container margin-top terms-section" ng-repeat="(key,section) in leaseData" id="section{{section.sectionNum}}">
+            <h2><span class="terms-section-index">{{section.sectionNum}}.</span><span ng-bind-html="section.title | to_trusted"></span></h2>
+            <div class="row">
+                <div ng-if="section.lease != undefined">
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="(key,value) in section.lease.Lease_Data">
+                            <label class="column-6">{{key}}</label> <span class="column-6">{{value}}</span>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <h4 class="column-12" style="padding-bottom: 0;">Equipment Details</h4>
+                        <div class="column-12">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Model Code and Name</th>
+                                    <th>Unit Price w/o Tax and S&H</th>
+                                    <th>QTY</th>
+                                    <th>Purchase Type</th>
+                                    <th>Equipment Type</th>
+                                    <th>Industry Type</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="bold" ng-repeat="eq in section.lease.Equipment">
+                                    <td><span>{{eq.modelName}}</span></td>
+                                    <td><span>{{eq.unitPrice}}</span></td>
+                                    <td><span>{{eq.quantity}}</span></td>
+                                    <td><span>{{eq.fullNameTerm}}</span></td>
+                                    <td><span>{{eq.equipmentType}}</span></td>
+                                    <td><span>{{eq.industryType}}</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="section.cloverLease != undefined">
+                    <div class="column-6">
+                        <div class="mpa-item" ng-repeat="(key,value) in section.cloverLease">
+                            <label class="column-6">{{key}}</label> <span class="column-6">{{value}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix mpa-legal-copy">
+                    <p ng-bind-html="section.value | to_trusted"></p>
+                </div>
+                <div class="column-6" ng-repeat="sign in section.signs">
+                    <div ng-if="sign.signature != 'NA'" class="mpa-signature-container" ng-class="{'disabledSign': sign.readOnly}">
+                        <strong>{{sign.aboveText}}</strong>
+                        <div class="signature-image-container" ng-if="sign.signature" ng-class="{'signed': signature_texts[sign.idx]}">
+                            <img ng-if="sign.signature != 'NA'" ng-src="data:image/png;base64,{{sign.signature}}" />
+                        </div>
+                        <div class="signature-box" ng-if="!sign.signature && showSignBox()" ng-class="{'signed': !{{'signature'+sign.idx+'Empty'}}, required : !sign.readOnly}">
+                            <canvas ng-attr-id="signature{{sign.idx}}" ng-mousemove="canMouseUp(sign.idx)" my-touchend="canMouseUp(sign.idx)" sketch></canvas>
+                            <span ng-show="{{'signature'+sign.idx+'Empty'}}">Please sign in the box with mouse or finger.</span>
+                            <a class="button" ng-hide="{{'signature'+sign.idx+'Empty'}}" ng-click="resetCanvas(sign.idx)">Clear Signature</a>
+                        </div>
+                        <div class="signature-box" ng-if="!showSignBox() && !sign.signature" ng-class="{'signed': signature_texts[sign.idx], required : !sign.readOnly}">
+                            <div class="signature-input-wrapper">
+                                <input ng-attr-id="type-signature-{{sign.idx}}" type="text" ng-model="signature_texts[sign.idx]" value="" ng-change="signTextChanged(sign.idx)" />
+                            </div>
+                            <img ng-show="!signature_texts[sign.idx] && !sign.readOnly" src="/img/sign-here-tab.png" class="sign-here" width="150px" />
+                            <span>Please sign by typing your name into the box.</span>
+                        </div>
+                        <div class="clearfix">
+                            <div class="column-6"><strong>{{sign.name}}</strong> (<span>{{sign.title}}</span>)</div>
+                            <div class="column-6 align-right">{{ getSignDate(sign.idx) | date:'MM-dd-yyyy'}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container screen margin-top">
+            <div class="align-center">
+                <a class="button" ng-if="!showSignatures" ng-class="{'disabled': (isSignInProg || isFormNotValid() || clickedTCSubmit)}" ng-click="isSignInProg || isFormNotValid() || clickedTCSubmit || submitTC()"><i ng-show="clickedTCSubmit" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>{{clickedTCSubmit ? ' Submitting...' : 'Submit'}}</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- end .wrapper -->
+
+
+<div class="modal fade prompt warning" tabindex="-1" role="dialog" id="leave-agreement-modal">
+    <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content" style="overflow:auto;">
+                <div class="modal-header clearfix">
+                    <h4 style="color:white; margin: 0;">Edit Agreement</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    <p class="column-12">You are about to leave this page.</p>
+                    <p class="column-12">Your Social Security Number and other sensitive information will have to be re-entered for security reasons.</p>
+                </div>
+                <div class="modal-footer">
+                    <a class="button button-primary" data-dismiss="modal">Stay</a>
+                    <a class="button button-primary" data-dismiss="modal" ng-click="goToUrl(gotoAddress)">Proceed</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<html>

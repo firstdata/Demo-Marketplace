@@ -1,0 +1,800 @@
+<style>
+    .location-equipment {
+        border: 2px solid #ddd;
+        background: #f6f6f6;
+    }
+    .location-details .location-label {
+        margin: 0;
+        padding: 15px 15px 0;
+    }
+
+    .table {
+        width: 100%;
+        text-align: left;
+        border-collapse: collapse;
+        border: 1px solid #aaa; }
+    .table tr td, .table tr th {
+        border-bottom: 1px solid #ddd;
+        padding: 9px;
+        font-family: "SimpleSansLight", Arial, sans-serif;
+        vertical-align: middle; }
+    .table tr:last-child td {
+        border: 0; }
+    .table tr th {
+        color: #004164;
+        font-family: "SimpleSansMedium", Arial, sans-serif;
+        background: #f3f3f3; }
+
+    .location-step, .location-step:hover {
+        display: inline-block;
+        cursor: default;
+        background: white;
+        color: #bbb;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        line-height: 40px;
+        border-radius: 30px;
+        border: 2px solid #ddd;
+        font-weight: bold;
+    }
+
+    .location-step.current {
+        background: #f03d00;
+        color: white;
+        border: 2px solid #f03d00;
+    }
+
+    .location-step.link {
+        color: #00a9e0;
+        border: 2px solid #00a9e0;
+    }
+
+    .location-step.link:hover {
+        color: #00c0ff;
+        border: 2px solid #00c0ff;
+
+    }
+
+    .location-step-divider {
+        display: inline-block;
+        width: 40px;
+        border: 1px solid #ddd;
+        top: -5px;
+        position: relative;
+    }
+</style>
+
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+    <div class="breadcrumb-inner container">
+        <div class="breadcrumb-mobile">
+            <a id="mobile-breadcrumb-toggle" class="current"><i class="fa fa-chevron-down"></i> <span>Owner & Business Info</span></a>
+        </div>
+        <ul>
+            <li><a class="link" href="#/signup/owner">Owner & Business Info</a></li>
+            <li><a class="current">Location Info</a></li>
+            <li><a style="color:#aaa;">Advanced Setup</a></li>
+            <li><a style="color:#aaa;">Merchant Agreement</a></li>
+            <li><a style="color:#aaa;">Finish</a></li>
+        </ul>
+    </div>
+</div>
+
+<style>div.error{display:block}</style>
+<div id="signup-content" class="main-content">
+    <form name="signupForm" novalidate style="max-width:100%" autocomplete="off" id="signupForm">
+        <div class="container">
+            <h1 class="margin-top">Location Information</h1>
+            <p class="subhead">You indicated that you have <strong>{{num_locations_selected}} location{{num_locations_selected > 1 ? 's' : ''}}</strong>. Please provide the information below for each of the locations.</p>
+
+            <hr />
+            <div class="location-breadcrumb align-center margin-top">
+                <span ng-repeat="n in [] | range:1:num_locations_selected"><span ng-if="n != 1" class="location-step-divider"></span><a class="location-step" ng-click="n < current_number && changeNumber(n)" ng-class="{'current': n == current_number, 'link': n < current_number}">{{n}}</a></span>
+            </div>
+            <p id="form-error" ng-show="form_error">Your form cannot be submitted. Please check the fields highlighted in red. Make sure all fields are completed and your information is correct.</p>
+            <br>
+            <div class="form-group" style="clear:both">
+              <h2>Location {{current_number}} <span class="small gray" id="location-nickname-label-1"></span></h2>
+              <h4>{{1 == current_number ? 'Primary ' : ''}}Store Location</h4>
+
+              <div class="column-6">
+                <div class="form-element">
+                    <label class="fancy-field"  fancy-field  ng-class="{'error': (signupForm.DBA_NAME.$touched && signupForm.DBA_NAME.$invalid) || tinError}">
+                        <input type="text" placeholder="DBA Name" ng-model="formData.DBA_NAME" ng-pattern="dbaNamePattern" name="DBA_NAME" required="required" minlength="2" maxlength="24" />
+                    </label>
+                    <p ng-show="signupForm.DBA_NAME.$touched && signupForm.DBA_NAME.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter your DBA Name.</p>
+                    <p ng-show="signupForm.DBA_NAME.$touched && signupForm.DBA_NAME.$error.minlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Business name must be of at least 2 characters.</p>
+                    <p ng-show="signupForm.DBA_NAME.$touched && signupForm.DBA_NAME.$error.maxlength" class="form-error-detail"><i class="fa fa-info-circle"></i> Business name must be less than 25 characters.</p>
+                    <p ng-show="signupForm.DBA_NAME.$touched && signupForm.DBA_NAME.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
+                    <p ng-show="tinError && formData.HOW_BUSINESS_FILES_TAXES == 'business_tax_id'" class="form-error-detail"><i class="fa fa-info-circle"></i> Name does not match EIN.</p>
+                    <p ng-show="tinError && formData.HOW_BUSINESS_FILES_TAXES != 'business_tax_id'" class="form-error-detail"><i class="fa fa-info-circle"></i> Name does not match SSN.</p>
+                </div>
+                <div class="form-element">
+                    <label class="fancy-field" fancy-field for="mcccodes" ng-class="{'error': signupForm.mcccodes.$touched && signupForm.mcccodes.$invalid}">
+                        <select name="mcccodes" ng-change="getMccTypes(formData)" id="mcccodes"  ng-model="formData.mcccodes" required="required" placeholder="Products/services that make up your business" ng-options="codes.industryDescription as codes.industryDescription for codes in mcc_codes | orderBy:'industryDescription'">
+                            <option value="">Products/services that make up your business</option>
+                        </select>
+                    </label>
+                    <p ng-show="signupForm.mcccodes.$touched && signupForm.mcccodes.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please enter Products/services.</p>
+                </div>
+                <div class="form-element">
+                    <label class="fancy-field" fancy-field ng-class="{'error': (signupForm.mcctypes.$touched && signupForm.mcctypes.$invalid)}">
+                        <select name="mcctypes" id="mcctypes" ng-options="types.mcc as types.mccList for types in formData.mccTypes | orderBy:'mccList'" ng-model="formData.mcc" placeholder="Select MCC Description" required>
+                            <option value="">Select MCC Description</option>
+                        </select>
+                    </label>
+                </div>
+                <p ng-show="signupForm.mcctypes.$touched && signupForm.mcctypes.$error.required" class="form-error-detail ng-hide"><i class="fa fa-info-circle"></i> Select the MCC Description type.</p>
+                <div class="form-element" >
+                  <label class="fancy-field"  fancy-field ng-class="{'error': signupForm.TYPICAL_SALE_AMOUNT.$touched && signupForm.TYPICAL_SALE_AMOUNT.$invalid}">
+                    <input type="text" format-num  placeholder="Typical sale amount" ng-model="formData.TYPICAL_SALE_AMOUNT" name="TYPICAL_SALE_AMOUNT" ng-min="1" ng-max="99999.99" required="required" maxlength="50" ng-pattern="amountPattern"/>
+                  </label>
+                  <p ng-show="signupForm.TYPICAL_SALE_AMOUNT.$touched && signupForm.TYPICAL_SALE_AMOUNT.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter typical sale amount.</p>
+                  <p ng-show="signupForm.TYPICAL_SALE_AMOUNT.$touched && signupForm.TYPICAL_SALE_AMOUNT.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Numeric characters only.</p>
+                  <p ng-show="signupForm.TYPICAL_SALE_AMOUNT.$touched && signupForm.TYPICAL_SALE_AMOUNT.$invalid && !signupForm.TYPICAL_SALE_AMOUNT.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Typical sale amount cannot be Higher than 99999.99 and lower than 1.</p>
+                </div>
+                <div class="form-element">
+                  <label class="fancy-field"  fancy-field ng-class="{'error': signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$touched && signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$invalid}">
+                    <input type="text" format-num  placeholder="Anticipated highest ticket sale" ng-model="formData.ANTICIPATED_HIGHEST_TICKET_SALE" name="ANTICIPATED_HIGHEST_TICKET_SALE" ng-min="{{formData.TYPICAL_SALE_AMOUNT +1}}" ng-max="{{formData.annualVolume -1}}" required="required" ng-pattern="amountPattern"/>
+                  </label>
+                  <p ng-show="signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$touched && signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter anticipated highest ticket sale amount.</p>
+                  <p ng-show="signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$touched && signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Numeric characters only.</p>
+                  <p ng-show="signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$touched && signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$invalid && !signupForm.ANTICIPATED_HIGHEST_TICKET_SALE.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Highest Ticket cannot be lower than Average Ticket and higher than Annual Volume </p>
+                </div>
+                <div class="form-element" >
+                  <label class="fancy-field" fancy-field ng-class="{'error': signupForm.annualcardVolume.$touched && signupForm.annualcardVolume.$invalid}">
+                    <input type="text" format-num placeholder="Anticipated annual credit card sales" ng-model="formData.annualcardVolume" name="annualcardVolume" ng-pattern="amountPattern">
+                  </label>
+                  <p ng-show="signupForm.annualcardVolume.$touched && signupForm.annualcardVolume.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Select anticipated annual sales.</p>
+                  <p ng-show="signupForm.annualcardVolume.$touched && signupForm.annualcardVolume.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Numeric characters only.</p>
+                </div>
+
+                <div class="form-element">
+                  <p>How do you plan to accept payments with First Data? <br><span class="small">(Must total 100%)</span></p>
+                  <div class="column-4" style="padding: 5px 8px 0 0">
+                    <label class="fancy-field" for="facetoface" fancy-field ng-class="{'error': (signupForm.FACE_TO_FACE.$touched && signupForm.FACE_TO_FACE.$invalid) || (signupForm.PHONE_OR_EMAIL.$touched && signupForm.PHONE_OR_EMAIL.$invalid) || (signupForm.INTERNET_PAY.$touched && signupForm.INTERNET_PAY.$invalid) || signupForm.PHONE_OR_EMAIL.$error.total}">
+                      <select placeholder="Face to face" id="facetoface" name="FACE_TO_FACE" required="required" ng-model="formData.FACE_TO_FACE" ng-change="faceToFaceChange(0)">
+                        <option value="">Face to face</option>
+                        <option ng-repeat="val in percentValues" value="{{val}}">{{val}}%</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="column-4" style="padding: 5px 8px 0 0;">
+                    <label class="fancy-field" for="phoneoremail" fancy-field  ng-class="{'error': (signupForm.PHONE_OR_EMAIL.$touched && signupForm.PHONE_OR_EMAIL.$invalid) || (signupForm.FACE_TO_FACE.$touched && signupForm.FACE_TO_FACE.$invalid) || (signupForm.INTERNET_PAY.$touched && signupForm.INTERNET_PAY.$invalid) || signupForm.PHONE_OR_EMAIL.$error.total}">
+                      <select placeholder="Phone/mail order" id="phoneoremail" name="PHONE_OR_EMAIL" required="required" ng-model="formData.PHONE_OR_EMAIL" ng-change="faceToFaceChange(1)">
+                        <option value="">Phone/mail order</option>
+                        <option ng-repeat="val in percentValues" value="{{val}}">{{val}}%</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div class="column-4" style="padding: 5px 0px 0 0;">
+                    <label class="fancy-field" for="internetPay" fancy-field  ng-class="{'error': (signupForm.INTERNET_PAY.$touched && signupForm.INTERNET_PAY.$invalid) || (signupForm.FACE_TO_FACE.$touched && signupForm.FACE_TO_FACE.$invalid) || (signupForm.PHONE_OR_EMAIL.$touched && signupForm.PHONE_OR_EMAIL.$invalid) || signupForm.PHONE_OR_EMAIL.$error.total}">
+                      <select placeholder="Internet" id="internetPay" name="INTERNET_PAY" required="required" ng-model="formData.INTERNET_PAY" ng-change="faceToFaceChange(2)" ng-disabled="!isWebSiteAvailable">
+                        <option value="">Internet</option>
+                        <option ng-repeat="val in percentValues" value="{{val}}">{{val}}%</option>
+                      </select>
+                    </label>
+                  </div>
+                  <p ng-show="signupForm.PHONE_OR_EMAIL.$error.size" class="form-error-detail"><i class="fa fa-info-circle"></i>Either Phone/Mail Order or Internet payments should be greater than 80% for E-Commerce merchants.</p>
+                  <p ng-show="signupForm.PHONE_OR_EMAIL.$error.total || signupForm.FACE_TO_FACE.$touched && signupForm.FACE_TO_FACE.$invalid || signupForm.INTERNET_PAY.$touched && signupForm.INTERNET_PAY.$invalid || signupForm.PHONE_OR_EMAIL.$touched && signupForm.PHONE_OR_EMAIL.$invalid " class="form-error-detail"><i class="fa fa-info-circle"></i> Total must be 100%.</p>
+                </div>
+                <div class="form-element">
+                    <p>Time frame from transaction to delivery (% of orders delivered in)</p>
+                    <div class="column-3" style="padding: 0 8px 6px 0;">
+                        <label class="fancy-field active" for="delivery-0-7" fancy-field ng-class="{'error': (signupForm.DELIVERY0_7.$touched && signupForm.DELIVERY0_7.$error.required) || (signupForm.DELIVERY8_14.$touched && signupForm.DELIVERY8_14.$error.required) || (signupForm.DELIVERY15_30.$touched && signupForm.DELIVERY15_30.$error.required) || (signupForm.DELIVERY31.$touched && signupForm.DELIVERY31.$error.required) || signupForm.DELIVERY31.$error.total}">
+                            <select id="delivery-0-7" class="hasvalue" placeHolder="0-7 days" name="DELIVERY0_7" ng-model="formData.DELIVERY0_7" ng-required="categoryDetails.name=='ECOMMERCE' || categoryDetails.name=='MOTO' || formData.FACE_TO_FACE < 100" ng-change="changeDeliveryTimeFrame(0)">
+                                <option value="">0-7 days</option>
+                                <option value="0">0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="column-3" style="padding: 0 8px 6px 0;">
+                        <label class="fancy-field active" for="delivery-8-14" fancy-field ng-class="{'error': (signupForm.DELIVERY0_7.$touched && signupForm.DELIVERY0_7.$error.required) || (signupForm.DELIVERY8_14.$touched && signupForm.DELIVERY8_14.$error.required) || (signupForm.DELIVERY15_30.$touched && signupForm.DELIVERY15_30.$error.required) || (signupForm.DELIVERY31.$touched && signupForm.DELIVERY31.$error.required) || signupForm.DELIVERY31.$error.total}">
+                            <select id="delivery-8-14" class="hasvalue" placeHolder="8-14 days" name="DELIVERY8_14" ng-model="formData.DELIVERY8_14" ng-required="categoryDetails.name=='ECOMMERCE' || categoryDetails.name=='MOTO' || formData.FACE_TO_FACE < 100" ng-change="changeDeliveryTimeFrame(1)">
+                                <option value="">8-14 days</option>
+                                <option value="0">0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="column-3" style="padding: 0 8px 6px 0;">
+                        <label class="fancy-field active" for="delivery-15-30" fancy-field ng-class="{'error': (signupForm.DELIVERY0_7.$touched && signupForm.DELIVERY0_7.$error.required) || (signupForm.DELIVERY8_14.$touched && signupForm.DELIVERY8_14.$error.required) || (signupForm.DELIVERY15_30.$touched && signupForm.DELIVERY15_30.$error.required) || (signupForm.DELIVERY31.$touched && signupForm.DELIVERY31.$error.required) || signupForm.DELIVERY31.$error.total}">
+                            <select id="delivery-15-30" class="hasvalue" placeHolder="15-30 days" name="DELIVERY15_30" ng-model="formData.DELIVERY15_30" ng-required="categoryDetails.name=='ECOMMERCE' || categoryDetails.name=='MOTO' || formData.FACE_TO_FACE < 100" ng-change="changeDeliveryTimeFrame(2)">
+                                <option value="">15-30 days</option>
+                                <option value="0">0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="column-3" style="padding: 0 0 6px 0;">
+                        <label class="fancy-field active" for="delivery-31" fancy-field ng-class="{'error': (signupForm.DELIVERY0_7.$touched && signupForm.DELIVERY0_7.$error.required) || (signupForm.DELIVERY8_14.$touched && signupForm.DELIVERY8_14.$error.required) || (signupForm.DELIVERY15_30.$touched && signupForm.DELIVERY15_30.$error.required) || (signupForm.DELIVERY31.$touched && signupForm.DELIVERY31.$error.required) || signupForm.DELIVERY31.$error.total}">
+                            <select id="delivery-31" class="hasvalue" placeHolder="30+ days" name="DELIVERY31" ng-model="formData.DELIVERY31" ng-required="categoryDetails.name=='ECOMMERCE' || categoryDetails.name=='MOTO' || formData.FACE_TO_FACE < 100" ng-change="changeDeliveryTimeFrame(3)">
+                                <option value="">30+ days</option>
+                                <option value="0">0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </label>
+                    </div>
+                    <p ng-show="(signupForm.DELIVERY0_7.$touched && signupForm.DELIVERY0_7.$error.required) || (signupForm.DELIVERY8_14.$touched && signupForm.DELIVERY8_14.$error.required) || (signupForm.DELIVERY15_30.$touched && signupForm.DELIVERY15_30.$error.required) || (signupForm.DELIVERY31.$touched && signupForm.DELIVERY31.$error.required) || signupForm.DELIVERY31.$error.total" class="form-error-detail">
+                        <i class="fa fa-info-circle"></i>  Total must be 100%.</p>
+                </div>
+              </div>
+              <div class="column-6">
+                <div class="form-element multiple">
+                  <label class="fancy-field"  fancy-field style="margin-bottom: 8px;" ng-class="{'error': (signupForm.business_address1.$touched && signupForm.business_address1.$invalid) || (signupForm.business_address1.$touched && signupForm.business_address1.$invalid)}">
+                    <input type="text" placeholder="Business street address" ng-maxlength="24" maxlength="24" ng-pattern="streetAddressPattern" ng-model="formData.business_address1" name="business_address1" ng-required="true" ng-change="updateMap()" />
+                  </label>
+                  <p ng-show="signupForm.business_address1.$touched && signupForm.business_address1.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter owner's street address.</p>
+                  <p ng-show="signupForm.business_address1.$touched && signupForm.business_address1.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Special characters( {, } , |, ~ ) are not allowed.</p>
+
+                  <label class="fancy-field" fancy-field style="margin-bottom: 8px;">
+                    <input type="text" placeholder="Business Unit, Apt, Suite etc. (optional)"  ng-pattern="apartmentPattern" maxlength="24" ng-model="formData.business_address2" name="business_address2" />
+                  </label>
+                  <p ng-show="signupForm.business_address2.$touched && signupForm.business_address2.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Street Address cannot contain []<>%$+.</p>
+
+                  <div class="column-4" style="padding:0 8px 8px 0;">
+                    <label class="fancy-field" fancy-field ng-class="{'error': signupForm.business_address_zip.$touched && signupForm.business_address_zip.$invalid || signupForm.business_address_zip.zipnotValid}">
+                      <input type="text" ng-change="lookupBusinessZip()" placeholder="Business ZIP"  maxlength="5" ng-model="formData.business_address_zip" ng-pattern="zipPattern" name="business_address_zip" ng-required="true" />
+                    </label>
+                    <p ng-show="signupForm.business_address_zip.$touched && signupForm.business_address_zip.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter zip code.</p>
+                    <p ng-show="signupForm.business_address_zip.$touched && signupForm.business_address_zip.$error.pattern || signupForm.business_address_zip.$error.zipnotValid" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter valid zip code.</p>
+                  </div>
+                  <div class="column-4" style="padding:0;">
+                    <label class="fancy-field"  fancy-field ng-class="{'error': signupForm.business_address_city.$touched && signupForm.business_address_city.$invalid}">
+                      <input placeholder="City" type="text" ng-model="formData.business_address_city" name="business_address_city"  ng-pattern ="cityPattern" maxlength="24" required="required" ng-change="updateMap()" />
+                    </label>
+                    <p ng-show="signupForm.business_address_city.$touched && signupForm.business_address_city.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter city.</p>
+                    <p ng-show="signupForm.business_address_city.$touched && signupForm.business_address_city.$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Invalid city.</p>
+                  </div>
+                  <div class="column-4" style="padding: 0 0 0 8px;">
+                    <label class="fancy-field" fancy-field  ng-class="{'error': signupForm.business_address_state.$touched && signupForm.business_address_state.$invalid}">
+                      <select placeholder="State" ng-model="formData.business_address_state" name="business_address_state" required="required" ng-options="state.abbr as state.name for state in CONST.STATES" ng-change="updateMap()">
+                        <option value="">State</option>
+                      </select>
+                    </label>
+                    <p ng-show="signupForm.business_address_state.$touched && signupForm.business_address_state.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Select state.</p>
+                  </div>
+                </div>
+
+                <div class="form-element">
+                  <div id="google-map-owner" style="width: 100%; height: 300px;"></div>
+                </div>
+              </div>
+            </div>
+            <br>
+
+            <div class="clearfix">
+              <h3 class="margin-top">Equipment Setup</h3>
+              <div class="clearfix">
+                <div class="column-9" style="padding-left: 0; padding-top: 0;	padding-bottom: 0;">
+                  <p>Select the hardware for this location.<span class="block small">Note that you will need at least one terminal product for each store location.</span></p>
+                </div>
+                <div class="column-3" style="padding-top: 0; padding-bottom: 0;">
+                  <a class="button blue float-right" data-toggle="modal" data-target="#add-equipment" ng-click="initEquipment()">Edit</a>
+                </div>
+              </div>
+              <div class="column-12">
+                <div class="location-equipment clearfix">
+                  <div class="column-2" ng-repeat="p in formData.products track by $index">
+                    <img ng-src="{{p.imageUrls[0]}}" style="width: 100%; border: 2px solid #ccc;">
+                    <p>{{p.productName}}</p>
+                    <div>
+                      <span ng-if="p.configurable">
+                        <a class="link small" data-toggle="modal" data-target="#configure-terminal" ng-click="configureProduct(p)">Configure</a>
+                        <span class="small gray">|</span>
+                      </span>
+                      <a class="small link red" ng-click="removeProduct(p, $index)">Remove</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p ng-show="formData.products.length == 0" class="form-error-detail"><i class="fa fa-info-circle"></i> Atleast one equipment or Gateway has to be selected.</p>
+            </div>
+
+
+
+            <div class="form-group clearfix" style="clear:both">
+                <h2>Where do you want us to send your money?</h2>
+
+                <div class="column-6" ng-if="current_number != 1">
+                    <label class="fancy-field active" for="location-2-bank-default">
+                        <span>Use same bank and funding options as Primary Store Location</span>
+                        <select id="location-2-bank-default" class="hasvalue" ng-model="formData.useSameBank" name="useSameBank">
+                            <option value="placeholder" disabled="">Use same bank and funding options as Primary Store Location</option>
+                            <option value="yes" selected="">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="clearfix" ng-if="current_number == 1 || formData.useSameBank == 'no'">
+                <p class="subhead">All transactions such as sales, {{BUSINESS_NAME}} equipment purchases and chargebacks will be credited or debited, as applicable, to the bank account specified below (the "Settlement Account")</p>
+                <div class="column-6">
+                    <div class="form-element" >
+                        <label class="fancy-field"  fancy-field ng-class="{'error': (signupForm.ROUTING_NUMBER.$touched && signupForm.ROUTING_NUMBER.$invalid) || bankError}">
+                            <input type="tel" placeholder="ABA routing number" ng-model="formData.ROUTING_NUMBER" ng-pattern="routingNumberPattern" name="ROUTING_NUMBER" required="required" maxlength="9" ng-change="checkBank(); checkAccount();" />
+                        </label>
+                        <p ng-show="signupForm.ROUTING_NUMBER.$touched && signupForm.ROUTING_NUMBER.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter your ABA routing number.</p>
+                        <p ng-show="signupForm.ROUTING_NUMBER.$touched && signupForm.ROUTING_NUMBER.$error.pattern" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please enter a valid ABA number.</p>
+                        <p ng-show="bankError" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> The routing number is not valid. Please enter a valid routing number.</p>
+                        <p ng-show="bankErrorServerFails" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> We're sorry, but we are unable to get bank details at this time. You will be contacted in future to provide the routing number.</p>
+                    </div>
+                    <div class="form-element" >
+                        <label class="fancy-field" fancy-field ng-class="{'error': signupForm.ACCOUNT_NUMBER.$touched && signupForm.ACCOUNT_NUMBER.$invalid}">
+                            <input type="password" placeholder="Checking account number" ng-model="formData.ACCOUNT_NUMBER" ng-change="checkAccount()" ng-pattern="numberPattern" name="ACCOUNT_NUMBER" required="required" ng-minlength="1" maxlength="17" />
+                        </label>
+                        <p ng-show="signupForm.ACCOUNT_NUMBER.$touched && signupForm.ACCOUNT_NUMBER.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter your checking account number.</p>
+                        <p ng-show="signupForm.ACCOUNT_NUMBER.$touched && signupForm.ACCOUNT_NUMBER.$error.pattern" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter valid account number.</p>
+
+                    </div>
+                    <div class="form-element" >
+                        <label class="fancy-field" fancy-field ng-class="{'error': signupForm.ACCOUNT_NUMBER_confirm.$touched && signupForm.ACCOUNT_NUMBER_confirm.$invalid}">
+                            <input ng-paste="$event.preventDefault()" type="password" placeholder="Re-enter checking account number" ng-model="formData.ACCOUNT_NUMBER_confirm" ng-pattern="numberPattern" name="ACCOUNT_NUMBER_confirm" required="required" compare-num-to="formData.ACCOUNT_NUMBER" minlength="1" maxlength="17" />
+                        </label>
+                        <p ng-show="signupForm.ACCOUNT_NUMBER_confirm.$touched && signupForm.ACCOUNT_NUMBER_confirm.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Re-enter your checking account number.</p>
+                        <p ng-show="signupForm.ACCOUNT_NUMBER_confirm.$touched && signupForm.ACCOUNT_NUMBER_confirm.$invalid && !signupForm.ACCOUNT_NUMBER_confirm.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Checking account number does not match.</p>
+                        <p ng-show="signupForm.ACCOUNT_NUMBER_confirm.$touched && signupForm.ACCOUNT_NUMBER_confirm.$error.pattern && !signupForm.ACCOUNT_NUMBER_confirm.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter valid account number.</p>
+
+                    </div>
+
+                    <!--Second bank details start-->
+                    <div ng-if="formData.isSecondBankSelected">
+                        <div class="form-element" id="funding-options-1">
+                            <p><strong>Because you've selected to add an additional account, you have the option to split these funding items between your two accounts:</strong></p>
+                            <div class="column-6">
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="deposits" value="0" ng-model="formData.bankInformation.deposits" checked> Deposit<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="non-bank-adjustments" value="0" ng-model="formData.bankInformation.nonBankAdjustments" checked=""> Non-Bank Adjustments<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="deposit-adjustments" value="0" ng-model="formData.bankInformation.depositAdjustments" checked=""> Deposit Adjustments<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="chargeback" value="0" ng-model="formData.bankInformation.chargebacks" checked=""> Chargebacks<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="chargeback-reversals" value="0" ng-model="formData.bankInformation.chargebackReversals" checked=""> Chargeback Reversals<br><div class="custom-input-anchor"></div></label>
+                            </div>
+                            <div class="column-6">
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="inter-assessments" value="0" ng-model="formData.bankInformation.interchangeAssessments" checked=""> Interchange Assessments<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="discount-services" value="0" ng-model="formData.bankInformation.discountServices" checked=""> Discount Services<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="fees" value="0" ng-model="formData.bankInformation.fees" checked=""> Fees<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="fin-adjustments" value="0" ng-model="formData.bankInformation.financialAdjustments" checked=""> Financial Adjustments<div class="custom-input-anchor"></div></label>
+                            </div>
+                        </div>
+                        <div class="form-element" id="funding-options-2">
+                            <h4>Additional Bank Account</h4>
+                            <p><strong>Funding options:</strong></p>
+                            <div class="column-6">
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="deposits" value="1" ng-model="formData.bankInformation.deposits" checked> Deposit<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="non-bank-adjustments" value="1" ng-model="formData.bankInformation.nonBankAdjustments"> Non-Bank Adjustments<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="deposit-adjustments" value="1" ng-model="formData.bankInformation.depositAdjustments"> Deposit Adjustments<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="chargeback" value="1" ng-model="formData.bankInformation.chargebacks"> Chargebacks<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="chargeback-reversals" value="1" ng-model="formData.bankInformation.chargebackReversals"> Chargeback Reversals<br><div class="custom-input-anchor"></div></label>
+                            </div>
+                            <div class="column-6">
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="inter-assessments" value="1" ng-model="formData.bankInformation.interchangeAssessments"> Interchange Assessments<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="discount-services" value="1" ng-model="formData.bankInformation.discountServices"> Discount Services<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="fees" value="1" ng-model="formData.bankInformation.fees"> Fees<br><div class="custom-input-anchor"></div></label>
+                                <label class="custom-input custom-input-radiocheckbox"><input type="radio" style="margin:7px;" name="fin-adjustments" value="1" ng-model="formData.bankInformation.financialAdjustments"> Financial Adjustments<div class="custom-input-anchor"></div></label>
+                            </div>
+                        </div>
+                        <div class="form-element" >
+                            <label class="fancy-field"  fancy-field ng-class="{'error': (signupForm.ROUTING_NUMBER_SECOND.$touched && signupForm.ROUTING_NUMBER_SECOND.$invalid) || bankError_second}">
+                                <input type="tel" placeholder="ABA routing number" ng-model="formData.ROUTING_NUMBER_SECOND" ng-pattern="routingNumberPattern" name="ROUTING_NUMBER_SECOND" required="required" maxlength="9" ng-change="CheckSecondBank(); checkAccount();" />
+                            </label>
+                            <p ng-show="signupForm.ROUTING_NUMBER_SECOND.$touched && signupForm.ROUTING_NUMBER_SECOND.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Enter your ABA routing number.</p>
+                            <p ng-show="signupForm.ROUTING_NUMBER_SECOND.$touched && signupForm.ROUTING_NUMBER_SECOND.$error.pattern" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Please enter a valid ABA number.</p>
+                            <p ng-show="bankError_second" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> The routing number is not valid. Please enter a valid routing number.</p>
+                            <p ng-show="bankErrorServerFails_second" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> We're sorry, but we are unable to get bank details at this time. You will be contacted in future to provide the routing number.</p>
+                        </div>
+                        <div class="form-element" >
+                            <label class="fancy-field" fancy-field ng-class="{'error': (signupForm.ACCOUNT_NUMBER_SECOND.$touched && signupForm.ACCOUNT_NUMBER_SECOND.$invalid) || signupForm.ACCOUNT_NUMBER_SECOND.$error.accountError}">
+                                <input type="password" placeholder="Checking account number" ng-model="formData.ACCOUNT_NUMBER_SECOND" ng-change="checkAccount()" ng-pattern="numberPattern" name="ACCOUNT_NUMBER_SECOND" required="required" ng-minlength="1" maxlength="17" />
+                            </label>
+                            <p ng-show="signupForm.ACCOUNT_NUMBER_SECOND.$touched && signupForm.ACCOUNT_NUMBER_SECOND.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Enter your checking account number.</p>
+                            <p ng-show="signupForm.ACCOUNT_NUMBER_SECOND.$touched && signupForm.ACCOUNT_NUMBER_SECOND.$error.pattern" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Enter valid account number.</p>
+                            <p ng-show="signupForm.ACCOUNT_NUMBER_SECOND.$error.accountError" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Secondary account number cannot be same as the primary account.</p>
+
+                        </div>
+                        <div class="form-element" >
+                            <label class="fancy-field" fancy-field ng-class="{'error': signupForm.ACCOUNT_NUMBER_SECOND_confirm.$touched && signupForm.ACCOUNT_NUMBER_SECOND_confirm.$invalid}">
+                                <input ng-paste="$event.preventDefault()" type="password" placeholder="Re-enter checking account number" ng-model="formData.ACCOUNT_NUMBER_SECOND_confirm" ng-pattern="numberPattern" name="ACCOUNT_NUMBER_SECOND_confirm" required="required" compare-to="formData.ACCOUNT_NUMBER_SECOND" minlength="1" maxlength="17" />
+                            </label>
+                            <p ng-show="signupForm.ACCOUNT_NUMBER_SECOND_confirm.$touched && signupForm.ACCOUNT_NUMBER_SECOND_confirm.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Re-enter your checking account number.</p>
+                            <p ng-show="signupForm.ACCOUNT_NUMBER_SECOND_confirm.$touched && signupForm.ACCOUNT_NUMBER_SECOND_confirm.$invalid && !signupForm.ACCOUNT_NUMBER_SECOND_confirm.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Checking account number does not match.</p>
+                            <p ng-show="signupForm.ACCOUNT_NUMBER_SECOND_confirm.$touched && signupForm.ACCOUNT_NUMBER_SECOND_confirm.$error.pattern && !signupForm.ACCOUNT_NUMBER_SECOND_confirm.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Enter valid account number.</p>
+
+                        </div>
+                    </div>
+                    <!--Second bank details end-->
+                    <div class="form-element">
+                        <a class="link add-owner1" ng-click="toggleBankAccount()"><strong><i class="fa" ng-class="{'fa-plus': !formData.isSecondBankSelected, 'fa-minus': formData.isSecondBankSelected}"></i> {{formData.isSecondBankSelected ? 'Remove bank account' : 'Add bank account'}}</strong></a>
+                    </div>
+                    <div class="form-element">
+                        <div class="form-element">
+                            <label class="fancy-field active" for="rollupIndicator" fancy-field ng-class="{'error': (signupForm.rollupIndicator.$touched && signupForm.rollupIndicator.$invalid)}">
+                                <select id="rollupIndicator" class="hasvalue" placeholder="How would you like debits and credits to be sent to your bank?" name="rollupIndicator" ng-model="formData.rollupIndicator" required="required">
+                                    <option value="">How would you like debits and credits to be sent to your bank?</option>
+                                    <option value="0">Each transfer</option>
+                                    <option value="1">Debit/credit grouped by category</option>
+                                    <option value="2">Net transfer only</option>
+                                    <option value="3">Net transfer end of month combined</option>
+                                </select>
+                            </label>
+                            <p ng-show="signupForm.rollupIndicator.$touched && signupForm.rollupIndicator.$invalid" class="form-error-detail"> <i class="fa fa-info-circle"></i> Please select a method to send debits and credits to your bank.</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="column-6">
+                    <div class="form-element">
+                        <img ng-src="{{ASSETS_FOLDER}}/img/ach.png" />
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="form-group clearfix" ng-if="current_number == 1">
+                <br>
+                <h2>Client Visitation</h2>
+                <p class="subhead">For most instances a site survey of the merchant location is required by the credit and underwriting team</p>
+                <div class="column-6">
+
+                    <div class="form-element">
+                        <label class="fancy-field active" for="site-visitation" fancy-field ng-class="{'error': (signupForm.SITE_VISITATION.$touched && signupForm.SITE_VISITATION.$invalid)}">
+                            <select id="site-visitation" placeHolder="Site Visitation" name="SITE_VISITATION" class="hasvalue" ng-model="formData.siteVisitation" required="required">
+                                <option value="">Site Visitation</option>
+                                <option value="Not Required">Not Required</option>
+                                <option value="Visitation Completed">Required</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.SITE_VISITATION.$touched && signupForm.SITE_VISITATION.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="business-zone" fancy-field ng-class="{'error': (signupForm.BUSINESS_ZONE.$touched && signupForm.BUSINESS_ZONE.$invalid)}">
+                            <select id="business-zone" name="BUSINESS_ZONE" class="hasvalue" placeholder="Type of zone business is located in" ng-model="formData.businessZone" required="required">
+                                <option value="">Type of zone business is located in</option>
+                                <option>Combination</option>
+                                <option>Commercial</option>
+                                <option>Residential</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.BUSINESS_ZONE.$touched && signupForm.BUSINESS_ZONE.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a Business Zone.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="business-location-type" fancy-field ng-class="{'error': (signupForm.BUSINESS_LOCATION_TYPE.$touched && signupForm.BUSINESS_LOCATION_TYPE.$invalid)}">
+                            <select id="business-location-type" class="hasvalue" placeHolder="Kind of location" name="BUSINESS_LOCATION_TYPE" ng-model="formData.businessLocationType" required="required">
+                                <option value="">Kind of location</option>
+                                <option>Apartment</option>
+                                <option>Home</option>
+                                <option>Isolated</option>
+                                <option>Mall</option>
+                                <option>Office</option>
+                                <option>Other</option>
+                                <option>Shopping Area</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.BUSINESS_LOCATION_TYPE.$touched && signupForm.BUSINESS_LOCATION_TYPE.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a Business Location Type.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="seasonal-merchant" fancy-field ng-class="{'error': (signupForm.SEASONAL_MERCANT.$touched && signupForm.SEASONAL_MERCANT.$invalid)}">
+                            <select id="seasonal-merchant" class="hasvalue" placeHolder="Seasonal merchant" name="SEASONAL_MERCANT" ng-init="formData.seasonalMerchant='No'" ng-model="formData.seasonalMerchant" required="required">
+                                <option value="">Seasonal merchant</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.SEASONAL_MERCANT.$touched && signupForm.SEASONAL_MERCANT.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a Option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <div class="column-6" style="padding: 0 8px 0 0;">
+                            <label class="fancy-field active" for="floors" fancy-field ng-class="{'error': (signupForm.BUILDING_FLOORS.$touched && signupForm.BUILDING_FLOORS.$invalid)}">
+                                <select id="floors" class="hasvalue" placeHolder="Floors/levels in building" name="BUILDING_FLOORS" ng-model="formData.buildingFloors" required="required">
+                                    <option value="">Floors/levels in building</option>
+                                    <option ng-repeat="f in [] | range:01:150" ng-value="f">{{f}}</option>
+                                </select>
+                            </label>
+                            <p ng-show="signupForm.BUILDING_FLOORS.$touched && signupForm.BUILDING_FLOORS.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Please select a option.</p>
+                        </div>
+                        <div class="column-6" style="padding: 0" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                            <label class="fancy-field active" for="floorsOccupied" fancy-field ng-class="{'error': (signupForm.FLOORS_OCCUPIED.$touched && signupForm.FLOORS_OCCUPIED.$invalid)}">
+                                <select id="floorsOccupied" class="hasvalue" ng-disabled="!formData.buildingFloors" placeHolder="Floors/levels merchant occupies" name="FLOORS_OCCUPIED" ng-model="formData.floorsOccupied" required="required">
+                                    <option value="">Floors/levels merchant occupies</option>
+                                    <option ng-repeat="f in [] | range:01:formData.buildingFloors" ng-value="f">{{f}}</option>
+                                </select>
+                            </label>
+                            <p ng-show="signupForm.FLOORS_OCCUPIED.$touched && signupForm.FLOORS_OCCUPIED.$error.required" class="form-error-detail">
+                                <i class="fa fa-info-circle"></i> Please select a option.</p>
+                        </div>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <p>How is the merchant's name displayed?</p>
+                        <label class="" for="floors" ng-class="{'error': (signupForm.DOOR.$touched && signupForm.DOOR.$invalid) || (signupForm.STORE_FRONT.$touched && signupForm.STORE_FRONT.$invalid) || (signupForm.WINDOW.$touched && signupForm.WINDOW.$invalid)}">
+                            <input type="checkbox" name="DOOR" ng-model="formData.merchantsNameDisplayed['Door']" value="Door" ng-required="!merchantDisplayed"  ng-change="checkCheckbox()"> Door<br>
+                            <input type="checkbox" name="STORE_FRONT" ng-model="formData.merchantsNameDisplayed['Store Front']" value="Store front" ng-required="!merchantDisplayed" ng-change="checkCheckbox()"> Store front<br>
+                            <input type="checkbox" name="WINDOW" ng-model="formData.merchantsNameDisplayed['Window']" value="Window" ng-change="checkCheckbox()" ng-required="!merchantDisplayed"> Window
+                        </label>
+                        <p ng-show="(signupForm.DOOR.$touched && signupForm.DOOR.$error.required) || (signupForm.STORE_FRONT.$touched && signupForm.STORE_FRONT.$error.required) || (signupForm.WINDOW.$touched && signupForm.WINDOW.$error.required)" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="square-footage" fancy-field ng-class="{'error': (signupForm.SQUARE_FOOTAGE.$touched && signupForm.SQUARE_FOOTAGE.$invalid)}">
+                            <select id="square-footage" class="hasvalue" placeHolder="Approx sq. footage of business" name="SQUARE_FOOTAGE" ng-model="formData.squareFootage" required="required">
+                                <option value="">Approx sq. footage of business</option>
+                                <option>0-250</option>
+                                <option>251-500</option>
+                                <option>501-2000</option>
+                                <option>2001 and above</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.SQUARE_FOOTAGE.$touched && signupForm.SQUARE_FOOTAGE.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="own-or-rent" fancy-field ng-class="{'error': (signupForm.OWNORRENT.$touched && signupForm.OWNORRENT.$invalid)}">
+                            <select id="own-or-rent" class="hasvalue" placeHolder="Own or rent building space?" name="OWNORRENT" ng-model="formData.ownOrRent" required="required">
+                                <option value="">Own or rent building space?</option>
+                                <option>Own</option>
+                                <option>Rent</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.OWNORRENT.$touched && signupForm.OWNORRENT.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.ownOrRent == 'Rent' && formData.siteVisitation == 'Visitation Completed'">
+                        <p>When did you start renting the building space?</p>
+                        <label class="fancy-field active" for="building-space" fancy-field ng-class="{'error': (signupForm.BUILDING_SPACE.$touched && signupForm.BUILDING_SPACE.$invalid)}">
+                            <input type="date" id="building-space" placeholder="When did you start renting the building space?" class="hasvalue" name="BUILDING_SPACE"  ng-model="formData.buildingSpace" required="required" style="height:30px">
+                        </label>
+                        <p ng-show="(signupForm.BUILDING_SPACE.$touched && signupForm.BUILDING_SPACE.$error.required) || (signupForm.BUILDING_SPACE.$touched && signupForm.BUILDING_SPACE.$invalid)" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please enter a valid date.</p>
+                    </div>
+                </div>
+                <div class="column-6">
+                    <div class="form-element" ng-if="formData.ownOrRent == 'Rent' && formData.siteVisitation == 'Visitation Completed'">
+                        <p>When does your lease expire?</p>
+                        <label class="fancy-field active" for="lease-expiry" fancy-field ng-class="{'error': (signupForm.LEASE_EXPIRY.$touched && signupForm.LEASE_EXPIRY.$invalid)}">
+                            <input type="date" min="{{formData.buildingSpace}}" id="lease-expiry" placeholder="When does your lease expire?" class="hasvalue" name="LEASE_EXPIRY"  ng-model="formData.leaseExpiry" required="required" style="height:30px">
+                        </label>
+                        <p ng-show="(signupForm.LEASE_EXPIRY.$touched && signupForm.LEASE_EXPIRY.$error.required) || (signupForm.LEASE_EXPIRY.$touched && signupForm.LEASE_EXPIRY.$invalid) && (!signupForm.LEASE_EXPIRY.$error.min)" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please enter a valid date.</p>
+                        <p ng-show="signupForm.LEASE_EXPIRY.$touched && signupForm.LEASE_EXPIRY.$error.min" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Lease Expiry date cannot be lower than rent start date.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.ownOrRent == 'Rent' && formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="landlord-name" fancy-field ng-class="{'error': (signupForm.LANDLORD_NAME.$touched && signupForm.LANDLORD_NAME.$invalid)}">
+                            <input type="text" id="landlord-name" placeholder="What is your landlords name?" class="hasvalue" name="LANDLORD_NAME"  ng-model="formData.landLordName" required="required">
+                        </label>
+                        <p ng-show="signupForm.LANDLORD_NAME.$touched && signupForm.LANDLORD_NAME.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please enter land lord name.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.ownOrRent == 'Rent' && formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="landlord-number" fancy-field ng-class="{'error': (signupForm.LANDLORD_NUMBER.$touched && signupForm.LANDLORD_NUMBER.$invalid)}">
+                            <input type="tel" id="landlord-number" format-phone placeholder="What is your landlords telephone number?" class="hasvalue" name="LANDLORD_NUMBER"  ng-model="formData.landLordNumber" ng-pattern="phoneNumberPattern" minlength="14" maxlength="14" required="required">
+                        </label>
+                        <p ng-show="signupForm.LANDLORD_NUMBER.$touched && signupForm.LANDLORD_NUMBER.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please enter a telephone number.</p>
+                        <p ng-show="signupForm.LANDLORD_NUMBER.$touched && signupForm.LANDLORD_NUMBER.$error.pattern" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter a valid telephone number.</p>
+                        <p ng-show="signupForm.LANDLORD_NUMBER.$touched && !signupForm.LANDLORD_NUMBER.$error.pattern && signupForm.LANDLORD_NUMBER.$error.minlength" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter a valid telephone number.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="number-of-registers" fancy-field ng-class="{'error': (signupForm.NO_OF_REGISTERS.$touched && signupForm.NO_OF_REGISTERS.$invalid)}">
+                            <input type="number" id="number-of-registers" placeholder="How many registers?" min="1" class="hasvalue" name="NO_OF_REGISTERS" ng-model="formData.noOfRegisters" required="required">
+                        </label>
+                        <p ng-show="signupForm.NO_OF_REGISTERS.$touched && signupForm.NO_OF_REGISTERS.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter Number of Registers.</p>
+                        <p ng-show="(signupForm.NO_OF_REGISTERS.$touched && signupForm.NO_OF_REGISTERS.$error.pattern) || (signupForm.NO_OF_REGISTERS.$touched && signupForm.NO_OF_REGISTERS.$error.number)" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Enter a valid Number of Registers.</p>
+                        <p ng-show="signupForm.NO_OF_REGISTERS.$touched && signupForm.NO_OF_REGISTERS.$error.min" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Number of Registers cannot be lower than 1.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="business-license-displayed" fancy-field ng-class="{'error': (signupForm.BUSINESS_LICENSE_DISPLAY.$touched && signupForm.BUSINESS_LICENSE_DISPLAY.$invalid)}">
+                            <select id="business-license-displayed" class="hasvalue" placeHolder="Business License properly displayed?" name="BUSINESS_LICENSE_DISPLAY" ng-init="formData.businessLicenseDisplay = 'Yes'" ng-model="formData.businessLicenseDisplay" required="required">
+                                <option value="">Business License properly displayed?</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.BUSINESS_LICENSE_DISPLAY.$touched && signupForm.BUSINESS_LICENSE_DISPLAY.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation">
+                        <label class="fancy-field active" for="return-policy" fancy-field ng-class="{'error': (signupForm.RETURN_POLICY.$touched && signupForm.RETURN_POLICY.$invalid)}">
+                            <select id="return-policy" class="hasvalue" placeHolder="Return policy" name="RETURN_POLICY" ng-init="formData.returnPolicy = 'Exchange Only'" ng-model="formData.returnPolicy" required="required">
+                                <option value="">Return policy</option>
+                                <option>Exchange Only</option>
+                                <option>Full Refund</option>
+                                <option>No Refunds</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.RETURN_POLICY.$touched && signupForm.RETURN_POLICY.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation">
+                        <label class="fancy-field active" for="return-policy-card" fancy-field ng-class="{'error': (signupForm.RETURN_POLICY_CARD.$touched && signupForm.RETURN_POLICY_CARD.$invalid)}">
+                            <select id="return-policy-card" class="hasvalue" placeHolder="Separate return policy for credit card sales?" name="RETURN_POLICY_CARD" ng-init="formData.returnPolicyCard = 'No'" ng-model="formData.returnPolicyCard" required="required">
+                                <option value="">Separate return policy for credit card sales?</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.RETURN_POLICY_CARD.$touched && signupForm.RETURN_POLICY_CARD.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="customer-deposit" fancy-field ng-class="{'error': (signupForm.CUSTOMER_DEPOSIT.$touched && signupForm.CUSTOMER_DEPOSIT.$invalid)}">
+                            <select id="customer-deposit" class="hasvalue" placeHolder="Require customers to leave a deposit?" name="CUSTOMER_DEPOSIT" ng-init="formData.customerDeposit = 'No'" ng-model="formData.customerDeposit" required="required">
+                                <option value="">Require customers to leave a deposit?</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.CUSTOMER_DEPOSIT.$touched && signupForm.CUSTOMER_DEPOSIT.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="deposit" fancy-field ng-class="{'error': (signupForm.CARD_DEPOSIT.$touched && signupForm.CARD_DEPOSIT.$invalid)}">
+                            <select id="deposit" class="hasvalue" placeHolder="MC/Visa/Discover Network/American Express OptBlue sales deposited on" name="CARD_DEPOSIT" ng-init="formData.cardDeposit = 'Date of delivery'" ng-model="formData.cardDeposit" required="required">
+                                <option value="">MC/Visa/Discover Network/American Express OptBlue sales deposited on</option>
+                                <option>Date of delivery</option>
+                                <option>Date of order</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.CARD_DEPOSIT.$touched && signupForm.CARD_DEPOSIT.$error.required" class="form-error-detail">
+                            <i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                    <div class="form-element" ng-if="formData.siteVisitation == 'Visitation Completed'">
+                        <label class="fancy-field active" for="order-renew" fancy-field ng-class="{'error': (signupForm.ORDER_RENEWAL.$touched && signupForm.ORDER_RENEWAL.$invalid)}">
+                            <select id="order-renew" class="hasvalue" placeHolder="Orders renew automatically" name="ORDER_RENEWAL" ng-init="formData.orderRenewal = 'No'" ng-model="formData.orderRenewal" required="required">
+                                <option value="">Orders renew automatically</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                        </label>
+                        <p ng-show="signupForm.ORDER_RENEWAL.$touched && signupForm.ORDER_RENEWAL.$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please select a option.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="margin-top" />
+            <div class="form-group form-actions column-12 align-center">
+              <a ng-if="current_number < num_locations_selected" class="button submit float-right link" ng-click="changeNumber(current_number + 1)" ng-class="{'disabled': formData.products.length == 0 || !signupForm.$valid}">Next: Location {{current_number + 1}}</a>
+              <a ng-if="current_number == num_locations_selected" class="button submit float-right link" ng-click="clickedSubmit || submitLocations()" ng-class="{'disabled': formData.products.length == 0 || clickedSubmit || !signupForm.$valid}">Continue</a>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+
+<!-- Add Equipment -->
+<div class="modal fade" tabindex="-1" role="dialog" id="add-equipment">
+  <div class="vertical-alignment-helper">
+    <div class="modal-dialog vertical-align-center">
+      <div class="modal-content">
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
+          <p class="modal-title">Associate Equipment</p>
+        </div>
+        <div class="modal-body row">
+          <div class="clearfix">
+
+            <div class="column-3" ng-repeat="(i, p) in products track by $index">
+              <img ng-src="{{p.imageUrls[0]}}" style="width: 100%; border: 2px solid #ccc;">
+              <p>{{p.product_name}}</p>
+              <div class="form-element">
+                <label class="fancy-field" for="associate-1" fancy-field>
+                  <select id="associate-1" placeholder="Select Location" ng-model="prodLoc[i]" ng-options="n as 'Location ' + n for n in [] | range:1:num_locations_selected">
+                    <option value="placeholder" disabled>Select Location</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer row">
+          <div class="column-12 align-right" style="background: #eee;">
+            <a class="button gray" data-dismiss="modal">Cancel</a>
+            <a class="button" data-dismiss="modal" ng-click="saveEquipment()">Save</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Configure Terminal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="configure-terminal">
+  <div class="vertical-alignment-helper" ng-show="activeProduct.attributeDataDefault">
+    <div class="modal-dialog vertical-align-center">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
+          <p class="modal-title">Configure Terminal <i>&raquo;</i> <strong>Location {{current_number}}</strong> <i>&raquo;</i> <strong>{{activeProduct.product_name}}</strong></p>
+        </div>
+        <div class="modal-body row">
+          <fieldset>
+            <div class="column-6" ng-repeat="a in activeProduct.attributeDataDefault">
+              <div class="form-element">
+                <label class="fancy-field" fancy-field>
+                  <select placeholder="{{a.displayName}}" ng-model="a.value" ng-if="a.attributeType == 'Select'">
+                    <option value="">{{a.displayName}}</option>
+                    <option ng-repeat="v in a.attributeValues" value="{{v.attributeValue}}">{{v.description ? v.description : v.attributeValue}}</option>
+                  </select>
+                  <input type="text" placeholder="{{a.displayName}}" ng-model="a.value" ng-if="a.attributeType == 'Text'" />
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer row">
+          <div class="column-12 align-right" style="background: #eee;">
+            <a class="button gray" data-dismiss="modal">Cancel</a>
+            <a class="button" data-dismiss="modal" ng-click="saveConfigureProduct(activeProduct)" ng-show="activeProduct.attributeDataDefault | lengthOfObject">Save</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,8 +1,8 @@
 /**
  * Cart Controller
  */
-app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', 'CONST', '$location', '$timeout',
-    function ($scope, $rootScope, $window, fdService, $routeParams, CONST, $location, $timeout) {
+app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', 'CONST', '$location', '$timeout', 'filterFilter',
+    function ($scope, $rootScope, $window, fdService, $routeParams, CONST, $location, $timeout, filterFilter) {
 
   /**
    * Init function
@@ -13,6 +13,7 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
     $scope.clickedCheckout = false;
     $scope.showRecFee = true;
     $scope.transactionFee = true;
+    $scope.disableReviewOrder = false;
     $scope.allowExpand = true;
 
     $scope.acquiringPricing = [];
@@ -38,7 +39,15 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
       $scope.cart = newVal;
     }, true);
 
-    if (('shipping' == $scope.page && $scope.orderId) || 'thankyou' == $scope.page) {
+          if (($scope.orderId &&
+                ('shipping' == $scope.page
+                    || 'multi-locations' == $scope.page
+                    || 'transaction_info' == $scope.page
+                  ))
+                  || 'thankyou' == $scope.page
+                  || 'summary' == $scope.page
+                  || 'proposal' == $scope.page) {
+
       $scope.allowExpand = false;
       $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
     }
@@ -59,26 +68,37 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
    * remove product from cart
    * @param pid product Id
    */
-  $scope.removeFromCart = function(pid){
-    delete $rootScope.cart.data[pid];
+        $scope.removeFromCart = function(index){
+            $rootScope.cart.data.splice(index, 1);
+            // delete $rootScope.cart.data[pid];
     fdService.validateCart($rootScope.cart)
       .success(function(data, status, headers, config) {
         $rootScope.cart.validation = data;
+        $scope.cart = $rootScope.cart;
         $scope.cartChanged();
+        if(data.iscartvalid)
+            fdService.updatePricing();
       })
       .error(function(data, status, headers, config) {
         console.log('error');
       });
       
-    fdService.updatePricing();
+            $scope.cart = $rootScope.cart;
     $scope.cartChanged();
+
+            if (0 === $scope.cart.total_qty) {
+                $location.path('/');
+            }
   };
 
   /**
    * Calling in case of changing quantity.
    */
   $scope.qtyChanged = function(){
-    fdService.updatePricing();
+            fdService.resetCartOverridePricing($scope.cart);
+            fdService.updatePricing(function(){
+                $rootScope.cart = $scope.cart = fdService.getCart();
+            });
     $scope.cartChanged();
   };
 
@@ -114,23 +134,52 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
    * Remove processing product from cart
    * @param p processing product object
    */
-  $scope.removeProcessing = function(p){
-    delete $scope.cart.payment_types.products[p.id];
-    if (!Object.keys($scope.cart.payment_types.products).length) {
-      $scope.cart.payment_types = null;
-    }
-    fdService.validateCart($scope.cart)
-      .success(function(data, status, headers, config) {
-        $scope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
+    $scope.removeProcessing = function(p){
+        delete $scope.cart.payment_types.products[p.id];
+        if (!Object.keys($scope.cart.payment_types.products).length) {
+            $scope.cart.payment_types = null;
+        }
+        fdService.validateCart($scope.cart)
+            .success(function(data, status, headers, config) {
+                $scope.cart.validation = data;
+                $scope.cartChanged();
+                if(data.iscartvalid)
+                    fdService.updatePricing();
+            })
+            .error(function(data, status, headers, config) {
+                console.log('error');
+            });
 
-    fdService.updatePricing();
-    $scope.cartChanged();
-  };
+        $scope.cartChanged();
+    };
+
+    /**
+     * remove transaction product
+     * @param p
+     */
+    $scope.removeTransactionProduct = function(p){
+
+      var index =  $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(p.id);
+
+      if (-1 === index) {
+        return;
+      }
+
+      $rootScope.cart.transaction_products.splice(index, 1);
+
+        fdService.validateCart($scope.cart)
+            .success(function(data, status, headers, config) {
+                $scope.cart.validation = data;
+                $scope.cartChanged();
+                if(data.iscartvalid)
+                    fdService.updatePricing();
+            })
+            .error(function(data, status, headers, config) {
+                console.log('error');
+            });
+
+        $scope.cartChanged();
+    };
 
   /**
    * Remove payment types from cart
@@ -141,35 +190,41 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
       .success(function(data, status, headers, config) {
         $scope.cart.validation = data;
         $scope.cartChanged();
+                    if(data.iscartvalid)
+                        fdService.updatePricing();
       })
       .error(function(data, status, headers, config) {
         console.log('error');
       });
-      
-    fdService.updatePricing();
+
     $scope.cartChanged();
   };
 
   /**
-   * Change payment type to lease
-   * @param p leasing product object
+   * Lease product
+   * @param {Object} p product
    */
-  $scope.leaseProduct = function(p){
-    $rootScope.cart = $scope.cart = fdService.leaseProduct(p, $scope.cart, p.id);
-    $scope.showRecFee = true;
-    fdService.updatePricing();
-    fdService.validateCart($scope.cart)
-      .success(function(data, status, headers, config) {
-        $scope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-  };
+    $scope.leaseProduct = function(p){
+
+        var index = fdService.getCartProductIndex($rootScope.cart, p);
+        $scope.cart.data.splice(index, 1);
+
+        $rootScope.cart = $scope.cart = fdService.leaseProduct(p, $scope.cart, p.category);
+        $scope.showRecFee = true;
+        fdService.validateCart($scope.cart)
+            .success(function(data, status, headers, config) {
+                $scope.cart.validation = data;
+                $scope.cartChanged();
+                if(data.iscartvalid)
+                    fdService.updatePricing();
+            })
+            .error(function(data, status, headers, config) {
+                console.log('error');
+            });
+    };
 
   /**
-   * Save transaction info
+         * Save transaction info in session
    */
   $scope.saveTransactionInfo = function(){
 
@@ -183,7 +238,14 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
       } else {
         $location.path('400');
       }
-    });
+            },null,fdService.getEquipmentPricingStorage(),fdService.getGlobalPricingStorage());
+        };
+
+        /**
+         * Submit proposal
+         */
+        $scope.sendProp = function(){
+            fdService.submitProposal();
   };
 
   /**
@@ -195,21 +257,27 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
   };
 
   /**
-   * Place order
+   * Call review order service
    */
-  $scope.placeOrder = function(){
-    var orderId = fdService.getOrderId();
-    fdService.placeOrder(orderId)
-      .success(function(data, status, headers, config) {
-        var cart = fdService.getCart();
-        fdService.storeOrderId(data.orderId);
-        fdService.storeOrderedCart(data.orderId, cart);
-        $scope.gotoUrl('/checkout/thankyou');
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-        $location.path('400');
-      });
+  $scope.reviewOrder = function(){
+      if($scope.disableReviewOrder)
+          return;
+      $scope.disableReviewOrder = true;
+      var orderId = fdService.getOrderId();
+      $rootScope.$emit('Update_address_cart');
+      fdService.reviewOrder(orderId)
+          .success(function(data, status, headers, config) {
+              $scope.disableReviewOrder = false;
+              var cart = orderId ? fdService.getOrderedCart(orderId) : fdService.getCart();
+              fdService.storeOrderId(data.orderId);
+              fdService.storeOrderedCart(data.orderId, cart);
+              fdService.clearTmpOrderId();
+              $scope.gotoUrl('/checkout/summary');
+          })
+          .error(function(data, status, headers, config) {
+              $scope.disableReviewOrder = false;
+              console.log('error');
+          });
   };
 
   /**
@@ -221,15 +289,48 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
   };
 
   /**
+   * return pricing forms OK status
+   * @return {boolean}
+   */
+  $scope.pricingFormsOk = function(){
+      if (typeof $rootScope._pricingFormsOk == 'function') {
+          return $rootScope._pricingFormsOk();
+      }
+      return true;
+  };
+
+  /**
    * Redirect to the checkout page or transation info
    */
   $scope.proceedToCheckout = function(){
-    if ($scope.getTI()) {
+            var ep = fdService.getEquipmentPricingStorage();
+            var url;
+            if ($rootScope.cart.num_locations > 1 && !$rootScope.cart.num_locations_selected) {
+                url = '/multi-locations';
+            } else if ($scope.getTI() && ep) {
+                url = '/checkout/shipping';
+            } else {
+                url = '/transaction/info';
+            }
+            $timeout(function(){
+                $scope.gotoUrl(url);
+            });
+        };
+
+        /**
+         * Redirect to checkout page from multi locations
+         */
+    $scope.proceedToCheckoutML = function(){
+
+    var ep = fdService.getEquipmentPricingStorage();
+    if ($scope.getTI() && ep) {
       var url = '/checkout/shipping';
     } else {
       var url = '/transaction/info';
     }
-    $scope.gotoUrl(url);
+    $timeout(function(){
+        $scope.gotoUrl(url);
+    });
   };
 
   /**
@@ -252,9 +353,103 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
     if ('transaction_info' == $scope.page) {
       return false;
     }
-    
+    if ('cart' == $scope.page) {
+        return false;
+    }
+
     return true;
   };
+
+    /**
+     * Check if products clickable
+     * @return {boolean}
+     */
+    $scope.isProductsClickable = function(){
+        if ('thankyou' == $scope.page) {
+            return false;
+        }
+        if ('summary' == $scope.page) {
+            return false;
+        }
+        if ('proposal' == $scope.page) {
+            return false;
+        }
+        if ('cart' == $scope.page) {
+            return false;
+        }
+        return true;
+    };
+
+    /**
+     * Load unique lease options
+     * @param pricingmodel
+     */
+     $scope.models = function(pricingModel){
+         var filteredOptions = [];
+         angular.forEach(pricingModel, function(item) {
+             var index = filteredOptions.map(function(p){ return p.paymentType; }).indexOf(item.paymentType);
+             if (index === -1) {
+               filteredOptions.push(item);
+             } else {
+               filteredOptions[index] = item;
+             }
+         });
+         return filteredOptions;
+     };
+
+    /**
+     * Payment Type Changed
+     * @param product
+     */
+     $scope.paymentTypeChanged = function(product) {
+         var leaseTypes = [];
+         var index = 0;
+         if (product.termPaymentType == 'Lease') {
+           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'LT'});
+           //check for LT36 type lease if available.
+           var leaseIndex = leaseTypes.map(function(p) { return p.purchaseType; }).indexOf('LT36');
+           index = leaseIndex == -1 ? 0 : leaseIndex;
+         } else if (product.termPaymentType == 'Installment') {
+           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'IP'});
+         } else if (product.termPaymentType == 'Rent') {
+           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'R'});
+         }
+         if (leaseTypes.length > 0){
+           product.term = leaseTypes[index].purchaseType;
+         }
+         $scope.qtyChanged();
+     };
+
+    /**
+     * Change Category
+     * @param categoryName
+     */
+     $scope.changeCategory = function(categoryName){
+        if(!$scope.categories){
+            fdService.getCategories().success(function(data, status, headers, config) {
+                $scope.categories = data;
+                $scope.updateCategoryInSession(categoryName);
+            })
+            .error(function(data, status, headers, config) {
+                $location.path('/400');
+            });
+        } else {
+            $scope.updateCategoryInSession(categoryName);
+        }
+     }
+
+     /**
+      * Update Category in Session
+      * @param categoryName
+      */
+     $scope.updateCategoryInSession = function(categoryName){
+         var index = $scope.categories.map(function(cat) { return cat.name; }).indexOf(categoryName);
+         if(index != -1){
+             var category = $scope.categories[index];
+             fdService.storeCategoryInSession(category);
+             $rootScope.$emit('Category_Change');
+         }
+     }
 
   ///////////////// MAIN ////////////////////////////////
 
