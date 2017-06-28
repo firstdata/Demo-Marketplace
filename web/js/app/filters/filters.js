@@ -383,12 +383,18 @@ app.filter('orderByObj', function() {
   };
 });
 
+/**
+ * Trusted HTML content
+ */
 app.filter('to_trusted', ['$sce', function($sce){
   return function(text) {
     return $sce.trustAsHtml(text);
   };
 }]);
 
+/**
+ * Order By ParentOrder
+ */
 app.filter('orderByParentOrder', function() {
   return function(items, field, reverse) {
     var filtered = [];

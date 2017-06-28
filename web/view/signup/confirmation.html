@@ -27,12 +27,9 @@
          </h1>
         <div ng-show="!thankyouPageFlag">
              <p class="subhead">Your Application has been submitted.</p>
-             <p><span ng-if="CONST.PLATFORM_NAME != 'key'">Within 30 minutes you will receive an email from {{BUSINESS_NAME}}.</span><span ng-if="CONST.PLATFORM_NAME == 'key'">You will receive an email from KeyBank shortly.</span> If your Application has been approved the email will include your Business Track login information. Business Track is where you can see your detailed transaction reporting.</p>
+             <p><span>Within 30 minutes you will receive an email from First Data.</span> If your Application has been approved the email will include your Business Track login information. Business Track is where you can see your detailed transaction reporting.</p>
              <br>
-             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'fdmarketplace'" ng-click="learnMore()">Learn more about First Data</a></p>
-             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'td'" ng-click="learnMore()">Learn more about TD Bank</a></p>
-             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'bams'" ng-click="learnMore()">Learn more about Bank Of America</a></p>
-             <p><a class="btn" ng-if="CONST.PLATFORM_NAME == 'key'" ng-click="learnMore()">Learn more about KeyBank</a></p>
+             <p><a class="btn" ng-click="learnMore()">Learn more about First Data</a></p>
         </div>
         <div ng-show="thankyouPageFlag">
             <p class="subhead">Your signature has been captured.</p>

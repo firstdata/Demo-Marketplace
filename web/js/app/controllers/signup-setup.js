@@ -1,13 +1,12 @@
 /**
  * Signup Setup Controller
  */
-app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService','$timeout', '$anchorScroll', 'CONST',
-  function ($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST) {
+app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', 'CONST',
+  function($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST) {
 
     /**
-     * Description
+     * Init function
      * @method _init
-     * @return
      */
     var _init = function() {
       $rootScope.body_id = 'full_body';
@@ -41,89 +40,88 @@ app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location
             defaultDate: "+2w 1d",
             minDate: "+2w 1d"
           });*/
-          var orderId = fdService.getOrderId();
-          var cart = fdService.getOrderedCart(orderId);
-          if (!cart) {
-            $location.path('/');
-          }
+      var orderId = fdService.getOrderId();
+      var cart = fdService.getOrderedCart(orderId);
+      if (!cart) {
+        $location.path('/');
+      }
 
-          $scope.formData = {};
-          $scope.states_list=$rootScope.CONST.STATES;
-          if(cart.shippingAddress[0]){
+      $scope.formData = {};
+      $scope.states_list = $rootScope.CONST.STATES;
+      if (cart.shippingAddress[0]) {
 
-              if(!angular.isUndefined(cart.shippingAddress[0].address1)){
-                $scope.formData.trainingAddress1 = (cart.shippingAddress[0].address1).substring(0,24);
-              }
+        if (!angular.isUndefined(cart.shippingAddress[0].address1)) {
+          $scope.formData.trainingAddress1 = (cart.shippingAddress[0].address1).substring(0, 24);
+        }
 
-              $scope.formData.trainingAddress2 = cart.shippingAddress[0].address2;
-              $scope.formData.trainingZip = cart.shippingAddress[0].zip;
-              $scope.formData.trainingCity = cart.shippingAddress[0].city;
-              $scope.formData.trainingState = cart.shippingAddress[0].state;
+        $scope.formData.trainingAddress2 = cart.shippingAddress[0].address2;
+        $scope.formData.trainingZip = cart.shippingAddress[0].zip;
+        $scope.formData.trainingCity = cart.shippingAddress[0].city;
+        $scope.formData.trainingState = cart.shippingAddress[0].state;
 
-              if ($scope.formData.trainingState){
-                for (i = 0; i < $scope.states_list.length; i++) {
-                  if ($scope.states_list[i].name.toLowerCase() == $scope.formData.trainingState.toLowerCase()) {
-                    $scope.formData.trainingState = $scope.states_list[i].abbr;
-                    break;
-                  }
-                }
-              }
-              if(!$scope.formData.trainingCity || !$scope.formData.trainingState) {
-                $scope.lookupZip();
-              }
-              $scope.formData.trainingContactPhone = cart.shippingAddress[0].phone;
-              $scope.formData.trainingContactName = cart.shippingAddress[0].first_name +" "+ cart.shippingAddress[0].last_name;
-              $scope.formData.statementDeliveryType = "Email";
-              $scope.formData.statementType = "G";
-              $scope.formData.statementDeliveryEmail = cart.shippingAddress[0].email;
-              $scope.formData.electronic1099Email  = "Yes";
-              $scope.formData.chargebackAddress = "1";
-              $scope.formData.chargebackDelivery = "Mail";
-              $scope.formData.trainingProvider = "MAG";
-              $scope.formData.preferredTrainingTime = '12:00PM-01:00PM';
-              $scope.formData.thirdPartyProcessor = '00';
-              $scope.formData.electronic1099 = "Yes";
-
-          }
-
-          $scope.orderId = fdService.getOrderId();
-          fdService.getAccountPreferences($scope.orderId).success(function(data, status, headers, config) {
-            if (Object.keys(data).length > 0) {
-              $scope.formData.statementDeliveryType = data.statementDeliveryType;
-              $scope.formData.statementType = data.statementType;
-              $scope.formData.statementDeliveryEmail = data.statementEmailAddress;
-              $scope.formData.electronic1099 = data.form1099Electronically;
-              $scope.formData.electronic1099Email = data.form1099ToEmail;
-              $scope.formData.emailAddressFor1099k = data.emailAddressFor1099k;
-              $scope.formData.chargebackAddress = data.chargeBack;
-              $scope.formData.chargebackDelivery = data.chargeBackDeliveryType;
-              $scope.formData.trainingContactPhone = data.contactPhone;
-              $scope.formData.faxNumber = data.fax;
-              $scope.formData.trainingProvider = data.trainingProvider;
-              $scope.formData.preferredTrainingTime = data.preferredTrainingFrom + '-' + data.preferredTrainingTo;
-              $scope.formData.thirdPartyProcessor = data.thirdPartyProcessor;
-              $scope.formData.thirdPartyProcessorName = data.thirdPartyProcessorName;
-              $scope.formData.thirdPartyProcessorSoftware = data.thirdPartyProcessorSoftware;
+        if ($scope.formData.trainingState) {
+          for (i = 0; i < $scope.states_list.length; i++) {
+            if ($scope.states_list[i].name.toLowerCase() == $scope.formData.trainingState.toLowerCase()) {
+              $scope.formData.trainingState = $scope.states_list[i].abbr;
+              break;
             }
-            $timeout(function() {
-              angular.element('[name="trainingProvider"]').trigger('change');
-              angular.element('[name="preferredTrainingTime"]').trigger('change');
-            }, 0);
-          });
+          }
+        }
+        if (!$scope.formData.trainingCity || !$scope.formData.trainingState) {
+          $scope.lookupZip();
+        }
+        $scope.formData.trainingContactPhone = cart.shippingAddress[0].phone;
+        $scope.formData.trainingContactName = cart.shippingAddress[0].first_name + " " + cart.shippingAddress[0].last_name;
+        $scope.formData.statementDeliveryType = "Email";
+        $scope.formData.statementType = "G";
+        $scope.formData.statementDeliveryEmail = cart.shippingAddress[0].email;
+        $scope.formData.electronic1099Email = "Yes";
+        $scope.formData.chargebackAddress = "1";
+        $scope.formData.chargebackDelivery = "Mail";
+        $scope.formData.trainingProvider = "MAG";
+        $scope.formData.preferredTrainingTime = '12:00PM-01:00PM';
+        $scope.formData.thirdPartyProcessor = '00';
+        $scope.formData.electronic1099 = "Yes";
+
+      }
+
+      $scope.orderId = fdService.getOrderId();
+      fdService.getAccountPreferences($scope.orderId).success(function(data, status, headers, config) {
+        if (Object.keys(data).length > 0) {
+          $scope.formData.statementDeliveryType = data.statementDeliveryType;
+          $scope.formData.statementType = data.statementType;
+          $scope.formData.statementDeliveryEmail = data.statementEmailAddress;
+          $scope.formData.electronic1099 = data.form1099Electronically;
+          $scope.formData.electronic1099Email = data.form1099ToEmail;
+          $scope.formData.emailAddressFor1099k = data.emailAddressFor1099k;
+          $scope.formData.chargebackAddress = data.chargeBack;
+          $scope.formData.chargebackDelivery = data.chargeBackDeliveryType;
+          $scope.formData.trainingContactPhone = data.contactPhone;
+          $scope.formData.faxNumber = data.fax;
+          $scope.formData.trainingProvider = data.trainingProvider;
+          $scope.formData.preferredTrainingTime = data.preferredTrainingFrom + '-' + data.preferredTrainingTo;
+          $scope.formData.thirdPartyProcessor = data.thirdPartyProcessor;
+          $scope.formData.thirdPartyProcessorName = data.thirdPartyProcessorName;
+          $scope.formData.thirdPartyProcessorSoftware = data.thirdPartyProcessorSoftware;
+        }
+        $timeout(function() {
+          angular.element('[name="trainingProvider"]').trigger('change');
+          angular.element('[name="preferredTrainingTime"]').trigger('change');
+        }, 0);
+      });
     };
 
 
     /**
-     * Description
+     * Lookup Zip
      * @method lookupZip
-     * @return
      */
     $scope.lookupZip = function() {
       if (!$scope.formData.trainingZip) {
         return;
       } else if ($scope.signupForm && $scope.formData.trainingZip == '00000') {
         $scope.signupForm.trainingZip.$setValidity("zipnotValid", false);
-      } else if ($scope.signupForm){
+      } else if ($scope.signupForm) {
         $scope.signupForm.trainingZip.$setValidity("zipnotValid", true);
       }
 
@@ -160,21 +158,21 @@ app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location
 
 
     /**
-     * Description
+     * Validate Business
      * @method validateBusiness
      * @return
      */
     $scope.validateBusiness = function() {
-        fdService.validateBusiness($scope.signupForm.statementDeliveryEmail, $scope.formData.statementDeliveryEmail);
-    }
+      fdService.validateBusiness($scope.signupForm.statementDeliveryEmail, $scope.formData.statementDeliveryEmail);
+    };
 
     /**
-     * Description
+     * Goto Anchor
      * @method gotoAnchor
      * @param {string} anchor
      * @return
      */
-    $scope.gotoAnchor = function(anc){
+    $scope.gotoAnchor = function(anc) {
       $timeout(function() {
         $anchorScroll.yOffset = 50;
         $anchorScroll(anc);
@@ -188,18 +186,19 @@ app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location
      * @param {string} date
      * @return {string} mm/dd/yyyy
      */
-    $scope.getFormattedDate = function(data){
-        var date = new Date(data);
-        var day = ("0" + date.getUTCDate()).slice(-2);
-        var month = ("0" + (date.getMonth() + 1)).slice(-2);
-        var year = date.getFullYear().toString();
-        return month+ '/' + day + '/' + year;
+    $scope.getFormattedDate = function(data) {
+      var date = new Date(data);
+      var day = ("0" + date.getUTCDate()).slice(-2);
+      var month = ("0" + (date.getMonth() + 1)).slice(-2);
+      var year = date.getFullYear().toString();
+      return month + '/' + day + '/' + year;
     };
 
     /**
      * submit setup form
+     * @method submitForm
      */
-    $scope.submitForm = function () {
+    $scope.submitForm = function() {
 
       if ($scope.clickedSubmit) {
         return;
@@ -208,8 +207,8 @@ app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location
       if (!$scope.signupForm.$valid) {
         $scope.form_error = true;
         $scope.gotoAnchor('form-error');
-        angular.forEach($scope.signupForm.$error, function (field) {
-          angular.forEach(field, function(errorField){
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
             errorField.$setTouched();
           })
         });
@@ -237,10 +236,10 @@ app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location
         thirdPartyProcessor: $scope.formData.thirdPartyProcessor,
       };
 
-      if($scope.formData.thirdPartyProcessorName){
+      if ($scope.formData.thirdPartyProcessorName) {
         advancedPreferences.thirdPartyProcessorName = $scope.formData.thirdPartyProcessorName;
       }
-      if($scope.formData.thirdPartyProcessorSoftware){
+      if ($scope.formData.thirdPartyProcessorSoftware) {
         advancedPreferences.thirdPartyProcessorSoftware = $scope.formData.thirdPartyProcessorSoftware;
       }
 
@@ -250,24 +249,25 @@ app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location
       var orderId = fdService.getOrderId();
 
       fdService.postAccountPreferences(data_to_send, orderId)
-          .success(function(data, status, headers, config) {
-            $scope.clickedSubmit = false;
-            $location.path('/signup/terms');
-          })
-          .error(function(data, status, headers, config) {
-            $scope.clickedSubmit = false;
-          });
+        .success(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+          $location.path('/signup/terms');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+        });
     };
     /**
-     * Description
+     * Validate 1099k Email Address
      * @method validate1099kEmail
      * @return
      */
     $scope.validate1099kEmail = function() {
-        fdService.validateBusiness($scope.signupForm.emailAddressFor1099k, $scope.formData.emailAddressFor1099k);
+      fdService.validateBusiness($scope.signupForm.emailAddressFor1099k, $scope.formData.emailAddressFor1099k);
     };
 
 
     ///////////////// MAIN ////////////////////////////////
     _init();
-}]);
+  }
+]);

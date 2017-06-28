@@ -19,7 +19,9 @@ app.directive("compareTo", function() {
         }
     };
 });
-
+/**
+ * Compare Numbers
+ */
 app.directive("compareNumTo", function() {
     return {
         require: "ngModel",
@@ -59,6 +61,9 @@ app.directive("sketch", function() {
     };
 });
 
+/**
+ * Add Video Modal Directive
+ */
 app.directive("addVideoModal", function() {
     return function(scope, element, attrs) {
         element.on('click', function() {
@@ -73,6 +78,10 @@ app.directive("addVideoModal", function() {
         });
     };
 });
+
+/**
+ * Open Video Directive
+ */
 app.directive("openVideo", function() {
     return function(scope, element, attrs) {
         element.YouTubePopup({
@@ -231,6 +240,9 @@ app.directive('formatPhone', function($filter) {
     };
 });
 
+/**
+ * Format Number
+ */
 app.directive('formatNum', function($filter) {
     var numFilter = $filter('number');
     return {

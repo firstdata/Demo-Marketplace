@@ -517,8 +517,6 @@ app.config([
   }
 ]);
 
-
-
 /**
  * Init titles and referrer url
  */

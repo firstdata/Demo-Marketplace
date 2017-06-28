@@ -154,7 +154,7 @@
               <!--<div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="2" /><label>{{CONST.SHIPPING_METHODS[2].name}}</label></div>
               <div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="3" /><label>{{CONST.SHIPPING_METHODS[3].name}}</label></div>
               <div><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="4" /><label>{{CONST.SHIPPING_METHODS[4].name}}</label></div> -->
-              <div ng-repeat="method in  shippingMethods track by $index"><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="{{$index+1}}" /><label>{{method.price | currency}} {{method.name}}</label></div>
+              <div ng-repeat="method in  CONST.SHIPPING_METHODS track by $index"><input type="radio" ng-change="shippingMethosChanged()" style="margin:10px;" name="shipping-option" ng-model="cart.shipping_option_id" value="{{$index+1}}" /><label>{{method.price | currency}} {{method.name}}</label></div>
             </div>
           </div>
         </form>

@@ -146,7 +146,7 @@
               <div class="form-element">
 
                 <label class="fancy-field" fancy-field  ng-class="{'error': signupForm.ORGANIZATION_TYPE.$touched && signupForm.ORGANIZATION_TYPE.$invalid}">
-                  <select placeholder="Organization type" ng-model="formData.ORGANIZATION_TYPE" name="ORGANIZATION_TYPE" required="required" ng-change="getTitles()" >
+                  <select placeholder="Organization type" ng-model="formData.ORGANIZATION_TYPE" name="ORGANIZATION_TYPE" required="required">
                     <option value="">Select Organization type</option>
                     <option value="{{code}}" ng-repeat="(code, name) in orgTypes">{{name}}</option>
                   </select>
@@ -341,41 +341,6 @@
                       <p ng-show="signupForm['SocialSecurityNumber_' + $index].$touched && signupForm['SocialSecurityNumber_' + $index].$error.pattern" class="form-error-detail"><i class="fa fa-info-circle"></i> Enter a valid Social Security Number.</p>
                       <p ng-show="signupForm['SocialSecurityNumber_' + $index].$error.excluded" class="form-error-detail"><i class="fa fa-info-circle"></i> Not a valid Social Security Number.</p>
                       <p ng-show="tinError" class="form-error-detail"><i class="fa fa-info-circle"></i> SSN does not match Tax filing name.</p>
-                  </div>
-                  <div class="form-element" ng-if="CONST.PLATFORM_NAME == 'td'">
-                      <label class="fancy-field" for="dl" fancy-field ng-class="{'error': signupForm['DriverLicenseNo_' + $index].$touched && signupForm['DriverLicenseNo_' + $index].$invalid}">
-                          <input name="DriverLicenseNo_{{$index}}" id="dl" type="text" placeholder="Driver's License Number" ng-model="owner.DriverLicenseNo" required="required" maxlength="25"/>
-                      </label>
-                      <p ng-show="signupForm['DriverLicenseNo_' + $index].$touched && signupForm['DriverLicenseNo_' + $index].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please Enter Driver License Number.</p>
-                  </div>
-                  <div class="form-element" ng-if="CONST.PLATFORM_NAME == 'td'">
-                      <div class="column-4" style="padding:0 8px 0 0;">
-                          <label class="fancy-field" fancy-field  ng-class="{'error': signupForm['DlState_' + $index].$touched && signupForm['DlState_' + $index].$invalid}">
-                              <select placeholder="State Issued" ng-model="owner.DriverLicenseState" name="DlState_{{$index}}" required="required" ng-options="state.abbr as state.name for state in CONST.STATES">
-                                  <option value="">State Issued</option>
-                              </select>
-                          </label>
-                          <p ng-show="signupForm['DlState_' + $index].$touched && signupForm['DlState_' + $index].$error.required" class="form-error-detail">
-                              <i class="fa fa-info-circle"></i> Please select Issued State.</p>
-                      </div>
-                      <div class="column-4" style="padding:0;">
-                          <label class="fancy-field" for="Dl_month" fancy-field ng-class="{'error': (signupForm['Dl_month_' + $index].$touched && signupForm['Dl_month_' + $index].$invalid)}">
-                              <select name="Dl_month_{{$index}}" placeholder="D.L. Expiration Month" id="Dl_month" ng-model="owner.DriverLicenseMonth" required="required" >
-                                  <option value="">D.L. Expiration Month</option>
-                                  <option ng-repeat="m in [] | range:01:12" ng-value="m | numberFixedLen:2" >{{m|monthName}}</option>
-                              </select>
-                          </label>
-                          <p ng-show="signupForm['Dl_month_' + $index].$touched && signupForm['Dl_month_' + $index].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please Enter D.L. Expiration Month.</p>
-                      </div>
-                      <div class="column-4" style="padding-right:0; padding-bottom:0; padding-top:0; padding-left:8px;">
-                          <label class="fancy-field" for="Dl_year" fancy-field ng-class="{'error': (signupForm['Dl_year_' + $index].$touched && signupForm['Dl_year_' + $index].$invalid)}">
-                              <select name="Dl_year_{{$index}}" placeholder="D.L. Expiration Year" id="Dl_year" ng-model="owner.DriverLicenseYear" required="required" >
-                                  <option value="">D.L. Expiration Year</option>
-                                  <option ng-repeat="y in [] | range:thisYear+10:thisYear" ng-value="y">{{y}}</option>
-                              </select>
-                          </label>
-                          <p ng-show="signupForm['Dl_year_' + $index].$touched && signupForm['Dl_year_' + $index].$error.required" class="form-error-detail"><i class="fa fa-info-circle"></i> Please Enter D.L. Expiration Year.</p>
-                      </div>
                   </div>
               </div>
               <div class="column-6">

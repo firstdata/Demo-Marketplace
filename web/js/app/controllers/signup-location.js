@@ -1,13 +1,12 @@
 /**
  * Signup Location Controller
  */
-app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService','$timeout', '$anchorScroll', 'CONST', '$routeParams',
-  function ($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST, $routeParams) {
+app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', 'CONST', '$routeParams',
+  function($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST, $routeParams) {
 
     /**
-     * Description
+     * Init function
      * @method _init
-     * @return
      */
     var _init = function() {
       $rootScope.body_id = 'full_body';
@@ -42,25 +41,25 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       $scope.clickedSubmit = false;
       $scope.bankErrorCount = 0;
       $scope.bankError = false;
-      $scope.bankErrorServerFails=false;
+      $scope.bankErrorServerFails = false;
       $scope.bankCheck = false;
       $scope.bankErrorCount_second = 0;
       $scope.bankError_second = false;
-      $scope.bankErrorServerFails_second=false;
+      $scope.bankErrorServerFails_second = false;
       $scope.bankCheck_second = false;
 
       var ti = fdService.getTransactionInfo();
 
 
       $scope.form_error = false;
-      $scope.states_list=$rootScope.CONST.STATES;
+      $scope.states_list = $rootScope.CONST.STATES;
       $scope.globalFormData = {};
 
       for (var i = 1; i <= $scope.num_locations_selected; i++) {
         $scope.globalFormData[i] = {};
         $scope.globalFormData[i].bankInformation = {};
 
-        if(!angular.isUndefined(cart.shippingAddress[0])){
+        if (!angular.isUndefined(cart.shippingAddress[0])) {
           $scope.globalFormData[i].DBA_NAME = cart.shippingAddress[0].company;
 
           $scope.globalFormData[i].statementDeliveryEmail = cart.shippingAddress[0].email;
@@ -68,23 +67,23 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
           angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
             $scope.globalFormData[i].bankInformation[value] = '0';
           });
-          $scope.globalFormData[i].name = cart.shippingAddress[0].firstname +" "+ cart.shippingAddress[0].lastname;
+          $scope.globalFormData[i].name = cart.shippingAddress[0].firstname + " " + cart.shippingAddress[0].lastname;
 
         }
 
-        if(ti.annualVolume){
+        if (ti.annualVolume) {
           $scope.globalFormData[i].annualVolume = ti.annualVolume;
         }
 
-        if(ti.annualcardVolume){
+        if (ti.annualcardVolume) {
           $scope.globalFormData[i].annualcardVolume = ti.annualcardVolume;
         }
 
-        if(ti.averageTicket){
+        if (ti.averageTicket) {
           $scope.globalFormData[i].TYPICAL_SALE_AMOUNT = ti.averageTicket;
         }
 
-        if(ti.highestTicket){
+        if (ti.highestTicket) {
           $scope.globalFormData[i].ANTICIPATED_HIGHEST_TICKET_SALE = ti.highestTicket;
         }
         // $scope.globalFormData[i].mcccodes = ti.mccTypes;
@@ -114,7 +113,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       // Get MCC Codes
       $scope.mcc_codes = [];
       fdService.getMccCodes($scope.categoryDetails.name).success(function(data, status, headers, config) {
-          $scope.mcc_codes = data;
+        $scope.mcc_codes = data;
       });
 
       $scope.products = [];
@@ -141,13 +140,13 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
         fdService.getOrderLocations(orderId).success(function(data, status, headers, config) {
           $scope.orderLocationsInfo = data.locationInformation;
-          for(var i = 0; i < $scope.orderLocationsInfo.length; i++){
-            var form = $scope.globalFormData[i+1];
+          for (var i = 0; i < $scope.orderLocationsInfo.length; i++) {
+            var form = $scope.globalFormData[i + 1];
             var formData = $scope.orderLocationsInfo[i];
             form.mcccodes = formData.mccDescription;
             form.mcc = formData.mcc;
-            if(formData.dbaName){
-                form.DBA_NAME = formData.dbaName;
+            if (formData.dbaName) {
+              form.DBA_NAME = formData.dbaName;
             }
             form.annualcardVolume = formData.annualVolume;
             form.merchantId = formData.merchantId;
@@ -155,19 +154,19 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
             form.PHONE_OR_EMAIL = formData.phoneOrEmail;
             form.INTERNET_PAY = formData.internet;
 
-            if(formData.averageTicket){
-                form.TYPICAL_SALE_AMOUNT = formData.averageTicket;
+            if (formData.averageTicket) {
+              form.TYPICAL_SALE_AMOUNT = formData.averageTicket;
             }
 
-            if(formData.highestTicket){
-                form.ANTICIPATED_HIGHEST_TICKET_SALE = formData.highestTicket;
+            if (formData.highestTicket) {
+              form.ANTICIPATED_HIGHEST_TICKET_SALE = formData.highestTicket;
             }
 
-            if(formData.rollupIndicator != undefined){
+            if (formData.rollupIndicator != undefined) {
               form.rollupIndicator = formData.rollupIndicator;
             }
 
-            if(formData.siteSurvey){
+            if (formData.siteSurvey) {
 
               var siteSurvey = formData.siteSurvey;
               form.siteVisitation = siteSurvey.siteVisitation;
@@ -176,7 +175,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
               form.DELIVERY15_30 = siteSurvey.deliveryTimeFrame_15_To_30;
               form.DELIVERY31 = siteSurvey.deliveryTimeFrame_Over_30;
 
-              if('Visitation Completed' === siteSurvey.siteVisitation){
+              if ('Visitation Completed' === siteSurvey.siteVisitation) {
                 $scope.surveyUser = siteSurvey.surveyPerformed;
                 form.businessZone = siteSurvey.businessZone;
                 form.businessLocationType = siteSurvey.merchantBusinessLocation;
@@ -185,9 +184,9 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
                 form.floorsOccupied = siteSurvey.floorOccupied.toString();
 
                 var merchantsNameDisplayed = {};
-                if(siteSurvey.merchantsNameDisplayed){
+                if (siteSurvey.merchantsNameDisplayed) {
                   var arr = siteSurvey.merchantsNameDisplayed.split(',');
-                  for(var k = 0; k < arr.length; k++){
+                  for (var k = 0; k < arr.length; k++) {
                     merchantsNameDisplayed[arr[k]] = true;
                   }
                 }
@@ -202,49 +201,49 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
                 form.cardDeposit = siteSurvey.salesDeposit;
                 form.orderRenewal = siteSurvey.autoRenew;
 
-                if(form.ownOrRent === 'Rent'){
+                if (form.ownOrRent === 'Rent') {
                   form.buildingSpace = new Date(siteSurvey.rentStartTime);
                   form.leaseExpiry = new Date(siteSurvey.leaseExpires);
                   form.landLordName = siteSurvey.landLordName;
                   form.landLordNumber = siteSurvey.landLordPhoneNumber;
                 }
-              } else{
+              } else {
                 form.returnPolicy = siteSurvey.returnPolicy;
                 form.returnPolicyCard = siteSurvey.separateRefundPolicy;
               }
-            }else{
-              form.ownOrRent === 'Own'
+            } else {
+              form.ownOrRent === 'Own';
             }
 
-            if(formData.address1){
+            if (formData.address1) {
               form.business_address1 = formData.address1;
             }
-            if(formData.address2){
+            if (formData.address2) {
               form.business_address2 = formData.address2;
             }
-            if(formData.zip){
+            if (formData.zip) {
               form.business_address_zip = formData.zip;
             }
-            if(formData.city){
+            if (formData.city) {
               form.business_address_city = formData.city;
             }
-            if(formData.state){
+            if (formData.state) {
               form.business_address_state = formData.state;
             }
 
             if (formData.equipmentLocation) {
               form.products = [];
-              for(var p = 0; p < formData.equipmentLocation.length; p++){
+              for (var p = 0; p < formData.equipmentLocation.length; p++) {
                 var equipmentId = formData.equipmentLocation[p].lineItemId;
                 var idx = $scope.products.map(function(p) { return p.id; }).indexOf(equipmentId);
-                if(idx !== -1){
+                if (idx !== -1) {
                   $scope.products[idx].location_num = i + 1;
                   form.products.push($scope.products[idx]);
-                  if(formData.equipmentLocation[p].attributes){
+                  if (formData.equipmentLocation[p].attributes) {
                     var configProduct = $scope.products[idx];
                     var attributes = formData.equipmentLocation[p].attributes;
                     configProduct.attributesReady = {};
-                    for(var d = 0; d < attributes.length; d++){
+                    for (var d = 0; d < attributes.length; d++) {
                       configProduct.attributesReady[attributes[d].attributeName] = {
                         attributeName: attributes[d].attributeName,
                         attributeValue: attributes[d].attributeValue,
@@ -257,17 +256,17 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
             }
 
             $timeout(function() {
-                angular.element('[name=SITE_VISITATION]').trigger('change');
-                angular.element('[name="FACE_TO_FACE"]').trigger('change');
-                angular.element('[name="PHONE_OR_EMAIL"]').trigger('change');
-                angular.element('[name="INTERNET_PAY"]').trigger('change');
-                angular.element('[name=DELIVERY0_7]').trigger('change');
-                angular.element('[name="DELIVERY8_14"]').trigger('change');
-                angular.element('[name="DELIVERY15_30"]').trigger('change');
-                angular.element('[name="DELIVERY31"]').trigger('change');
-                angular.element('[name="rollupIndicator"]').trigger('change');
+              angular.element('[name=SITE_VISITATION]').trigger('change');
+              angular.element('[name="FACE_TO_FACE"]').trigger('change');
+              angular.element('[name="PHONE_OR_EMAIL"]').trigger('change');
+              angular.element('[name="INTERNET_PAY"]').trigger('change');
+              angular.element('[name=DELIVERY0_7]').trigger('change');
+              angular.element('[name="DELIVERY8_14"]').trigger('change');
+              angular.element('[name="DELIVERY15_30"]').trigger('change');
+              angular.element('[name="DELIVERY31"]').trigger('change');
+              angular.element('[name="rollupIndicator"]').trigger('change');
             }, 0);
-            }
+          }
           for (var x = 0; x < $scope.num_locations_selected; x++) {
             var formDataMCC = $scope.globalFormData[x + 1];
             formDataMCC.mcccodes = formDataMCC.mcccodes ? formDataMCC.mcccodes : $scope.globalFormData[1].mcccodes;
@@ -284,13 +283,6 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
       });
 
-
-
-      // fdService.getFspCompany(orderId).success(function(data, status, headers, config) {
-      //   $scope.isFspCompany = data.isFspCompany;
-      // });
-
-
       $scope.fullNamePattern = (/^([a-zA-Z]{2,24})\s([a-zA-Z]{2,24})$/);
       $scope.emailPattern = (/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)?(\.(AERO|INT|GG|GH|GI|GL|GM|GN|GP|GQ|GR|GS|JOBS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|MIL|ID|IE|IL|IM|IN|IO|IQ|IR|IS|IT|MOBI|JE|JM|JO|JP|KE|KG|KH|KI|KM|KN|MUSEUM|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|NAME|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|NET|MG|MH|MK|ML|MM|MN|MO|MP|MQ|MR|ORG|MS|MT|MU|MV|MW|MX|MY|MZ|NA|NC|PRO|NE|NF|NG|NI|NL|NO|NP|NR|NU|NZ|TEL|OM|PA|PE|PF|PG|PH|PK|PL|PM|PN|ASIA|TRAVEL|PR|PS|PT|PW|PY|QA|RE|RO|RS|RU|AC|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|AD|SK|SL|SM|SN|SO|SR|ST|SU|SV|SY|AE|SZ|TC|TD|TF|TG|TH|TJ|TK|TL|TM|AF|TN|TO|TP|TR|TT|TV|TW|TZ|UA|UG|AG|UK|UM|US|UY|UZ|VA|VC|VE|VG|VI|AI|VN|VU|WF|WS|YE|YT|YU|ZA|ZM|AL|AM|AN|BIZ|AO|AQ|AR|AS|AT|AU|AW|AX|AZ|BA|CAT|BB|BD|BE|BF|BG|BH|BI|BJ|BM|BN|COM|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CC|COOP|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|EDU|CR|CU|CV|CX|CY|CZ|DE|DJ|DK|DM|GOV|DO|DZ|EC|EE|EG|ER|ES|ET|EU|FI|INFO|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|aero|int|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|jobs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|mil|id|ie|il|im|in|io|iq|ir|is|it|mobi|je|jm|jo|jp|ke|kg|kh|ki|km|kn|museum|kp|kr|kw|ky|kz|la|lb|lc|li|lk|name|lr|ls|lt|lu|lv|ly|ma|mc|md|me|net|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|org|ms|mt|mu|mv|mw|mx|my|mz|na|nc|pro|ne|nf|ng|ni|nl|no|np|nr|nu|nz|tel|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|asia|travel|pr|ps|pt|pw|py|qa|re|ro|rs|ru|ac|rw|sa|sb|sc|sd|se|sg|sh|si|sj|ad|sk|sl|sm|sn|so|sr|st|su|sv|sy|ae|sz|tc|td|tf|tg|th|tj|tk|tl|tm|af|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|ag|uk|um|us|uy|uz|va|vc|ve|vg|vi|ai|vn|vu|wf|ws|ye|yt|yu|za|zm|al|am|an|biz|ao|aq|ar|as|at|au|aw|ax|az|ba|cat|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|com|bo|br|bs|bt|bv|bw|by|bz|ca|cc|coop|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|edu|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|gov|do|dz|ec|ee|eg|er|es|et|eu|fi|info|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf))$/);
       $scope.phoneNumberPattern = (/^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/);
@@ -298,7 +290,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       $scope.streetAddressPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
       $scope.apartmentPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
       $scope.cityPattern = (/^[a-zA-Z\s]*$/);
-      $scope.zipPattern =(/^[0-9]{5}$/);
+      $scope.zipPattern = (/^[0-9]{5}$/);
       $scope.dbaNamePattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
       //$scope.dbaNamePattern = (/^[a-zA-Z0-9',\s]*$/);
       $scope.einPattern = (/^[0-9]{9}$/);
@@ -309,7 +301,6 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       $scope.today = new Date();
       $scope.thisYear = $scope.today.getFullYear();
       $scope.thisMonth = $scope.today.getMonth() + 1;
-      $scope.companyId = CONST.COMPANY_ID;
       $scope.titles = [];
 
 
@@ -330,18 +321,20 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
     /**
      * remove product from this location
+     * @method removeProduct
      * @param p
      * @param index
      */
-    $scope.removeProduct = function(p, index){
+    $scope.removeProduct = function(p, index) {
       p.location_num = null;
       $scope.formData.products.splice(index, 1);
     };
 
     /**
      * initialize equipment popup
+     * @method initEquipment
      */
-    $scope.initEquipment = function () {
+    $scope.initEquipment = function() {
 
       $scope.prodLoc = [];
 
@@ -350,24 +343,29 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       }
     };
 
-    $scope.getWebsiteFlag = function(){
-        var orderId = fdService.getOrderId();
-        fdService.getOrderBusinessinformation(orderId).success(function(data, status, headers, config) {
-            if(data.merchantInformation.length > 0 && data.merchantInformation[0].url){
-                $scope.isWebSiteAvailable = true;
-            } else {
-                $scope.isWebSiteAvailable = false;
-            }
+    /**
+     * Get Website Flag
+     * @method getWebsiteFlag
+     */
+    $scope.getWebsiteFlag = function() {
+      var orderId = fdService.getOrderId();
+      fdService.getOrderBusinessinformation(orderId).success(function(data, status, headers, config) {
+          if (data.merchantInformation.length > 0 && data.merchantInformation[0].url) {
+            $scope.isWebSiteAvailable = true;
+          } else {
+            $scope.isWebSiteAvailable = false;
+          }
         })
         .error(function(data, status, headers, config) {
-            $scope.isWebSiteAvailable = false;
+          $scope.isWebSiteAvailable = false;
         });
-    }
+    };
 
     /**
      * save equipment info
+     * @method saveEquipment
      */
-    $scope.saveEquipment = function () {
+    $scope.saveEquipment = function() {
       var i, k, p, n;
       for (i = 0; i < $scope.products.length; i++) {
         if ($scope.products[i].location_num != $scope.prodLoc[i]) {
@@ -377,7 +375,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
           k = $scope.globalFormData[p].products.indexOf($scope.products[i]);
 
-          if (-1 !== k){
+          if (-1 !== k) {
             $scope.globalFormData[n].products.push($scope.products[i]);
             $scope.globalFormData[p].products.splice(k, 1);
           } else {
@@ -391,37 +389,34 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     };
 
     /**
-    * Description
-    * @method checkCheckbox
-    * @return
-    */
-    $scope.checkCheckbox = function(){
+     * Check Checkbox
+     * @method checkCheckbox
+     */
+    $scope.checkCheckbox = function() {
       $scope.merchantDisplayedArray = [];
-      angular.forEach($scope.formData.merchantsNameDisplayed, function (value, key) {
-          if(value == true){
-            $scope.merchantDisplayedArray.push(key);
-          }
+      angular.forEach($scope.formData.merchantsNameDisplayed, function(value, key) {
+        if (value == true) {
+          $scope.merchantDisplayedArray.push(key);
+        }
       });
-      if ($scope.merchantDisplayedArray.length > 0){
-          $scope.merchantDisplayed = $scope.merchantDisplayedArray.toString();
-      }
-      else{
+      if ($scope.merchantDisplayedArray.length > 0) {
+        $scope.merchantDisplayed = $scope.merchantDisplayedArray.toString();
+      } else {
         $scope.merchantDisplayed = '';
       }
     };
 
     /**
-     * Description
+     * Calculate Remaining Values
      * @method calcRemainingValues
      * @param {} input1
      * @param {} input2
      * @param {} input3
-     * @return
      */
-    var calcRemainingValues =  function(input1, input2, input3) {
+    var calcRemainingValues = function(input1, input2, input3) {
       $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());
       if ($scope.formData[input1]) {
-        if(!$scope.isWebSiteAvailable){
+        if (!$scope.isWebSiteAvailable) {
           $scope.formData.INTERNET_PAY = '0';
         }
         if (!$scope.formData[input2] && !$scope.formData[input3]) {
@@ -436,14 +431,14 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
           }
 
         }
-        if ($scope.formData[input2] && $scope.formData[input3]) {//Set form validity
+        if ($scope.formData[input2] && $scope.formData[input3]) { //Set form validity
           $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());
           return;
         }
-        if ($scope.formData[input2]){
+        if ($scope.formData[input2]) {
           $scope.formData[input3] = $scope.isWebSiteAvailable ? (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]))).toString() : '0';
           $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());}
-        if ($scope.formData[input3]){
+        if ($scope.formData[input3]) {
           $scope.formData[input2] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]))).toString();
           $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());}
       } else {
@@ -452,8 +447,8 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
       }
       $timeout(function() {
-        angular.element('[name='+input2+']').trigger('change');
-        angular.element('[name='+input3+']').trigger('change');
+        angular.element('[name=' + input2 + ']').trigger('change');
+        angular.element('[name=' + input3 + ']').trigger('change');
       }, 1);
     };
 
@@ -463,24 +458,23 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
      * @return BinaryExpression
      */
     var isTotalValid = function() {
-      var a = $scope.formData.FACE_TO_FACE ? parseInt($scope.formData.FACE_TO_FACE ) : 0;
-      var b = $scope.formData.PHONE_OR_EMAIL ? parseInt($scope.formData.PHONE_OR_EMAIL ) : 0;
-      var c = $scope.formData.INTERNET_PAY  ? parseInt($scope.formData.INTERNET_PAY ): 0;
-      return a + b + c === 100
+      var a = $scope.formData.FACE_TO_FACE ? parseInt($scope.formData.FACE_TO_FACE) : 0;
+      var b = $scope.formData.PHONE_OR_EMAIL ? parseInt($scope.formData.PHONE_OR_EMAIL) : 0;
+      var c = $scope.formData.INTERNET_PAY ? parseInt($scope.formData.INTERNET_PAY) : 0;
+      return a + b + c === 100;
     };
 
 
     /**
-     * Description
+     * Lookup Business Zip
      * @method lookupBusinessZip
-     * @return
      */
     $scope.lookupBusinessZip = function() {
       if (!$scope.formData.business_address_zip) {
         return;
       } else if ($scope.signupForm && $scope.formData.business_address_zip == '00000') {
         $scope.signupForm.business_address_zip.$setValidity("zipnotValid", false);
-      } else if ($scope.signupForm){
+      } else if ($scope.signupForm) {
         $scope.signupForm.business_address_zip.$setValidity("zipnotValid", true);
       }
 
@@ -519,14 +513,15 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
     /**
      * update Google Map
+     * @method updateMap
      */
-    $scope.updateMap = function(){
+    $scope.updateMap = function() {
 
       if ($scope.mapTO) {
         $timeout.cancel($scope.mapTO);
       }
 
-      $scope.mapTO = $timeout(function(){
+      $scope.mapTO = $timeout(function() {
 
         if (!$scope.geocoder) {
           $scope.geocoder = new google.maps.Geocoder();
@@ -535,7 +530,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
         if (!$scope.map) {
           var mapOptions = {
             zoom: 14,
-          }
+          };
           $scope.map = new google.maps.Map(document.getElementById('google-map-owner'), mapOptions);
         }
 
@@ -554,70 +549,67 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     };
 
     /**
-     * Description
+     * Get Titles for Organozation Owners
      * @method getTitles
      * @return
      */
-    $scope.getTitles = function(){
-      if($scope.signupForm.ORGANIZATION_TYPE.$valid){
+    $scope.getTitles = function() {
+      if ($scope.signupForm.ORGANIZATION_TYPE.$valid) {
         $scope.titles = [];
         $scope.formData.title1 = '';
-        var dataToSend = {"companyId": $scope.companyId,
-          "businessType": $scope.formData.ORGANIZATION_TYPE};
+        var dataToSend = {"businessType": $scope.formData.ORGANIZATION_TYPE};
         fdService.getTitles(dataToSend)
-            .success(function(response, status, headers, config) {
-              if(!angular.isUndefined(response.titles)){
-                for (var i = 0; i < response.titles.length; i++) {
-                  $scope.titles.push(response.titles[i]);
-                }
+          .success(function(response, status, headers, config) {
+            if (!angular.isUndefined(response.titles)) {
+              for (var i = 0; i < response.titles.length; i++) {
+                $scope.titles.push(response.titles[i]);
               }
-            })
-            .error(function(data, status, headers, config) {
-              console.log('error');
-            });
+            }
+          })
+          .error(function(data, status, headers, config) {
+            console.log('error');
+          });
       }
     };
 
     /**
-     * Description
+     * Check Date
      * @method checkDate
      * @param {Object} owner
      * @param {numeric} index
-     * @return
      */
-    $scope.checkDate = function(owner, index){
+    $scope.checkDate = function(owner, index) {
       if (!owner.dob_day || !owner.dob_month || !owner.dob_year) {
         return;
       }
 
 
       var dateValid = true;
-      if((owner.dob_month == 04 || owner.dob_month == 06 || owner.dob_month == 9 || owner.dob_month == 11) && (owner.dob_day >= 31))
+      if ((owner.dob_month == 04 || owner.dob_month == 06 || owner.dob_month == 9 || owner.dob_month == 11) && (owner.dob_day >= 31))
         dateValid = false;
-      if(owner.dob_month == 02){
-        if(owner.dob_year % 4 != 0){
-          if(owner.dob_day > 28)
+      if (owner.dob_month == 02) {
+        if (owner.dob_year % 4 != 0) {
+          if (owner.dob_day > 28)
             dateValid = false;
         }
-        if(owner.dob_year % 4 == 0){
-          if(owner.dob_day > 29)
+        if (owner.dob_year % 4 == 0) {
+          if (owner.dob_day > 29)
             dateValid = false;
         }
       }
 
-      var calculateAge = new Date(owner.dob_year, owner.dob_month-1, owner.dob_day);
+      var calculateAge = new Date(owner.dob_year, owner.dob_month - 1, owner.dob_day);
       var ageDifMs = Date.now() - calculateAge.getTime();
       var ageDate = new Date(ageDifMs);
-      var age =  Math.abs(ageDate.getUTCFullYear() - 1970);
-      isAgeInsufficient  = false;
-      if(age < 18){
-        isAgeInsufficient  = true;
-      }
-      else{
-        isAgeInsufficient  = false;
+      var age = Math.abs(ageDate.getUTCFullYear() - 1970);
+      isAgeInsufficient = false;
+      if (age < 18) {
+        isAgeInsufficient = true;
+      } else {
+        isAgeInsufficient = false;
       }
 
-      if(dateValid && !isAgeInsufficient){
+      if (dateValid && !isAgeInsufficient) {
         $scope.signupForm['dob_month_' + index].$setValidity('date_format', true);
       } else {
         $scope.signupForm['dob_month_' + index].$setValidity('date_format', false);
@@ -629,10 +621,11 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
     /**
      * percent owned field's on blur event
+     * @method percentBlurred
      * @param owner
      * @param index
      */
-    $scope.percentBlurred = function (owner, index) {
+    $scope.percentBlurred = function(owner, index) {
 
       var totalPercent = 0;
 
@@ -670,12 +663,12 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     };
 
     /**
-     * Description
+     * Goto Anchor
      * @method gotoAnchor
      * @param {string} anchor
      * @return
      */
-    $scope.gotoAnchor = function(anc){
+    $scope.gotoAnchor = function(anc) {
       $timeout(function() {
         $anchorScroll.yOffset = 50;
         $anchorScroll(anc);
@@ -685,14 +678,15 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
     /**
      * change active location's number
-     * @param n
+     * @method changeNumber
+     * @param {number} n
      */
-    $scope.changeNumber = function (n) {
+    $scope.changeNumber = function(n) {
       if (!$scope.signupForm.$valid) {
         $scope.form_error = true;
         $scope.gotoAnchor('form-error');
-        angular.forEach($scope.signupForm.$error, function (field) {
-          angular.forEach(field, function(errorField){
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
             errorField.$setTouched();
           })
         });
@@ -711,9 +705,9 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       $scope.formData = $scope.globalFormData[$scope.current_number];
       $scope.gotoAnchor('signup-content');
 
-      $timeout(function () {
-        angular.forEach($scope.signupForm.$error, function (field) {
-          angular.forEach(field, function(errorField){
+      $timeout(function() {
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
             errorField.$setUntouched();
           })
         });
@@ -726,8 +720,9 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
     /**
      * show / hide second bank account info
+     * @method toggleBankAccount
      */
-    $scope.toggleBankAccount = function () {
+    $scope.toggleBankAccount = function() {
       $scope.formData.isSecondBankSelected = !$scope.formData.isSecondBankSelected;
       if (!$scope.formData.isSecondBankSelected) {
         $scope.formData.ROUTING_NUMBER_SECOND = '';
@@ -740,28 +735,27 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     };
 
     /**
-     * Description
+     * Check Account
      * @method checkAccount
      * @return
      */
-    $scope.checkAccount = function(){
-      if($scope.formData.isSecondBankSelected){
-        if($scope.formData.ROUTING_NUMBER == $scope.formData.ROUTING_NUMBER_SECOND){
-          if($scope.formData.ACCOUNT_NUMBER == $scope.formData.ACCOUNT_NUMBER_SECOND){
+    $scope.checkAccount = function() {
+      if ($scope.formData.isSecondBankSelected) {
+        if ($scope.formData.ROUTING_NUMBER == $scope.formData.ROUTING_NUMBER_SECOND) {
+          if ($scope.formData.ACCOUNT_NUMBER == $scope.formData.ACCOUNT_NUMBER_SECOND) {
             $scope.signupForm.ACCOUNT_NUMBER_SECOND.$setValidity('accountError', false);
-          }else{
+          } else {
             $scope.signupForm.ACCOUNT_NUMBER_SECOND.$setValidity('accountError', true);
           }
-        }else{
+        } else {
           $scope.signupForm.ACCOUNT_NUMBER_SECOND.$setValidity('accountError', true);
         }
       }
     };
 
     /**
-     * Description
+     * Check Bank
      * @method checkBank
-     * @return
      */
     $scope.checkBank = function() {
       if ($scope.signupForm.ROUTING_NUMBER.$valid) {
@@ -780,11 +774,11 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
           }
         }).error(function(data, status, headers, config) {
           $scope.formData.bankName = "";
-          if(status == 400){
+          if (status == 400) {
             $scope.bankCheck = true;
             $scope.bankError = true;
             $scope.bankErrorServerFails = false;
-          }else{
+          } else {
             $scope.bankErrorCount++;
             $scope.bankError = false;
             if ($scope.bankErrorCount >= 3) {
@@ -800,7 +794,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     };
 
     /**
-     * Description
+     * Check Second Bank
      * @method CheckSecondBank
      * @return
      */
@@ -821,11 +815,11 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
           }
         }).error(function(data, status, headers, config) {
           $scope.formData.bankName_second = "";
-          if(status == 400){
+          if (status == 400) {
             $scope.bankCheck_second = true;
             $scope.bankError_second = true;
             $scope.bankErrorServerFails_second = false;
-          }else{
+          } else {
             $scope.bankErrorCount_second++;
             $scope.bankError_second = false;
             if ($scope.bankErrorCount_second >= 3) {
@@ -842,7 +836,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
 
     /**
-     * Description
+     * Face To Face Change
      * @method faceToFaceChange
      * @param {} tag
      * @return
@@ -851,17 +845,15 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", false);
       if (tag == 0) {
         if ($scope.formData.FACE_TO_FACE)
-          calcRemainingValues('FACE_TO_FACE','PHONE_OR_EMAIL','INTERNET_PAY');
-      }
-
-      else if (tag == 1) {
+          calcRemainingValues('FACE_TO_FACE', 'PHONE_OR_EMAIL', 'INTERNET_PAY');
+      } else if (tag == 1) {
         if ($scope.formData.PHONE_OR_EMAIL)
-          calcRemainingValues('PHONE_OR_EMAIL','FACE_TO_FACE','INTERNET_PAY');
+          calcRemainingValues('PHONE_OR_EMAIL', 'FACE_TO_FACE', 'INTERNET_PAY');
       }
       //Added tag=2 else condition for INTERNET_PAY logic handling
       else if (tag == 2) {
         if ($scope.formData.INTERNET_PAY)
-          calcRemainingValues('INTERNET_PAY','FACE_TO_FACE','PHONE_OR_EMAIL');
+          calcRemainingValues('INTERNET_PAY', 'FACE_TO_FACE', 'PHONE_OR_EMAIL');
       }
     };
 
@@ -879,13 +871,12 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     }
 
     /**
-     * Description
+     * Calculate Delivery Values
      * @method calcDeliveryValues
      * @param {} input1
      * @param {} input2
      * @param {} input3
      * @param {} input4
-     * @return
      */
     var calcDeliveryValues = function(input1, input2, input3, input4) {
       $scope.signupForm.DELIVERY31.$setValidity("total", deliveryTotal());
@@ -913,12 +904,12 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
         }
         if ($scope.formData[input2]) {
           if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) === 100)) {
-              $scope.formData[input3] = '0';
-              $scope.formData[input4] = '0';
-              $timeout(function() {
-                angular.element('[name=' + input3 + ']').trigger('change');
-                angular.element('[name=' + input4 + ']').trigger('change');
-              }, 1);
+            $scope.formData[input3] = '0';
+            $scope.formData[input4] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input3 + ']').trigger('change');
+              angular.element('[name=' + input4 + ']').trigger('change');
+            }, 1);
           }
           if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) > 100)) {
             $scope.signupForm.DELIVERY31.$setValidity("total", false);
@@ -941,12 +932,12 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
         }
         if ($scope.formData[input3]) {
           if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) === 100)) {
-              $scope.formData[input2] = '0';
-              $scope.formData[input4] = '0';
-              $timeout(function() {
-                angular.element('[name=' + input2 + ']').trigger('change');
-                angular.element('[name=' + input4 + ']').trigger('change');
-              }, 1);
+            $scope.formData[input2] = '0';
+            $scope.formData[input4] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input2 + ']').trigger('change');
+              angular.element('[name=' + input4 + ']').trigger('change');
+            }, 1);
           }
           if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) > 100)) {
             $scope.signupForm.DELIVERY31.$setValidity("total", false);
@@ -969,12 +960,12 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
         }
         if ($scope.formData[input4]) {
           if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input4]) === 100)) {
-              $scope.formData[input2] = '0';
-              $scope.formData[input3] = '0';
-              $timeout(function() {
-                angular.element('[name=' + input2 + ']').trigger('change');
-                angular.element('[name=' + input3 + ']').trigger('change');
-              }, 1);
+            $scope.formData[input2] = '0';
+            $scope.formData[input3] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input2 + ']').trigger('change');
+              angular.element('[name=' + input3 + ']').trigger('change');
+            }, 1);
           }
           if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input4]) > 100)) {
             $scope.signupForm.DELIVERY31.$setValidity("total", false);
@@ -1009,37 +1000,38 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     }
 
     /**
-     * Description
+     * Change Delivery Time Frame
      * @method changeDeliveryTimeFrame
      * @param {} tag
      * @return
      */
     $scope.changeDeliveryTimeFrame = function(tag) {
-        if (!($scope.categoryDetails.name == 'ECOMMERCE' || $scope.categoryDetails.name == 'MOTO' || $scope.formData.FACE_TO_FACE < 100)) {
-            if (($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY15_30) || ($scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY15_30 && $scope.formData.DELIVERY31) || ($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY15_30 && $scope.formData.DELIVERY31) || ($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY31)) {
-                $scope.signupForm.DELIVERY31.$setValidity("total", false);
-            }
+      if (!($scope.categoryDetails.name == 'ECOMMERCE' || $scope.categoryDetails.name == 'MOTO' || $scope.formData.FACE_TO_FACE < 100)) {
+        if (($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY15_30) || ($scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY15_30 && $scope.formData.DELIVERY31) || ($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY15_30 && $scope.formData.DELIVERY31) || ($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY31)) {
+          $scope.signupForm.DELIVERY31.$setValidity("total", false);
         }
-        if (tag == 0) {
-            if ($scope.formData.DELIVERY0_7)
-                calcDeliveryValues('DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY15_30', 'DELIVERY31');
-        } else if (tag == 1) {
-            if ($scope.formData.DELIVERY8_14)
-                calcDeliveryValues('DELIVERY8_14', 'DELIVERY0_7', 'DELIVERY15_30', 'DELIVERY31');
-        } else if (tag == 2) {
-            if ($scope.formData.DELIVERY15_30)
-                calcDeliveryValues('DELIVERY15_30', 'DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY31');
-        } else if (tag == 3) {
-            if ($scope.formData.DELIVERY31)
-                calcDeliveryValues('DELIVERY31', 'DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY15_30');
-        }
+      }
+      if (tag == 0) {
+        if ($scope.formData.DELIVERY0_7)
+          calcDeliveryValues('DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY15_30', 'DELIVERY31');
+      } else if (tag == 1) {
+        if ($scope.formData.DELIVERY8_14)
+          calcDeliveryValues('DELIVERY8_14', 'DELIVERY0_7', 'DELIVERY15_30', 'DELIVERY31');
+      } else if (tag == 2) {
+        if ($scope.formData.DELIVERY15_30)
+          calcDeliveryValues('DELIVERY15_30', 'DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY31');
+      } else if (tag == 3) {
+        if ($scope.formData.DELIVERY31)
+          calcDeliveryValues('DELIVERY31', 'DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY15_30');
+      }
     };
 
     /**
-     * init Configure Product popup
+     * Init Configure Product popup
+     * @method configureProduct
      * @param p
      */
-    $scope.configureProduct = function (p) {
+    $scope.configureProduct = function(p) {
 
       $scope.activeProduct = p;
 
@@ -1072,9 +1064,10 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
 
     /**
      * save configured product
+     * @method saveConfigureProduct
      * @param {Object} p product
      */
-    $scope.saveConfigureProduct = function (p) {
+    $scope.saveConfigureProduct = function(p) {
 
       p.attributesReady = {};
       for (i in p.attributeDataDefault) {
@@ -1088,26 +1081,30 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     };
 
     /**
+     * Description
      * @method getMccTypes
      * @param {Object} formData
+     * @param {} callback
+     * @return
      */
-    $scope.getMccTypes = function(formData,callback){
+    $scope.getMccTypes = function(formData, callback) {
       formData.mccTypes = [];
 
       var ti = fdService.getTransactionInfo();
 
       fdService.getMccTypes($scope.categoryDetails.name, formData.mcccodes).success(function(data, status, headers, config) {
         formData.mccTypes = data;
-        if(callback) {
-           callback.apply(this, []);
+        if (callback) {
+          callback.apply(this, []);
         }
       });
     };
 
     /**
      * submit locations form
+     * @method submitLocations
      */
-    $scope.submitLocations = function () {
+    $scope.submitLocations = function() {
 
       if ($scope.clickedSubmit) {
         return;
@@ -1116,8 +1113,8 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
       if (!$scope.signupForm.$valid) {
         $scope.form_error = true;
         $scope.gotoAnchor('form-error');
-        angular.forEach($scope.signupForm.$error, function (field) {
-          angular.forEach(field, function(errorField){
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
             errorField.$setTouched();
           })
         });
@@ -1146,7 +1143,7 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
         siteSurvey.deliveryTimeFrame_15_To_30 = $scope.globalFormData[i].DELIVERY15_30;
         siteSurvey.deliveryTimeFrame_Over_30 = $scope.globalFormData[i].DELIVERY31;
 
-        if($scope.globalFormData[i].siteVisitation === 'Visitation Completed'){
+        if ($scope.globalFormData[i].siteVisitation === 'Visitation Completed') {
           siteSurvey.surveyPerformed = $scope.surveyUser;
           siteSurvey.businessZone = $scope.globalFormData[i].businessZone;
           siteSurvey.merchantBusinessLocation = $scope.globalFormData[i].businessLocationType;
@@ -1164,13 +1161,13 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
           siteSurvey.salesDeposit = $scope.globalFormData[i].cardDeposit;
           siteSurvey.autoRenew = $scope.globalFormData[i].orderRenewal;
 
-          if($scope.globalFormData[i].ownOrRent === 'Rent'){
+          if ($scope.globalFormData[i].ownOrRent === 'Rent') {
             siteSurvey.rentStartTime = $filter('date')($scope.globalFormData[i].buildingSpace, "MM/dd/yyyy");
             siteSurvey.leaseExpires = $filter('date')($scope.globalFormData[i].leaseExpiry, "MM/dd/yyyy");
             siteSurvey.landLordName = $scope.globalFormData[i].landLordName;
             siteSurvey.landLordPhoneNumber = $scope.globalFormData[i].landLordNumber;
           }
-        } else{
+        } else {
           siteSurvey.returnPolicy = $scope.globalFormData[i].returnPolicy;
           siteSurvey.separateRefundPolicy = $scope.globalFormData[i].returnPolicyCard;
         }
@@ -1202,12 +1199,12 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
         };
 
         angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
-          bankInfo[value] = $scope.globalFormData[i].bankInformation[value] == 0 ? 1 :0;
+          bankInfo[value] = $scope.globalFormData[i].bankInformation[value] == 0 ? 1 : 0;
         });
 
         bankInformation.push(bankInfo);
 
-        if($scope.globalFormData[i].isSecondBankSelected){
+        if ($scope.globalFormData[i].isSecondBankSelected) {
 
           bankInfo = {
             "instName": $scope.globalFormData[i].bankName_second,
@@ -1248,8 +1245,8 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
           zip: $scope.globalFormData[i].business_address_zip,
         });
 
-        if($scope.globalFormData[i].isPrimaryLocation || $scope.globalFormData[i].useSameBank != 'yes'){
-            data_to_send.locationInformation[i-1]['bankInformation'] = bankInformation;
+        if ($scope.globalFormData[i].isPrimaryLocation || $scope.globalFormData[i].useSameBank != 'yes') {
+          data_to_send.locationInformation[i - 1]['bankInformation'] = bankInformation;
         }
 
       }
@@ -1270,7 +1267,8 @@ app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$locat
     ///////////////// MAIN ////////////////////////////////
     _init();
     $(window).on('popstate', function() {
-        angular.element('.modal-backdrop').removeClass('modal-backdrop');
-        angular.element('body').css('overflow', 'auto');
+      angular.element('.modal-backdrop').removeClass('modal-backdrop');
+      angular.element('body').css('overflow', 'auto');
     });
-}]);
+  }
+]);

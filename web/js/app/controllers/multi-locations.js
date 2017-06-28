@@ -2,13 +2,13 @@
  * Multi Locations Controller
  */
 app.controller('MultiLocationsCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', 'CONST',
-  function ($scope, $rootScope, $window, fdService, $routeParams, $location, CONST) {
+  function($scope, $rootScope, $window, fdService, $routeParams, $location, CONST) {
 
     /**
      * init function
      * @private
      */
-    var _init = function(){
+    var _init = function() {
 
       $scope.orderId = fdService.getOrderId();
 
@@ -38,9 +38,10 @@ app.controller('MultiLocationsCtrl', ['$scope', '$rootScope', '$window', 'fdServ
 
     /**
      * change number of selected locations
+     * @method changeNumber
      * @param {number} n
      */
-    $scope.changeNumber = function (n) {
+    $scope.changeNumber = function(n) {
 
       if ($scope.cart.num_locations < n) {
         n = $scope.cart.num_locations;
@@ -51,6 +52,5 @@ app.controller('MultiLocationsCtrl', ['$scope', '$rootScope', '$window', 'fdServ
 
     ///////////////// MAIN ////////////////////////////////
     _init();
-  }]);
-
-
+  }
+]);

@@ -1,68 +1,68 @@
 /**
  * Family Controller
  */
-app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', '$anchorScroll','CONST',
-    function ($scope, $rootScope, $window, fdService, $routeParams, $location, $anchorScroll, CONST) {
+app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', '$anchorScroll', 'CONST',
+  function($scope, $rootScope, $window, fdService, $routeParams, $location, $anchorScroll, CONST) {
 
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
-    $rootScope.body_id = 'product-detail';
-    $scope.family = [];
-    $scope.productInfo = [];
-    $scope.recommendedBundles = [];
-    $scope.includes = [];
-    $scope.faqs = [];
-    $scope.features = [];
-    $scope.specs = {};
-    $scope.fid = $routeParams.fid;
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+      $rootScope.body_id = 'product-detail';
+      $scope.family = [];
+      $scope.productInfo = [];
+      $scope.recommendedBundles = [];
+      $scope.includes = [];
+      $scope.faqs = [];
+      $scope.features = [];
+      $scope.specs = {};
+      $scope.fid = $routeParams.fid;
 
-    if (!$scope.fid) {
-      $location.path('invalid-item');
-      return;
-    }
+      if (!$scope.fid) {
+        $location.path('invalid-item');
+        return;
+      }
 
-    $rootScope.cart = fdService.getCart();
-    fdService.getProductOptions($scope.fid)
-      .success(function(data, status, headers, config) {
-        $scope.family = data;
+      $rootScope.cart = fdService.getCart();
+      fdService.getProductOptions($scope.fid)
+        .success(function(data, status, headers, config) {
+          $scope.family = data;
 
-        if ($scope.family.options && $scope.family.options.length){
-          console.log($scope.family.options)
-          $scope.loadProduct($scope.family.options[0].productId);
-        }
-      })
-      .error(function(data, status, headers, config) {
-        $scope.family = [];
-        console.log('error');
-      });
+          if ($scope.family.options && $scope.family.options.length) {
+            $scope.loadProduct($scope.family.options[0].productId);
+          }
+        })
+        .error(function(data, status, headers, config) {
+          $scope.family = [];
+          console.log('error');
+        });
 
-  };
+    };
 
-  /**
-   * Load product information by product Id
-   * @param id {int} product Id
-   */
-  $scope.loadProduct = function(id){
-    $scope.productId = id;
-    fdService.getProduct(id)
-      .success(function(data, status, headers, config) {
-        $scope.productInfo = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.productInfo = [];
-        console.log('error')
-      });
-  
+    /**
+     * Load product information by product Id
+     * @method loadProduct
+     * @param id {int} product Id
+     */
+    $scope.loadProduct = function(id) {
+      $scope.productId = id;
+      fdService.getProduct(id)
+        .success(function(data, status, headers, config) {
+          $scope.productInfo = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.productInfo = [];
+          console.log('error');
+        });
+
       fdService.getRecommendedBundles(id)
         .success(function(data, status, headers, config) {
           $scope.recommendedBundles = data;
         })
         .error(function(data, status, headers, config) {
           $scope.recommendedBundles = [];
-          console.log('error')
+          console.log('error');
         });
 
       fdService.getFaqs(id)
@@ -71,16 +71,16 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
         })
         .error(function(data, status, headers, config) {
           $scope.faqs = [];
-          console.log('error')
+          console.log('error');
         });
-      
+
       fdService.getFeatures(id)
         .success(function(data, status, headers, config) {
           $scope.features = data;
         })
         .error(function(data, status, headers, config) {
           $scope.features = [];
-          console.log('error')
+          console.log('error');
         });
       fdService.getSpecs(id)
         .success(function(data, status, headers, config) {
@@ -88,37 +88,39 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
         })
         .error(function(data, status, headers, config) {
           $scope.specs = {};
-          console.log('error')
+          console.log('error');
         });
-  };
+    };
 
-  /**
-   * Add product to cart
-   * @param {Object} bundle
-   */
-  $scope.addToCart = function(bundle, family){
+    /**
+     * Add product to cart
+     * @method addToCart
+     * @param {Object} bundle
+     * @param {} family
+     */
+    $scope.addToCart = function(bundle, family) {
 
-    if (!bundle) {
-      bundle = JSON.parse(JSON.stringify($scope.bundle_info));
-    } else {
-      $anchorScroll();
-    }
-    
-    var category = fdService.getCategoryFromSession();
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
+      } else {
+        $anchorScroll();
+      }
 
-    var pid = bundle.productId;
-    
-    if (!Object.keys(bundle).length) {
-      return;
-    }
+      var category = fdService.getCategoryFromSession();
 
-    var cardNotPresent = bundle.cardNotPresent ? true : false;
+      var pid = bundle.productId;
 
-    if(bundle.offeringTypes && -1 === bundle.offeringTypes.indexOf("Transactions")){
+      if (!Object.keys(bundle).length) {
+        return;
+      }
+
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+      if (bundle.offeringTypes && -1 === bundle.offeringTypes.indexOf("Transactions")) {
 
 
 
-      var pr = {
+        var pr = {
           id: pid,
           name: bundle.productName,
           price: bundle.price,
@@ -129,27 +131,26 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
           pmodel: null,
           category: category.name,
           cardNotPresent: cardNotPresent,
-          productType: bundle.productType,
           qty: 1
-      };
+        };
 
-      var index = fdService.getCartProductIndex($rootScope.cart, pr);
+        var index = fdService.getCartProductIndex($rootScope.cart, pr);
 
 
-      if (-1 !== index){
-        pr = $rootScope.cart.data[index];
-        pr.qty++;
-        pr.price = bundle.price;
-        pr.defaultPrice = bundle.price;
-        if (pr.qty > 10) {
-          pr.qty = 10;
+        if (-1 !== index) {
+          pr = $rootScope.cart.data[index];
+          pr.qty++;
+          pr.price = bundle.price;
+          pr.defaultPrice = bundle.price;
+          if (pr.qty > 10) {
+            pr.qty = 10;
+          }
+
+          $rootScope.cart.data[index] = pr;
+        } else {
+          $rootScope.cart.data.push(pr);
         }
-
-        $rootScope.cart.data[index] = pr;
       } else {
-        $rootScope.cart.data.push(pr);
-      }
-    } else {
 
         if (-1 !== $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(bundle.productId)) {
           return;
@@ -174,82 +175,56 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
 
         $rootScope.cart.transaction_products.push(pr);
 
-    }
-    
-    fdService.validateCart($rootScope.cart)
-      .success(function(data, status, headers, config) {
-        $rootScope.cart.validation = data;
-        $scope.cartChanged();
-        if(data.iscartvalid)
+      }
+
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
             fdService.updatePricing();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-    
-    $scope.cartChanged();
-    fdService.clearOrderId();
-    
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
-    if (window.matchMedia("(max-width: 740px)").matches) {
-      $timeout(function() {
-        $location.hash('order-summary-container');
-        $anchorScroll();
-      });
-    }
-    fdService.updatePricing();
-    
-  };
+      $scope.cartChanged();
+      fdService.clearOrderId();
 
-  /**
-   * Redirect to checkout
-   * @param {boolean} if true, do nothing
-   */
-  $scope.goToCheckout = function(disabled){
-    if (disabled || !$rootScope.cart.purchaseEnabled) {
-      return;
-    }
-    $location.path('/checkout/shipping');
-  };
 
-  /**
-   * Call this method when cart was changed
-   */
-  $scope.cartChanged = function(){
-    $rootScope.cart = fdService.cartChanged($rootScope.cart);
-  };
-  
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+      fdService.updatePricing();
 
-  var _init = function(){
-    $scope.fid = $routeParams.fid;
+    };
 
-    if (!$scope.fid) {
-      $location.path('invalid-item');
-      return;
-    }
+    /**
+     * Redirect to checkout
+     * @method goToCheckout
+     * @param {} disabled
+     */
+    $scope.goToCheckout = function(disabled) {
+      if (disabled || !$rootScope.cart.purchaseEnabled) {
+        return;
+      }
+      $location.path('/checkout/shipping');
+    };
 
-    $rootScope.cart = fdService.getCart();
+    /**
+     * Call this method when cart was changed
+     * @method cartChanged
+     * @return
+     */
+    $scope.cartChanged = function() {
+      $rootScope.cart = fdService.cartChanged($rootScope.cart);
+    };
 
-    if ($rootScope.cart.total_qty) {
-//      $scope.showCheckout = true;
-    }
+    ///////////////// MAIN ////////////////////////////////
+    _init();
 
-    fdService.getProductOptions($scope.fid)
-      .success(function(data, status, headers, config) {
-        $scope.family = data;
-
-        if ($scope.family.options && $scope.family.options.length){
-          $scope.loadProduct($scope.family.productId);
-        }
-      })
-      .error(function(data, status, headers, config) {
-        $scope.family = [];
-//        $location.path('invalid-item');
-      });
-
-  };
-
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-  
-}]);
+  }
+]);

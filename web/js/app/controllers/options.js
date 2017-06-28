@@ -1,14 +1,14 @@
 /**
  * Options Controller
  */
-app.controller('OptionsCtrl', ['$scope', '$rootScope', '$location', '$routeParams', '$anchorScroll', '$window', 'fdService', '$timeout','$filter', 'CONST',
-  function($scope, $rootScope, $location, $routeParams, $anchorScroll, $window, fdService, $timeout,$filter, CONST) {
+app.controller('OptionsCtrl', ['$scope', '$rootScope', '$location', '$routeParams', '$anchorScroll', '$window', 'fdService', '$timeout', '$filter', 'CONST',
+  function($scope, $rootScope, $location, $routeParams, $anchorScroll, $window, fdService, $timeout, $filter, CONST) {
     $rootScope.body_id = 'product-detail';
 
     /**
      * Product Thumb Image
+     * @method ProductThumbImg
      * @param imgArray
-     * @return {}
      */
     $scope.ProductThumbImg = function(imgArray) {
       if (imgArray.length == 0) {
@@ -23,87 +23,88 @@ app.controller('OptionsCtrl', ['$scope', '$rootScope', '$location', '$routeParam
 
     /**
      * Add product to cart
+     * @method addToCart
      * @param {Object} product object
      */
-    $scope.addToCart = function(product){
+    $scope.addToCart = function(product) {
 
-        var cart = fdService.getCart();
+      var cart = fdService.getCart();
 
-        var category = fdService.getCategoryFromSession();
-        var cardNotPresent = product.cardNotPresent ? true : false;
+      var category = fdService.getCategoryFromSession();
+      var cardNotPresent = product.cardNotPresent ? true : false;
 
-        var family = product.parentProduct;
+      var family = product.parentProduct;
 
-        if (!family) {
+      if (!family) {
 
-          if (-1 !== cart.transaction_products.map(function(e) { return e.id; }).indexOf(product.productId)) {
-            return;
-          }
+        if (-1 !== cart.transaction_products.map(function(e) { return e.id; }).indexOf(product.productId)) {
+          return;
+        }
 
-          var pr = {
-            id: product.productId,
-            name: product.productName,
-            price: product.price,
-            type: product.productType,
-            term: product.defaultPurchaseType,
-            category: category.name,
-            cardNotPresent: cardNotPresent,
-            qty: 1,
+        var pr = {
+          id: product.productId,
+          name: product.productName,
+          price: product.price,
+          type: product.productType,
+          term: product.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1,
+        };
+
+        cart.transaction_products.push(pr);
+
+
+      } else {
+        var fid = family.id;
+
+        if (!Object.keys(family).length) {
+          return;
+        }
+
+        if (!cart.payment_types || fid != cart.payment_types.id) {
+          cart.payment_types = {
+            id: fid,
+            name: family.name,
+            products: {},
           };
-
-          cart.transaction_products.push(pr);
-
-
-        } else {
-          var fid = family.id;
-
-          if (!Object.keys(family).length) {
-            return;
-          }
-
-          if (!cart.payment_types || fid != cart.payment_types.id) {
-            cart.payment_types = {
-              id: fid,
-              name: family.name,
-              products: {},
-            };
-          }
-          cart.payment_types.products[product.productId] = {
-            id: product.productId,
-            name: product.productName,
-            price: product.price,
-            type: product.productType,
-            term: product.defaultPurchaseType,
-            category: category.name,
-            cardNotPresent: cardNotPresent,
-            qty: 1,
-          }
         }
-
-
-
-        $rootScope.cart = fdService.cartChanged(cart);
-
-        fdService.validateCart($rootScope.cart)
-            .success(function(data, status, headers, config) {
-                $rootScope.cart.validation = data;
-                $rootScope.cart = fdService.cartChanged($rootScope.cart);
-                if(data.iscartvalid)
-                    fdService.updatePricing();
-            })
-            .error(function(data, status, headers, config) {
-                console.log('error');
-            });
-
-        fdService.clearOrderId();
-
-
-        if (window.matchMedia("(max-width: 740px)").matches) {
-            $timeout(function() {
-                $location.hash('order-summary-container');
-                $anchorScroll();
-            });
+        cart.payment_types.products[product.productId] = {
+          id: product.productId,
+          name: product.productName,
+          price: product.price,
+          type: product.productType,
+          term: product.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1,
         }
+      }
+
+
+
+      $rootScope.cart = fdService.cartChanged(cart);
+
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $rootScope.cart = fdService.cartChanged($rootScope.cart);
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      fdService.clearOrderId();
+
+
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
     };
 
     /**
@@ -113,12 +114,12 @@ app.controller('OptionsCtrl', ['$scope', '$rootScope', '$location', '$routeParam
     var _init = function() {
       $scope.productType = $routeParams.typename;
       $rootScope.cart = fdService.getCart();
-      if($rootScope.cart.validation.carterrors){
-          $scope.sortedValidation = $filter('orderBy')($rootScope.cart.validation.carterrors, '_errorOrder');
-          var currentCartError = $scope.sortedValidation[0];
-          $scope.productDisplayName = currentCartError.errormessage;
-      } else{
-          $scope.productDisplayName = $scope.productType.charAt(0) + $scope.productType.substr(1).toLowerCase();
+      if ($rootScope.cart.validation.carterrors) {
+        $scope.sortedValidation = $filter('orderBy')($rootScope.cart.validation.carterrors, '_errorOrder');
+        var currentCartError = $scope.sortedValidation[0];
+        $scope.productDisplayName = currentCartError.errormessage;
+      } else {
+        $scope.productDisplayName = $scope.productType.charAt(0) + $scope.productType.substr(1).toLowerCase();
       }
 
       fdService.getProductsByOptionType($scope.productType)

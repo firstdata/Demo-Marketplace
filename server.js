@@ -51,7 +51,7 @@ var getAuthenticationHeaders = function () {
 app.all('*', function(req, res) {
   var options = {
     method: req.method,
-    url: kongUrl + '/marketplace' + req.originalUrl,
+    url: kongUrl + req.originalUrl,
     headers: getAuthenticationHeaders()
   };
 

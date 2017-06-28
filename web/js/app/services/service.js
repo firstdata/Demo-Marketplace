@@ -132,7 +132,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getPricingOptions = function(data) {
-      return $http.get(urlPrefix + '/v1/pricing/' + CONST.COMPANY_ID + '/options/');
+      return $http.get(urlPrefix + '/v1/pricing/options/');
     };
 
     /**
@@ -162,8 +162,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProduct = function(pid) {
-      //return $http.get(urlPrefix + '/v1/products/' + pid + '/details/');
-      return $http.get(urlPrefix + '/v1/companies/386/products/' + pid + '/details/');
+      return $http.get(urlPrefix + '/v1/products/' + pid + '/details/');
     };
 
     /**
@@ -182,8 +181,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getRecommendedBundles = function(id) {
-      //return $http.get(urlPrefix + '/v1/products/'+ id + '/recommended/');
-      return $http.get(urlPrefix + '/v1/companies/386/products/' + id + '/recommended/');
+      return $http.get(urlPrefix + '/v1/products/'+ id + '/recommended/');
     };
 
     /**
@@ -274,8 +272,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         };
 
       } else {
-        //var res = $http({method: 'GET', cache: true, url: urlPrefix + 'v1/products/'});
-        var res = $http({method: 'GET', cache: true, url: urlPrefix + 'v1/companies/386/products/'});
+        var res = $http({method: 'GET', cache: true, url: urlPrefix + 'v1/products/'});
         ret.error = res.error;
         ret.success = function(callback) {
           res.success(function(data, status, headers, config) {
@@ -315,8 +312,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductsList = function(pid) {
-      //return $http.get(urlPrefix + '/v1/products/' + pid + '/includes/');
-      return $http.get(urlPrefix + '/v1/companies/386/products/' + pid + '/includes/');
+      return $http.get(urlPrefix + '/v1/products/' + pid + '/includes/');
     };
 
     /**
@@ -500,7 +496,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       ti = ti || this.getTransactionInfo();
       data = {
-        "companyId": CONST.COMPANY_ID,
         "transactionInfo": ti,
         "cardNotPresent": cart.cardNotPresent,
         "cartDetails": []
@@ -520,8 +515,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         }
       }
 
-      //return $http.post(urlPrefix + '/v1/pricing/equipment', data);
-      return $http.post(urlPrefix + '/v2/pricing/equipment', data); //386
+      return $http.post(urlPrefix + '/v2/pricing/equipment', data);
     };
 
     /**
@@ -531,9 +525,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.getGlobalPricing = function() {
 
-      data = {
-        "companyId": CONST.COMPANY_ID
-      };
+      data = {};
       return $http.post(urlPrefix + '/v1/pricing/global', data);
     };
 
@@ -548,7 +540,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
       ti = ti || this.getTransactionInfo();
 
       data = {
-        "companyId": CONST.COMPANY_ID,
         "transactionInfo": ti,
         "cardNotPresent": cart.cardNotPresent,
         "cartDetails": []
@@ -595,8 +586,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       }
 
-      //return $http.post(urlPrefix + '/v1/pricing/acquiring', data);
-      return $http.post(urlPrefix + '/v2/pricing/acquiring', data); //386
+      return $http.post(urlPrefix + '/v2/pricing/acquiring', data);
     };
 
     /**
@@ -661,8 +651,8 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
       }
 
       //send Shipping details
-      var shippingMethods = this.getSessionShippingMethods();
-      var shipProduct = shippingMethods[cart.shipping_option_id];
+      //var shippingMethods = this.getSessionShippingMethods();
+      var shipProduct = CONST.SHIPPING_METHODS[cart.shipping_option_id];
       if (shipProduct !== undefined && (cart.amount > 0 || cart.lease_amount > 0)) {
         cartDetails.data.push({
           id: shipProduct.productId,
@@ -730,7 +720,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         cardPresentDiscountRates: cardPresentDiscountRates,
         cardNotPresentDiscountRates: cardNotPresentDiscountRates,
         pricingOptions: {
-          companyId: CONST.COMPANY_ID,
           transactionInfo: transactionInfo,
         },
         shippingAddress: cart.shippingAddress,
@@ -845,8 +834,8 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         }
 
         //send Shipping details
-        var shippingMethods = this.getSessionShippingMethods();
-        var shipProduct = shippingMethods[cart.shipping_option_id];
+        //var shippingMethods = this.getSessionShippingMethods();
+        var shipProduct = CONST.SHIPPING_METHODS[cart.shipping_option_id];
         if (shipProduct !== undefined && (cart.amount > 0 || cart.lease_amount > 0)) {
           cartDetails.data.push({
             id: shipProduct.productId,
@@ -916,7 +905,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         cardPresentDiscountRates: cardPresentDiscountRates,
         cardNotPresentDiscountRates: cardNotPresentDiscountRates,
         pricingOptions: {
-          companyId: CONST.COMPANY_ID,
           transactionInfo: transactionInfo,
         },
         shippingAddress: cart.shippingAddress,
@@ -1310,7 +1298,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
       cart.total_purchase_qty = 0;
       cart.product_fees = {};
       cart.total_product_fee_amount = 0;
-      var shippingMethods = this.getSessionShippingMethods();
+      //var shippingMethods = this.getSessionShippingMethods();
 
       var total_product_fee_amount = 0;
       var product_fees = {};
@@ -1380,7 +1368,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
       }
 
       if (cart.amount > 0 || cart.lease_amount > 0)
-        cart.shipping_amount = shippingMethods[cart.shipping_option_id].price;
+        cart.shipping_amount = CONST.SHIPPING_METHODS[cart.shipping_option_id].price;
       else
         cart.shipping_amount = 0;
 
@@ -1942,7 +1930,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getMCCDetails = function(categoryName, mccNumber) {
-      return $http.get(urlPrefix + '/v1/companies/' + CONST.COMPANY_ID + '/category/' + categoryName + '/merchantcategorycodes/' + mccNumber + '/industries');
+      return $http.get(urlPrefix + '/v1/companies/category/' + categoryName + '/merchantcategorycodes/' + mccNumber + '/industries');
     };
 
     /**
@@ -2026,7 +2014,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getShippingMethods = function() {
-      return $http.get(urlPrefix + '/v1/companies/' + CONST.COMPANY_ID + '/products/shipping');
+      return $http.get(urlPrefix + '/v1/companies/products/shipping');
     };
 
     /**
@@ -2109,7 +2097,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductsByOptionType = function(type) {
-      return $http.get(urlPrefix + '/v1/companies/' + CONST.COMPANY_ID + '/products/' + type + '/types/');
+      return $http.get(urlPrefix + '/v1/companies/products/' + type + '/types/');
     };
 
 

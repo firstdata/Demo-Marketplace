@@ -55,18 +55,15 @@
       ],
       citySpecialChar: {'St.':'Saint','ñ':'n',"'":" "},
 
-      SHIPPING_METHODS: {
-        1: {name: '$19.99 Standard Shipping (4-5 Business Days)', price: 19.99},
-        2: {name: 'FREE Standard Shipping (4-5 business days)', price: 0},
-        3: {name: '$11.97 Two-Day Shipping', price: 11.97},
-        4: {name: '$39.99 One-Day Shipping', price: 39.99},
-
+      SHIPPING_METHODS:{
+          "1":{"id":93224,"productId":50712,"supplierProductName":"Gnd","supplierName":"MAMA","productType":"SHIPPING","productName":"Gnd","productShortDescription":"Shipping Fee - Ground Service","productLongDescription":"Shipping Fee - Ground Service","defaultPurchaseType":"P","price":19.95,"productWithOptions":false,"pinPad":false,"imageUrls":[],"offeringTypes":["Shipping"],"categoryIds":[],"tags":[],"name":"Shipping Fee - Ground Service"},
+          "2":{"id":93226,"productId":50714,"supplierProductName":"2da","supplierName":"MAMA","productType":"SHIPPING","productName":"2da","productShortDescription":"Shipping Fee - 2 Day Service","productLongDescription":"Shipping Fee - 2 Day Service","defaultPurchaseType":"P","price":19.95,"productWithOptions":false,"pinPad":false,"imageUrls":[],"offeringTypes":["Shipping"],"categoryIds":[],"tags":[],"name":"Shipping Fee - 2 Day Service"},
+          "3":{"id":93227,"productId":50715,"supplierProductName":"1da","supplierName":"MAMA","productType":"SHIPPING","productName":"1da","productShortDescription":"Shipping Fee - Priority Overnight","productLongDescription":"Shipping Fee - Priority Overnight","defaultPurchaseType":"P","price":35.95,"productWithOptions":false,"pinPad":false,"imageUrls":[],"offeringTypes":["Shipping"],"categoryIds":[],"tags":[],"name":"Shipping Fee - Priority Overnight"}
       },
       PURCHASE_CODE: 'P',
       OWNED_CODE: 'O',
       FSPFUNDTYPES : ['deposits', 'nonBankAdjustments', 'depositAdjustments', 'chargebackReversals', 'interchangeAssessments', 'discountServices', 'fees', 'financialAdjustments', 'chargebacks'],
       OPTIONSPRODUCTTYPES : ['Telecheck'],
-      COMPANY_ID: 386,
                 
   }
   app.constant('CONST', constants);
