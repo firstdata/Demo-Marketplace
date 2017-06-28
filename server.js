@@ -46,7 +46,6 @@ var getAuthenticationHeaders = function () {
 
 /**
  * POST and GET service end-point proxy
- * get list of categories
  */
 app.all('*', function(req, res) {
   var options = {
