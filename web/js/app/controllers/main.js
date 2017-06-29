@@ -23,7 +23,6 @@ app.controller('MainCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdS
       }
 
       $timeout(function() {
-        $rootScope._setPaneDefaultPage();
         $location.path(url);
       });
     };

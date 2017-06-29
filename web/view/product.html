@@ -29,10 +29,7 @@
          <div class="shop-product-actions">
            <any ng-show="bundle_info.video_id.length"><a class="link-bold" add-video-modal="#video-{{bundle_info.productId}}">Watch Video</a><span>|</span></any>
            <a class="link-bold" id="add-to-cart" ng-click="addToCart()">Add to Cart</a>
-           <!-- <span>|</span>
-           <a ng-if="min_lease_amt" class="link-bold" id="lease-now" ng-click="leaseProduct(bundle_info)">Lease Now</a> -->
          </div>
-         <!-- <p><i class="fa fa-credit-card fa-lg"></i> Credit Card Processing @ 2.69% + 5 cents per swipe*<br> <span class="small">*3.69% + $0.05 per non-swiped transactions</span> <a id="pricing-terms-toggle" ng-init="showTc = false" class="small link green" style="cursor:pointer;" ng-click="showTc = !showTc">{{showTc ? 'Hide' : 'View'}} Terms &amp; Conditions</a></p> -->
          <div id="pricing-terms" class="small" ng-show="showTc">
            <br>
            <p>Offer applies to new Clover Station, Mobile or Mini clients only.</p><br>

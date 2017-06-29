@@ -681,37 +681,6 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
-    .when('/proposal/:orderId/:proposalId',{
-      controller: 'ProposalCtrl',
-      templateUrl: 'view/proposal.html',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.page = 'proposal';
-        }
-      }
-    })
-    .when('/agreement',{
-      controller: 'AgreementCtrl',
-      templateUrl: 'view/agreement.html',
-      title: 'Merchant Agreement | FD',
-      resolve: {
-        page: function($route){
-          $route.current.params.page = 'Agreement';
-        }
-      }
-    })
-    .when('/agreement/:orderID',{
-      controller: 'AgreementCtrl',
-      templateUrl: 'view/agreement.html',
-      title: 'Merchant Agreement | FD',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.page = 'Agreement';
-        }
-      }
-    })
     .when('/checkout/shipping',{
       controller: 'CheckoutCtrl',
       templateUrl: 'view/checkout/shipping.html',
@@ -724,58 +693,12 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
-    .when('/checkout/shipping/one',{
-      controller: 'CheckoutCtrl',
-      templateUrl: 'view/checkout/shipping.html',
-      title: 'Shipping Information | FD',
-      resolve: {
-        page: function($route){
-          $route.current.params.ordered = false;
-          $route.current.params.one_step = true;
-          $route.current.params.page = 'shipping';
-        }
-      }
-    })
-    .when('/checkout/cart',{
-      controller: 'CheckoutCtrl',
-      templateUrl: 'view/checkout/showCart.html',
-      title: 'Order Summary | FD',
-      resolve: {
-        page: function($route){
-          $route.current.params.ordered = false;
-          $route.current.params.one_step = true;
-          $route.current.params.page = 'cart';
-        }
-      }
-    })
-    .when('/checkout/shipping/prop',{
-      controller: 'CheckoutCtrl',
-      templateUrl: 'view/checkout/shipping.html',
-      title: 'Shipping Information | FD',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.ordered = true;
-          $route.current.params.one_step = false;
-          $route.current.params.page = 'shipping';
-        }
-      }
-    })
     .when('/product/:bid',{
       controller: 'SolutionCtrl',
       templateUrl: 'view/product.html',
       resolve: {
         page: function($route){
           $route.current.params.page = 'product';
-        }
-      }
-    })
-    .when('/guideme/:cid',{
-      controller: 'GuideMeCtrl',
-      templateUrl: 'view/guideme.html',
-      resolve: {
-        page: function($route){
-          $route.current.params.page = 'guideme';
         }
       }
     })
@@ -796,17 +719,6 @@ app.config(['$routeProvider', function ($routeProvider) {
         page: function($route){
           $route.current.params.nologin = true;
           $route.current.params.page = 'summary';
-        }
-      }
-    })
-    .when('/checkout/thankyou/:oid/:h',{
-      controller: 'CheckoutCtrl',
-      templateUrl: 'view/checkout/thankyou.html',
-      title: 'Thank You | FD',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.page = 'thankyou';
         }
       }
     })
@@ -913,17 +825,6 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
-    .when('/verify-identity/:orderID',{
-      controller: 'VerifyIdentityCtrl',
-      templateUrl: 'view/signup/questions.html',
-      title: 'Verify Identity | First Data',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.page = 'questions';
-        }
-      }
-    })
     .when('/signup',{
        controller: 'SignupCtrl',
        templateUrl: 'view/signup/index.html',
@@ -1003,79 +904,12 @@ app.config(['$routeProvider', function ($routeProvider) {
             }
         }
     })
-    .when('/signup/terms/:orderID/:ownerID', {
-        controller: 'SignupTermsCtrl',
-        templateUrl: 'view/signup/terms.html',
-        title: 'Terms & Conditions | First Data Marketplace',
-        resolve: {
-            page: function($route) {
-                $route.current.params.eSignature = true;
-                $route.current.params.nologin = true;
-                $route.current.params.page = 'merchant-agreement';
-            }
-        }
-    })
-    .when('/verify/:orderID/:verifyCode',{
-      controller: 'VerifyCtrl',
-      templateUrl: 'view/signup/verify.html',
-      title: 'Signup | First Data Marketplace',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.page = 'verify';
-        }
-      }
-    })
     .when('/terms',{
        controller: 'TCCtrl',
        templateUrl: 'view/signup/tc-rsa.html',
        title: 'Terms & Conditions | First Data Marketplace',
        resolve: {
          page: function($route){
-           $route.current.params.eSignature = true;
-           $route.current.params.nologin = true;
-           $route.current.params.page = 'terms';
-         }
-       }
-    })
-    .when('/forgot-password',{
-      controller: 'ForgotCtrl',
-      templateUrl: 'view/forgot.html',
-      title: 'Forgot Password | First Data Marketplace',
-      resolve: {
-        page: function($route){
-          $route.current.params.nologin = true;
-          $route.current.params.page = 'forgot';
-        }
-      }
-    })
-    .when('/merchantOrders', {
-        controller: 'OrdersCtrl',
-        templateUrl: 'view/ordersDisplay.html',
-        title: 'Merchant Orders | First Data Marketplace',
-        resolve: {
-            page: function($route) {
-                $route.current.params.page = 'merchant_orderspage';
-            }
-        }
-    })
-    .when('/merchantAuditTrail', {
-        controller: 'AuditTrailCtrl',
-        templateUrl: 'view/ordersAuditTrail.html',
-        title: 'Merchant Orders Audit Trail | First Data Marketplace',
-        resolve: {
-            page: function($route) {
-                $route.current.params.page = 'merchant_orders_audit_trailpage';
-            }
-        }
-    })
-    .when('/remoteContract/:orderID', {
-        controller: 'TCCtrl',
-        templateUrl: 'view/signup/tc-rsa.html',
-        title: 'Terms & Conditions | First Data Marketplace',
-        resolve: {
-            page: function($route){
-               $route.current.params.eSignature = true;
            $route.current.params.nologin = true;
            $route.current.params.page = 'terms';
          }
@@ -1663,14 +1497,14 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
       var leaseTypes = [];
       var index = 0;
       if (product.termPaymentType == 'Lease') {
-           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'LT'});
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'LT'});
         //check for LT36 type lease if available.
-           var leaseIndex = leaseTypes.map(function(p) { return p.purchaseType; }).indexOf('LT36');
+        var leaseIndex = leaseTypes.map(function(p) {return p.purchaseType;}).indexOf('LT36');
         index = leaseIndex == -1 ? 0 : leaseIndex;
       } else if (product.termPaymentType == 'Installment') {
-           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'IP'});
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'IP'});
       } else if (product.termPaymentType == 'Rent') {
-           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'R'});
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'R'});
       }
       if (leaseTypes.length > 0) {
         product.term = leaseTypes[index].purchaseType;
@@ -2669,7 +2503,6 @@ app.controller('MainCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdS
       }
 
       $timeout(function() {
-        $rootScope._setPaneDefaultPage();
         $location.path(url);
       });
     };
@@ -3844,7 +3677,7 @@ app.controller('ProductsCtrl', ['$scope', '$rootScope', '$filter', '$location', 
           } else {
             $scope.category = null;
           }
-        } else if ('recommended' == $routeParams.type) { //Showing recommended products as part of FDMP-3298
+        } else if ('recommended' == $routeParams.type) {
           $scope.productContentType = $routeParams.type;
           $scope.isRecommendedCallDone = false;
           var pid = $routeParams.typename;
@@ -9227,7 +9060,6 @@ app.directive('absMax', function() {
             });
 
             var absMaxFun = function (value, attrs) {
-                // console.log(Object.keys(ngModel.warn).length)
                 ngModel.warn = {};
                 if (parseFloat(attrs.max) === parseFloat(attrs.min))
                     return;

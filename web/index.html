@@ -38,7 +38,7 @@
         <div id="top">
             <nav class="container">
                 <a id="logo" href="#/"><img src="img/logo.svg" /></a>
-                <a ng-show="cart.total_qty && !orderId" id="cart-icon" href="#/checkout/shipping"><img ng-src="img/cart.svg"/><span><any ng-bind="cart.total_qty"></any></span></a>
+                <a ng-show="cart.total_qty && !orderId" class="link" id="cart-icon" ng-click="proceedToCheckout()"><img ng-src="img/cart.svg"/><span><any ng-bind="cart.total_qty"></any></span></a>
                 <!--<ul id="main-menu" class="">-->
                     <!--<li><a class="nav-main-item" href="https://www.firstdata.com/en_us/products-all.html">Solutions</a></li>-->
                     <!--<li><a class="nav-main-item" href="https://www.firstdata.com/en_us/insights/landing.html">Insights</a></li>-->

@@ -390,7 +390,6 @@ app.directive('absMax', function() {
             });
 
             var absMaxFun = function (value, attrs) {
-                // console.log(Object.keys(ngModel.warn).length)
                 ngModel.warn = {};
                 if (parseFloat(attrs.max) === parseFloat(attrs.min))
                     return;

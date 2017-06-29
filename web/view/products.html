@@ -28,7 +28,6 @@
  <section id="products-main">
    <div class="container">
 
-     <!--Start: Showing Recommended Products as part of FDMP-3298-->
      <div class="column-12" ng-show="productContentType == 'recommended'">
        <h3>Recommended Products For <strong>{{recommendedProductName}}</strong></h3>
        <p class="subhead" ng-show="!isRecommendedCallDone">Loading....</p>
@@ -40,7 +39,6 @@
          <a class="link-blue" ng-href="#/product/{{p.productId}}">View Details</a>
        </div>
      </div>
-       <!--End: Showing Recommended Products as part of FDMP-3298-->
 
      <div class="column-12" ng-show="heroProds.length">
        <h3>Featured Products</h3>
@@ -57,7 +55,6 @@
      <div  style="clear:both;" id="allproducts">
         <div class="column-9">
           <h3>All Products</h3>
-          <!--<p class="subhead">It takes a lot of work to figure out how to look so good.</p>-->
         </div>
       </div>
       <div class="column-12" infinite-scroll='loadMore()' infinite-scroll-distance='2'>

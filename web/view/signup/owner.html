@@ -101,13 +101,10 @@
                       <option ng-repeat="y in [] | range:thisYear:1900" ng-value="y">{{y}}</option>
                     </select>
                   </label>
-                  <!-- Added common error messages for Year and month-->
                   <p ng-show="signupForm.YEAR_BUSINESS_STARTED.$touched && signupForm.YEAR_BUSINESS_STARTED.$error.required ||  (signupForm.MONTH_BUSINESS_STARTED.$touched && signupForm.MONTH_BUSINESS_STARTED.$error.required)" class="form-error-detail">
                     <i class="fa fa-info-circle"></i> Select the year and month of your business started .</p>
                   <p ng-show="signupForm.YEAR_BUSINESS_STARTED.$touched && signupForm.YEAR_BUSINESS_STARTED.$error.min" class="form-error-detail">
                     <i class="fa fa-info-circle"></i> Enter a year past 1950 .</p>
-                  <!--<p ng-show="signupForm.MONTH_BUSINESS_STARTED.$touched && signupForm.MONTH_BUSINESS_STARTED.$error.required" class="form-error-detail">
-                      <i class="fa fa-info-circle"></i> Select the month your business started .</p> -->
                   <p ng-show="signupForm.MONTH_BUSINESS_STARTED.$touched && signupForm.MONTH_BUSINESS_STARTED.$error.excluded" class="form-error-detail">
                     <i class="fa fa-info-circle"></i> Date cannot be future date .</p>
                 </div>
@@ -132,7 +129,6 @@
 
                 </div>
                 <div class="column-4" style="padding:0 0 0 8px;">
-                  <!-- Removed unnecessary(year and Month) validations from State of incorporation -->
                   <label class="fancy-field"  fancy-field ng-class="{'error': (signupForm.INCORPORATION_STATE.$touched && signupForm.INCORPORATION_STATE.$invalid)}">
                     <select placeholder="State of incorporation" ng-model="formData.INCORPORATION_STATE" name="INCORPORATION_STATE" required="required">
                       <option value="">State of incorporation</option>

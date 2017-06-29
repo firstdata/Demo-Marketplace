@@ -427,14 +427,14 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
       var leaseTypes = [];
       var index = 0;
       if (product.termPaymentType == 'Lease') {
-           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'LT'});
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'LT'});
         //check for LT36 type lease if available.
-           var leaseIndex = leaseTypes.map(function(p) { return p.purchaseType; }).indexOf('LT36');
+        var leaseIndex = leaseTypes.map(function(p) {return p.purchaseType;}).indexOf('LT36');
         index = leaseIndex == -1 ? 0 : leaseIndex;
       } else if (product.termPaymentType == 'Installment') {
-           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'IP'});
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'IP'});
       } else if (product.termPaymentType == 'Rent') {
-           leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'R'});
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'R'});
       }
       if (leaseTypes.length > 0) {
         product.term = leaseTypes[index].purchaseType;

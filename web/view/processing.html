@@ -29,7 +29,7 @@
         <div class="clearfix multiple" id="product-configuration-options" style="max-width: 800px;">
           <h3>Payment Types</h3>
           <h4>Please add all Payment Types you want to accept.</h4>
-          <div class="product-configuration-options">
+           <div class="product-configuration-options">
             <div class="product-configuration-option column-3" ng-class="{'selected': p.productId == productId}" ng-repeat="p in family.options track by $index">
               <a class="link" data-toggle="modal" data-target="#include-{{p.productId}}">
                 <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}">
@@ -50,10 +50,9 @@
       <ng-include src="'templates/cart.tpl'"></ng-include>
     </div>
   </section>
-  <!--Adding Includes section for Acquiring Products. FDMP-3533-->
   <ng-include src="'templates/included_products.tpl'"></ng-include>
   <ng-include src="'templates/Processing_recommended.tpl'"></ng-include>
-   <ng-include src="'templates/faq.tpl'"></ng-include>
+  <ng-include src="'templates/faq.tpl'"></ng-include>
 </div>
 
 <div class="modal fade" tabindex="-1" role="dialog" ng-attr-id="include-{{p.productId}}" ng-repeat="p in family.options">

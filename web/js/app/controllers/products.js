@@ -439,7 +439,7 @@ app.controller('ProductsCtrl', ['$scope', '$rootScope', '$filter', '$location', 
           } else {
             $scope.category = null;
           }
-        } else if ('recommended' == $routeParams.type) { //Showing recommended products as part of FDMP-3298
+        } else if ('recommended' == $routeParams.type) {
           $scope.productContentType = $routeParams.type;
           $scope.isRecommendedCallDone = false;
           var pid = $routeParams.typename;
