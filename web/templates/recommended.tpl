@@ -7,7 +7,7 @@
       <a class="link-blue" ng-href="#/product/{{b.productId}}">View Details</a>
     </div>
     <div class="product-accessory column-2">
-      <a class="link-bold" href="#/products"><img ng-src="{{ASSETS_FOLDER}}/img/more-item.jpg"></a>
+      <a class="link-bold" href="#/products"><img src="img/more-item.jpg"></a>
     </div>
   </div>
 </section>
