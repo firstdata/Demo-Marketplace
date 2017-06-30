@@ -10271,46 +10271,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     };
 
     /**
-     * Save Transaction Info into session
-     * @method saveTransactionInfo
-     * @param {} data
-     * @return {HTTPPromise}
-     */
-    this.saveTransactionInfo = function(data) {
-      return $http.post(urlPrefix + '/v1/application', data);
-    };
-
-    /**
-     * Get Pricing Options
-     * @method getPricingOptions
-     * @param {} data
-     * @return {HTTPPromise}
-     */
-    this.getPricingOptions = function(data) {
-      return $http.get(urlPrefix + '/v1/pricing/options/');
-    };
-
-    /**
-     * Send Pricing Options
-     * @method sendPricingOptions
-     * @param {} data
-     * @return {HTTPPromise}
-     */
-    this.sendPricingOptions = function(data) {
-      return $http.post(urlPrefix + '/v1/pricing', data);
-    };
-
-    /**
-     * Get Category
-     * @method getCategory
-     * @param {} cid
-     * @return {HTTPPromise}
-     */
-    this.getCategory = function(cid) {
-      return $http.get(urlPrefix + '/v1/categories/' + cid + '/details');
-    };
-
-    /**
      * Get Product
      * @method getProduct
      * @param {} pid
@@ -10321,32 +10281,13 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     };
 
     /**
-     * Description
-     * @method getSkipResponses
-     * @return _skipResponses
-     */
-    this.getSkipResponses = function() {
-      return _skipResponses;
-    };
-
-    /**
      * Get Recommended products
      * @method getRecommendedBundles
-     * @param {} id
+     * @param {number} id
      * @return {HTTPPromise}
      */
     this.getRecommendedBundles = function(id) {
       return $http.get(urlPrefix + '/v1/products/'+ id + '/recommended/');
-    };
-
-    /**
-     * Get Products List Category
-     * @method getProductsListCategory
-     * @param {} cid
-     * @return {HTTPPromise}
-     */
-    this.getProductsListCategory = function(cid) {
-      return $http.get(urlPrefix + '/v1/products/' + cid);
     };
 
     /**
@@ -10474,50 +10415,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.getProductOptions = function(pid) {
       return $http.get(urlPrefix + '/v1/products/' + pid + '/options/');
-    };
-
-    /**
-     * Description
-     * @method merchantLookupGeo
-     * @param {} lat
-     * @param {} lng
-     * @return {HTTPPromise}
-     */
-    this.merchantLookupGeo = function(lat, lng) {
-      return $http.get(urlPrefix + '/v1/lookup/' + lat + ',' + lng);
-    };
-
-    /**
-     * Description
-     * @method merchantLookupZip
-     * @param {} zip
-     * @return {HTTPPromise}
-     */
-    this.merchantLookupZip = function(zip) {
-      return $http.get(urlPrefix + '/v1/lookup/' + zip);
-    };
-
-    /**
-     * Description
-     * @method merchantLookupByGeo
-     * @param lat
-     * @param lng
-     * @param keyword
-     * @return {HTTPPromise}
-     */
-    this.merchantLookupByGeo = function(lat, lng, keyword) {
-      return $http.get(urlPrefix + '/v1/lookup/locations/' + lat + ',' + lng + '/keywords/' + keyword);
-    };
-
-    /**
-     * Description
-     * @method merchantLookupByZip
-     * @param {} zip
-     * @param {} keyword
-     * @return {HTTPPromise}
-     */
-    this.merchantLookupByZip = function(zip, keyword) {
-      return $http.get(urlPrefix + '/v1/lookup/zip/' + zip + '/keywords/' + keyword);
     };
 
     /**
@@ -11306,7 +11203,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     /**
      * Get transaction info from session
      * @method getTransactionInfo
-     * @return Boolean
+     * @return {boolean}
      */
     this.getTransactionInfo = function() {
       var data = $window.sessionStorage.getItem(transaction_info);
@@ -11336,7 +11233,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     /**
      * Get equipment pricing from session
      * @method getEquipmentPricingStorage
-     * @return Boolean
+     * @return {Array}
      */
     this.getEquipmentPricingStorage = function() {
       var data = $window.sessionStorage.getItem(equipment_pricing);
@@ -11366,7 +11263,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     /**
      * Get acquiring pricing from session
      * @method getAcquiringPricingStorage
-     * @return Boolean
+     * @return {Array}
      */
     this.getAcquiringPricingStorage = function() {
       var data = $window.sessionStorage.getItem(acquiring_pricing);
@@ -11396,7 +11293,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     /**
      * Get global pricing from session
      * @method getGlobalPricingStorage
-     * @return Boolean
+     * @return {Array}
      */
     this.getGlobalPricingStorage = function() {
       var data = $window.sessionStorage.getItem(global_pricing);
@@ -11716,18 +11613,14 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     this.setPricingToCart = function(cart, dt, addData) {
 
       var data = angular.copy(dt);
-
       var paymentProducts = {
         products: {}
       };
 
       addData = addData || false;
-
       var productAttributes = {}, pid;
-
       for (var i = 0; i < data.length; i++) {
         if (data[i].productAttribute && data[i].showoncart) {
-
           var tmpId = data[i].productAttribute.name + data[i].productAttribute.value;
           if (productAttributes[tmpId]) {
             data[i].showoncart = false;
@@ -11755,7 +11648,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         } else {
 
           if (data[i].showoncart) {
-
             if ('Recurring' == data[i].occurrence.type) {
               if (data[i].paymentType == 'Installment' || data[i].paymentType == 'Lease' || data[i].paymentType == 'Rent') {
                 var pricingModel = [];
@@ -11885,7 +11777,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
           fdService.cartChanged(cart);
           if (ap && ep && gp) {
             callback.apply(this, [1]);
-
           }
         }
       };
@@ -11913,23 +11804,17 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
             fdService.storeAcquiringPricing(data);
 
             var index, pid;
-
             var newData = [];
             for (var i in data) {
-
               if ('cartTransactionRates' == i) {
                 cart.cartTransactionRates = data[i];
               } else {
                 newData = newData.concat(data[i]);
               }
-
             }
 
-
             for (i in data.cartTransactionRates) {
-
               pid = data.cartTransactionRates[i].parentProduct ? data.cartTransactionRates[i].parentProduct.id : data.cartTransactionRates[i].productId;
-
               if ('ACQUIRING' == data.cartTransactionRates[i].productType) {
                 if (!cart.payment_types) {
                   cart.payment_types = {};
@@ -11947,7 +11832,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
                   })
 
                 }
-
               } else {
 
                 index = cart.transaction_products.map(function(e) {return e.id;}).indexOf(pid);
@@ -11959,7 +11843,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
             }
 
             cart = fdService.setPricingToCart(cart, newData);
-
             ap = data;
             cbf();
 
