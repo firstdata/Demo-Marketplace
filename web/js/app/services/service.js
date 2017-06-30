@@ -106,16 +106,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     };
 
     /**
-     * Get Banks
-     * @method getBanks
-     * @param {} data
-     * @return {HTTPPromise}
-     */
-    this.getBanks = function(data) {
-      return $http.post(urlPrefix + '/v1/businessconsultant/banks', data);
-    };
-
-    /**
      * Save Transaction Info into session
      * @method saveTransactionInfo
      * @param {} data
@@ -192,20 +182,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.getProductsListCategory = function(cid) {
       return $http.get(urlPrefix + '/v1/products/' + cid);
-    };
-
-
-    /**
-     * Get Verify Identity Questions
-     * @method getVerifyIdentityQuestions
-     * @param {} data
-     * @param {} orderId
-     * @return {HTTPPromise}
-     */
-    this.getVerifyIdentityQuestions = function(data, orderId) {
-      return $http.post(urlPrefix + '/v2/identity/' + orderId + '/questions', data, {
-        timeout: 5000
-      });
     };
 
     /**
@@ -386,7 +362,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.getDataByIp = function() {
       return $http.get(urlPrefix + '/v1/zipcode/');
-      //    return $http.jsonp('http://ip-api.com/json?callback=JSON_CALLBACK');
     };
 
     /**
@@ -462,7 +437,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       }
 
-      return $http.post(urlPrefix + '/v1/cart/validate', data); //386
+      return $http.post(urlPrefix + '/v2/cart/validate', data);
     };
 
     /**
@@ -524,7 +499,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getGlobalPricing = function() {
-
       data = {};
       return $http.post(urlPrefix + '/v1/pricing/global', data);
     };
@@ -743,16 +717,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.submitSignature = function(data) {
       return $http.post(urlPrefix + '/v2/application/submit', data);
-    };
-
-    /**
-     * Signature Notification
-     * @method signatureNotification
-     * @param {} data
-     * @return {HTTPPromise}
-     */
-    this.signatureNotification = function(data) {
-      return $http.post(urlPrefix + '/v2/notification/remotesignature', data);
     };
 
     /**
@@ -2116,16 +2080,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         }
       }
       return -1;
-    };
-
-    /**
-     * Get Owners signature status
-     * @method getOwnersSignStatus
-     * @param {} orderId
-     * @return {HTTPPromise}
-     */
-    this.getOwnersSignStatus = function(orderId) {
-      return $http.get(urlPrefix + 'v1/remotesignature/status/' + orderId);
     };
 
     /**

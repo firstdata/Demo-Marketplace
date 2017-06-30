@@ -50,10 +50,9 @@ var getAuthenticationHeaders = function () {
 app.all('*', function(req, res) {
   var options = {
     method: req.method,
-    url: kongUrl + req.originalUrl,
+    url: kongUrl + '/marketplace' + req.originalUrl,
     headers: getAuthenticationHeaders()
   };
-
   if (req.method == 'POST') {
     options['json'] = req.body;
     options['content-type'] = 'application/json';

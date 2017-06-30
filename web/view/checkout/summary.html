@@ -31,7 +31,7 @@
           </div>
           <div ng-if="cart.amount > 0 || cart.lease_amount > 0">
             <h2 style="margin-top: 25pt;" >Shipping Option <a href="#/checkout/shipping" class="link-blue" style="font-size: 9pt; border: 2px solid; padding: 5px 13px; line-height: 22px; box-sizing: content-box; display: inline-block; height: 20px;">Edit</a></h2>
-            <p>{{CONST.SHIPPING_METHODS[cart.shipping_option_id].price | currency}} {{shippingMethods[cart.shipping_option_id].name}}</p>
+            <p>{{CONST.SHIPPING_METHODS[cart.shipping_option_id].price | currency}} {{CONST.SHIPPING_METHODS[cart.shipping_option_id].name}}</p>
           </div>
         </form>
       </div>
