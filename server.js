@@ -59,14 +59,7 @@ app.all('*', function(req, res) {
   }
 
   request(options, function(error, response, body) {
-    if (error){ console.log(JSON.stringify(error));}
     if (error) throw new Error(error);
-
-    console.log('error-->'+JSON.stringify(error));
-    console.log('statusCode-->'+JSON.stringify(response.statusCode));
-    console.log('response-->'+JSON.stringify(response));
-    console.log('body-->'+JSON.stringify(body));
-
     res.status(response.statusCode).send(body);
   });
 });
