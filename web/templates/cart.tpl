@@ -1,3 +1,38 @@
+<style>
+    .toggle-rates-children {}
+
+    .test-class {
+        display: table;
+        width: 100%;
+    }
+
+    #sales-wrapper .sales-wrapper-content .sales-container .table.rates tr td {
+        vertical-align: top;
+    }
+
+    #sales-wrapper .sales-wrapper-content .sales-container .table.rates .test-class,
+    #sales-wrapper .sales-wrapper-content .sales-container .table.rates form {
+        display: table;
+        width: 100%;
+    }
+
+    .fee-children {
+        color: #666;
+        font-size: 11px;
+        margin-top: 6px;
+    }
+
+    .fee-children p {
+        margin-left: 20px;
+        min-height: 30px;
+        margin-bottom: 6px;
+    }
+
+    .fee-children input {
+        min-height: 30px;
+        margin-bottom: 6px;
+    }
+</style>
 <div ng-controller="CartCtrl" ng-attr-id="{{page == 'cart' ? 'cart-page' : 'cart'}}" ng-class="{'faded': showTrDetailBox, 'column-4': (page != 'cart')}" ng-show="cart.total_qty || cart.payment_types || cart.transaction_products.length" ng-init="showTrDetailBox = false; sampleTransAmount = 25;">
 
     <div class="transaction-fee-detail" ng-show="showTrDetailBox">
@@ -236,92 +271,200 @@
 
 <!-- View Fees Modal -->
     <div ng-controller="CartCtrl" class="modal fade include-detail-modal" tabindex="-1" role="dialog" id="view-fees-modal">
-        <div class="vertical-alignment-helper">
-            <div class="modal-dialog vertical-align-center">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
-                        <h4 class="modal-title">Rates and Fees</strong></h4>
-                    </div>
-                    <div class="modal-body row">
-                        <div class="rates-details-modal">
-                            <div class="column-6">
-
-                                <table class="table rates">
-                                    <thead>
-                                    <tr>
-                                        <th colspan="3">
-                                            <h3 style="margin-bottom:0;">{{cart.payment_types.name}}</h3>
-                                            <strong>{{cart.payment_types.groups[0].rate}}% + {{cart.payment_types.groups[0].fee|currency}} is the qualified rate</strong>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody style="border: none;">
-									    <tr>
-											<td><strong>DiscountRates</strong></td>
-                                            <td class="align-right"></td>
-                                            <td class="align-right"></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Description</strong></td>
-                                            <td class="align-right"><strong>Rate (%)</strong></td>
-                                            <td class="align-right"><strong>Fee ($)</strong></td>
-                                        </tr>
-                                        <tr ng-repeat="p in acquiringPricing.discountRates track by $index">
-                                            <td>{{p.productName}}</td>
-                                            <td class="align-right"><span>{{p.rateDefault}}</span></td>
-                                            <td class="align-right"><span>{{p.defaultAmt}}</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="column-6">
-                                <table class="table rates">
-                                    <thead>
-                                    <tr>
-                                        <th colspan="3">
-                                            <h3 style="margin-bottom:0;">Product Pricing</h3>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody style="border: none;">
-                                        <tr>
-                                            <td><strong>Description</strong></td>
-                                            <td class="align-right"><strong>Rate (%)</strong></td>
-                                            <td class="align-right"><strong>Fee ($)</strong></td>
-                                        </tr>
-                                        <tr ng-repeat="p in equipmentPricing track by $index">
-                                            <td>{{p.productName}}</td>
-                                            <td class="align-right"><span>{{p.rateDefault}}</span></td>
-                                            <td class="align-right"><span>{{p.defaultAmt}}</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table class="table rates">
-                                    <thead>
-                                    <tr>
-                                        <th colspan="3">
-                                            <h3 style="margin-bottom:0;">Rates - Applies to all</h3>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody style="border: none;">
-                                        <tr>
-                                            <td><strong>Description</strong></td>
-                                            <td class="align-right"><strong>Rate (%)</strong></td>
-                                            <td class="align-right"><strong>Fee ($)</strong></td>
-                                        </tr>
-                                        <tr ng-repeat="p in globalPricing track by $index">
-                                            <td>{{p.productName}}</td>
-                                            <td class="align-right"><span>{{p.rateDefault}}</span></td>
-                                            <td class="align-right"><span>{{p.defaultAmt}}</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="vertical-alignment-helper">
+    <div class="modal-dialog vertical-align-center">
+      <div class="modal-content">
+        <div class="modal-header">
+          <a class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></a>
+          <h4 class="modal-title">Rates and Fees</strong></h4>
         </div>
+        <div class="modal-body row">
+          <div class="rates-details-modal">
+            <div class="column-6">
+              <table class="table rates">
+                <thead>
+                  <tr>
+                    <th colspan="3">
+                      <h3 style="margin-bottom:0;">{{cart.payment_types.name}}</h3>
+                      <strong ng-show="cart.transaction_fee">{{cart.payment_types.groups[0].rate}}% + {{cart.payment_types.groups[0].fee|currency}} is the qualified rate</strong>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Description</strong></td>
+                    <td class="align-right"><strong>Rate (%)</strong></td>
+                    <td class="align-right"><strong>Fee ($)</strong></td>
+                  </tr>
+                  <!--Card Present & Card Not Present placeholder-->
+                  <tr ng-repeat="group in groupedPricingDetails | orderByParentOrder:'parentOrder' track by $index">
+                    <td ng-if="group[0].cardPresentDiscountRates.length>=1 || group[0].cardNotPresentDiscountRates.length>=1" colspan=3>
+                      <div>
+                        <a class="link toggle-rates-children" ng-class="'toggle-rates-children'+$index" ng-click="grouping($index)">
+                          <i class="fa fa-lg fa-angle-double-down"></i>
+                        </a>
+                        <strong>{{group[0].groupName}}</strong>
+                        <!--card present-->
+                        <table ng-if="group[0].cardPresentDiscountRates.length>=1" class="table rates rate-child rate-child{{$index}}" style="display:none; margin: 10px 0 0 0;">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <a class="link toggle-rates-sub-children" ng-class="'toggle-rates-sub-children'+$index" ng-click="subgrouping($index)">
+                                  <i class="fa fa-lg fa-angle-double-down"></i>
+                                </a>
+                                <strong> Card Present </strong>
+                              </td>
+                              <td class="align-right">{{group[0].rateDefault}}</td>
+                              <td class="align-right">{{group[0].defaultAmt}}</td>
+                            </tr>
+                          </tbody>
+                          <!--repeated part-->
+                          <tbody class="rate-sub-child rate-sub-child+$index" ng-repeat="product in group[0].cardPresentDiscountRates track by $index" style="display:none;">
+                            <tr>
+                              <td>{{product.productName}}</td>
+                              <td class="align-right">{{product.rateDefault}}</td>
+                              <td class="align-right">{{product.defaultAmt}}</td>
+                            </tr>
+                          </tbody>
+                          <!--end repeated part-->
+                        </table>
+                        <!--card present end-->
+                        <!--card not present-->
+                        <table ng-if="group[0].cardNotPresentDiscountRates.length>=1" class="table rates rate-child rate-child{{$index}}" style="display:none; margin: 10px 0 0 0;">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <a class="link toggle-rates-sub-children" ng-class="'toggle-rates-sub-children'+$index + 'np'" ng-click="subgrouping($index + 'np')">
+                                  <i class="fa fa-lg fa-angle-double-down"></i>
+                                </a>
+                                <strong> Card Not Present</strong>
+                              </td>
+                              <td>{{group[0].cardNotPresentDiscountRates[0].rateDefault}}</td>
+                              <td>{{group[0].cardNotPresentDiscountRates[0].defaultAmt}}</td>
+                            </tr>
+                          </tbody>
+                          <!--repeated part-->
+                          <tbody class="rate-sub-child rate-sub-child+$index + 'np'" ng-repeat="product in group[0].cardNotPresentDiscountRates track by $index" style="display:none;">
+                            <tr>
+                              <td>{{product.productName}}</td>
+                              <td class="align-right">{{product.rateDefault}}</td>
+                              <td class="align-right">{{product.rateDefault}}</td>
+                            </tr>
+                          </tbody>
+                          <!--end repeated part-->
+                        </table>
+                        <!--card not present end-->
+                      </div>
+                    </td>
+                  </tr>
+                  <!--Card Present & Card Not Present placeholder-->
+                  <!--grouped discount rates products-->
+                  <tr ng-repeat="items in groupedDiscountRates | orderByParentOrder:'parentOrder' track by $index">
+                    <td colspan="3">
+                      <div>
+                        <a ng-if="items.length>=1" class="link toggle-rates-children+'gdr'" ng-class="'toggle-rates-children' + $index+'gdr'" ng-click="grouping($index+'gdr')">
+                          <i class="fa fa-lg fa-angle-double-down"></i></a>
+                        <strong>{{items[0].groupName}}</strong>
+                        <table class="table rates rate-child rate-child{{$index+'gdr'}}" style="margin: 10px 0 0 0;display:none;">
+                          <!--repeated part-->
+                          <tbody class="rate-sub-child rate-sub-child+$index" ng-repeat="item in items track by $index">
+                            <tr>
+                              <td>{{item.productName}}</td>
+                              <td class="align-right">{{item.rateDefault}}</td>
+                              <td class="align-right">{{item.defaultAmt}}</td>
+                            </tr>
+                          </tbody>
+                          <!--end repeated part-->
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <!--end grouped discount rates products-->
+                  <tr ng-repeat="item in discountRates track by $index">
+                    <td><strong>{{item.productName}}</strong></td>
+                    <td class="align-right">{{item.rateDefault}}</td>
+                    <td class="align-right">{{item.defaultAmt}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!--<div class="column-6">
+              <table class="table rates">
+                <thead>
+                  <tr>
+                    <th colspan="3">
+                      <h3 style="margin-bottom:0;">{{cart.payment_types.name}}</h3>
+                      <strong>{{cart.payment_types.groups[0].rate}}% + {{cart.payment_types.groups[0].fee|currency}} is the qualified rate</strong>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody style="border: none;">
+                  <tr>
+                    <td><strong>DiscountRates</strong></td>
+                    <td class="align-right"></td>
+                    <td class="align-right"></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Description</strong></td>
+                    <td class="align-right"><strong>Rate (%)</strong></td>
+                    <td class="align-right"><strong>Fee ($)</strong></td>
+                  </tr>
+                  <tr ng-repeat="p in acquiringPricing.discountRates track by $index">
+                    <td>{{p.productName}}</td>
+                    <td class="align-right"><span>{{p.rateDefault}}</span></td>
+                    <td class="align-right"><span>{{p.defaultAmt}}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>-->
+            <div class="column-6">
+              <table class="table rates">
+                <thead>
+                  <tr>
+                    <th colspan="3">
+                      <h3 style="margin-bottom:0;">Product Pricing</h3>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody style="border: none;">
+                  <tr>
+                    <td><strong>Description</strong></td>
+                    <td class="align-right"><strong>Rate (%)</strong></td>
+                    <td class="align-right"><strong>Fee ($)</strong></td>
+                  </tr>
+                  <tr ng-repeat="p in equipmentPricing track by $index">
+                    <td>{{p.productName}}</td>
+                    <td class="align-right"><span>{{p.rateDefault}}</span></td>
+                    <td class="align-right"><span>{{p.defaultAmt}}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <table class="table rates">
+                <thead>
+                  <tr>
+                    <th colspan="3">
+                      <h3 style="margin-bottom:0;">Rates - Applies to all</h3>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody style="border: none;">
+                  <tr>
+                    <td><strong>Description</strong></td>
+                    <td class="align-right"><strong>Rate (%)</strong></td>
+                    <td class="align-right"><strong>Fee ($)</strong></td>
+                  </tr>
+                  <tr ng-repeat="p in globalPricing track by $index">
+                    <td>{{p.productName}}</td>
+                    <td class="align-right"><span>{{p.rateDefault}}</span></td>
+                    <td class="align-right"><span>{{p.defaultAmt}}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>

@@ -54,6 +54,7 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
 
       $("#view-fees-modal").on('show.bs.modal', function() {
         $scope.acquiringPricing = fdService.getAcquiringPricingStorage();
+        $scope.acquiringDataGrouping($scope.acquiringPricing);
         console.log($scope.acquiringPricing)
         $scope.equipmentPricing = fdService.getEquipmentPricingStorage();
         $scope.globalPricing = fdService.getGlobalPricingStorage();
@@ -62,6 +63,95 @@ app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$ro
         }
       });
     };
+
+    /**
+     * Acquiring Data Grouping
+     * @method acquiringDataGrouping
+     * @param data acquiringData
+     */
+    $scope.acquiringDataGrouping = function(data) {
+        var result = {};
+        var discountRates = [];
+        var groupedDiscountRates = {};
+        if(undefined != data && undefined != data.discountRates){
+            for (var i = 0; i < data.discountRates.length; i++) {
+                var temp = data.discountRates[i];
+                if (groupedDiscountRates[data.discountRates[i].groupName] && data.discountRates[i].groupName != '') {
+                    groupedDiscountRates[data.discountRates[i].groupName].push(temp);
+                } else {
+                    if (data.discountRates[i].groupName != '')
+                        groupedDiscountRates[data.discountRates[i].groupName] = [temp];
+                    else {
+                        discountRates.push(temp);
+                    }
+                }
+            }
+        }
+        //setup cardPresentDiscountRates
+        if(undefined != data && undefined != data.cardPresentDiscountRates){
+            for (var i = 0; i < data.cardPresentDiscountRates.length; i++) {
+                var temp = data.cardPresentDiscountRates[i];
+                if (result[data.cardPresentDiscountRates[i].groupName] && data.cardPresentDiscountRates[i].groupName != '') {
+                    result[data.cardPresentDiscountRates[i].groupName][0].cardPresentDiscountRates.push(temp);
+                } else {
+                    var tempData = []; 
+                    tempData.push(temp);
+
+                    tempData[0].cardPresentDiscountRates = [];
+                    tempData[0].cardNotPresentDiscountRates = [];
+
+                    if (data.cardPresentDiscountRates[i].groupName != ''){
+                        tempData[0].cardPresentDiscountRates.push(angular.copy(temp));
+                        result[data.cardPresentDiscountRates[i].groupName]=tempData;
+                    }
+                }
+            }
+        }
+        //setup cardNotPresentDiscountRates
+        if(undefined != data && undefined != data.cardNotPresentDiscountRates){
+            for (var i = 0; i < data.cardNotPresentDiscountRates.length; i++) {
+                var temp = data.cardNotPresentDiscountRates[i];
+                if (result[data.cardNotPresentDiscountRates[i].groupName] && data.cardNotPresentDiscountRates[i].groupName != '') {
+                    result[data.cardNotPresentDiscountRates[i].groupName][0].cardNotPresentDiscountRates.push(temp);
+                } else {
+                    var tempData = [];
+                    tempData.push(temp);
+
+                    tempData[0].cardPresentDiscountRates = [];
+                    tempData[0].cardNotPresentDiscountRates = [];
+
+                    if (data.cardNotPresentDiscountRates[i].groupName != ''){
+                        tempData[0].cardNotPresentDiscountRates.push(angular.copy(temp));
+                        result[data.cardNotPresentDiscountRates[i].groupName]=tempData;
+                    }
+                }
+            }
+        }
+        //setup scope arrays and objects
+        $scope.groupedPricingDetails = result;
+        $scope.discountRates = discountRates;
+        $scope.groupedDiscountRates = groupedDiscountRates;
+    }
+
+    /**
+     * Grouping button click
+     * @method grouping
+     * @param {number} index
+     */
+    $scope.grouping = function(index) {
+        angular.element('.toggle-rates-children' + index).children('i').toggleClass('fa-angle-double-down fa-angle-double-up');
+        angular.element('.toggle-rates-children' + index).parent('div').children('table.rate-child' + index).slideToggle('fast');
+    }
+
+    /**
+     * Subgrouping button click
+     * @method grouping
+     * @param {number} index
+     */
+    $scope.subgrouping = function(index) {
+        angular.element('.toggle-rates-sub-children' + index).children('i').toggleClass('fa-angle-double-down fa-angle-double-up');
+        angular.element('.toggle-rates-sub-children' + index).parent('td').parent('tr').parent('tbody').parent('table').children('tbody.rate-sub-child').slideToggle('fast');
+    }
 
     /**
      * remove product from cart

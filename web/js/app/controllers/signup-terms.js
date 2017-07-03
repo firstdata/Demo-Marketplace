@@ -445,24 +445,19 @@ app.controller('SignupTermsCtrl', ['$scope', '$rootScope', '$filter', '$location
 
       fdService.submitSignature(sdata)
         .success(function(data, status, headers, config) {
-          if (!$rootScope.logged_in) {
-            $location.path('/verify-identity/' + orderId);
-          } else {
-            $location.path('/thankyou');
-          }
           fdService.clearOrderId();
-          fdService.clearSignupData();
           fdService.clearCart();
-          fdService.clearCategoryFromSession();
-          fdService.clearCDSession();
-          fdService.clearTransactionInfo();
           fdService.clearOrderedCart();
+          fdService.clearCategoryFromSession();
+          fdService.clearTransactionInfo();
           fdService.clearAcquiringPricing();
           fdService.clearEquipmentPricing();
           $rootScope.cart = fdService.getCart();
+          $location.path('/thankyou');
         })
         .error(function(data, status, headers, config) {
           $scope.clickedTCSubmit = false;
+          $location.path('/400');
         });
     };
 
