@@ -7,6 +7,7 @@ var app = angular.module('fdApp', ['ngRoute','ui.bootstrap', 'ngResource', 'infi
  * fdApp routes
  */
 app.config(['$routeProvider', function ($routeProvider) {
+
   $routeProvider
     .when('/',{
       controller: 'IndexCtrl',
@@ -19,8 +20,17 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
+    .when('/solutions/:sid',{
+      controller: 'SolutionCtrl',
+      templateUrl: 'view/solution.html',
+      resolve: {
+        page: function($route){
+          $route.current.params.page = 'solutions';
+        }
+      }
+    })
     .when('/product/:pid',{
-      controller: 'ProductCtrl',
+      controller: 'SolutionCtrl',
       templateUrl: 'view/product.html',
       resolve: {
         page: function($route){
@@ -59,7 +69,7 @@ app.config(['$routeProvider', function ($routeProvider) {
       }
     })
     .when('/product/:bid',{
-      controller: 'ProductCtrl',
+      controller: 'SolutionCtrl',
       templateUrl: 'view/product.html',
       resolve: {
         page: function($route){
@@ -160,6 +170,16 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
+    .when('/products/:pid/recommended-products',{
+      controller: 'RecommendedProductsCtrl',
+      templateUrl: 'view/recommended_products.html',
+      title: 'Recommended Products | First Data',
+      resolve: {
+        page: function($route){
+          $route.current.params.page = 'Recommended Products';
+        }
+      }
+    })
     .when('/products/:type/:typename',{
       controller: 'ProductsCtrl',
       templateUrl: 'view/products.html',
@@ -167,6 +187,16 @@ app.config(['$routeProvider', function ($routeProvider) {
       resolve: {
         page: function($route){
           $route.current.params.page = 'products';
+        }
+      }
+    })
+    .when('/options/:typename',{
+      controller: 'OptionsCtrl',
+      templateUrl: 'view/options.html',
+      title: 'Options | First Data',
+      resolve: {
+        page: function($route){
+          $route.current.params.page = 'options';
         }
       }
     })
@@ -180,6 +210,62 @@ app.config(['$routeProvider', function ($routeProvider) {
           $route.current.params.page = 'signup';
          }
        }
+    })
+    .when('/signup/owner',{
+       controller: 'SignupOwnerCtrl',
+       templateUrl: 'view/signup/owner.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-owner';
+         }
+       }
+    })
+    .when('/signup/location',{
+       controller: 'SignupLocationCtrl',
+       templateUrl: 'view/signup/location.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-location';
+         }
+       }
+    })
+    .when('/signup/location/:num',{
+       controller: 'SignupLocationCtrl',
+       templateUrl: 'view/signup/location.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-location';
+         }
+       }
+    })
+    .when('/signup/setup',{
+       controller: 'SignupSetupCtrl',
+       templateUrl: 'view/signup/setup.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-setup';
+         }
+       }
+    })
+    .when('/signup/terms', {
+        controller: 'SignupTermsCtrl',
+        templateUrl: 'view/signup/terms.html',
+        title: 'Terms & Conditions | First Data Marketplace',
+        resolve: {
+            page: function($route) {
+                $route.current.params.eSignature = true;
+                $route.current.params.nologin = true;
+                $route.current.params.page = 'merchant-agreement';
+            }
+        }
     })
     .when('/terms',{
        controller: 'TCCtrl',
@@ -203,9 +289,55 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
+    .when('/multi-locations',{
+       controller: 'MultiLocationsCtrl',
+       templateUrl: 'view/multi-locations.html',
+       title: 'Number of Locations | First Data Marketplace',
+       resolve: {
+           page: function($route){
+              $route.current.params.page = 'multi-locations';
+           }
+       }
+    })
     .otherwise({ redirectTo: '/404' });
   
 }]);
+
+app.config([
+  '$httpProvider',
+  function($httpProvider) {
+
+    $httpProvider.interceptors.push(['$rootScope', '$q', '$location', function($rootScope, $q, $location) {
+      return {
+        'response': function(response) {
+          if(response.status === 200 && response.config.method === 'POST'){
+            $rootScope.$emit('resetSessionTimeout');
+          }
+          return response || $q.when(response);
+        },
+        'responseError': function(response) {
+
+          var status = response.status;
+          var data = response.data;
+          if (status === 401) {
+            if (data.redirectUrl){
+              $rootScope.$emit('logout', [data]);
+            } else {
+              $location.path('/401');
+            }
+          } else if (status === 404) {
+            $location.path('/404');
+          } else if (status === 400 || status === 409 || status === 503 || status === -1) {
+            //Caller will handle
+          } else {
+            $location.path('/400');
+          }
+          return $q.reject(response);
+        }
+      };
+    }]);
+  }
+]);
 
 /**
  * Init titles and referrer url

@@ -1,12 +1,11 @@
 /**
- * Product Controller
+ * Solution Controller
  */
-app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', '$timeout', '$anchorScroll', '$window', 'fdService', 'CONST',
+app.controller('SolutionCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', '$timeout', '$anchorScroll', '$window', 'fdService', 'CONST',
   function($scope, $rootScope, $filter, $location, $routeParams, $timeout, $anchorScroll, $window, fdService, CONST) {
 
-
     /**
-     * Image Change Timeout Promise
+     * image timeout promise
      */
     var imgPromise;
 
@@ -16,13 +15,15 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
      */
     var _init = function() {
 
-      $scope.timestamp = new Date().getTime();
-      $rootScope.cart.taxPercent = 9; //set sales tax = 9%
+      $scope.category = fdService.getCategoryFromSession();
 
-      $scope.page = $routeParams.page;
+      if (!$scope.category) {
+        $location.path('/');
+        return;
+      }
 
-      $rootScope.cart = $rootScope.cart;
-
+      $rootScope.wrapperClass = 'product-detail';
+      $rootScope.wrapperId = 'product';
       $rootScope.body_id = 'product-detail';
 
       $scope.bundle_info = {};
@@ -36,6 +37,14 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
       $scope.images = [];
       $scope.cimage = $rootScope.placeholderImageUrl;
 
+      $scope.monthlyFee = false;
+      $scope.transactionFee = false;
+
+      $scope.timestamp = new Date().getTime();
+
+      $scope.page = $routeParams.page;
+
+      $rootScope.cart = $rootScope.cart;
       if (!$routeParams.pid) {
         $location.path('/');
         return;
@@ -43,27 +52,21 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
 
       $scope.pid = $routeParams.pid;
 
-      // Get product features
       fdService.getFeatures($scope.pid)
         .success(function(data, status, headers, config) {
           $scope.features = data;
         })
         .error(function(data, status, headers, config) {
           $scope.features = [];
-          console.log('error');
         });
-
-      // Get product specifications
       fdService.getSpecs($scope.pid)
         .success(function(data, status, headers, config) {
           $scope.specs = data;
         })
         .error(function(data, status, headers, config) {
           $scope.specs = {};
-          console.log('error');
         });
 
-      // Get product details
       fdService.getProduct($scope.pid)
         .success(function(data, status, headers, config) {
           $scope.bundle_info = data;
@@ -89,51 +92,84 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
               $scope.largeImages.push($scope.images[i]);
             }
           }
-          $scope.changeImage($scope.thumbImages[0]);
+          $scope.changeImage($scope.thumbImages[0], 0);
 
         })
         .error(function(data, status, headers, config) {
           $scope.bundle_info = [];
           $location.path('invalid-item');
           $scope.min_lease_amt = 0;
-          console.log('error');
         });
 
-      // Get Recommended bundles for this product
       fdService.getRecommendedBundles($scope.pid)
         .success(function(data, status, headers, config) {
           $scope.recommendedBundles = data;
         })
         .error(function(data, status, headers, config) {
           $scope.recommendedBundles = [];
-          console.log('error');
         });
 
-      // Get Products List
       fdService.getProductsList($scope.pid)
         .success(function(data, status, headers, config) {
           $scope.includes = data;
         })
         .error(function(data, status, headers, config) {
           $scope.includes = [];
-          console.log('error');
         });
 
-      // Get FAQ list for product
       fdService.getFaqs($scope.pid)
         .success(function(data, status, headers, config) {
           $scope.faqs = data;
         })
         .error(function(data, status, headers, config) {
           $scope.faqs = [];
-          console.log('error');
+        });
+
+
+      if (!$rootScope.cart.shippingAddress[0].zip) {
+        fdService.getDataByIp()
+            .success(function(data, status, headers, config) {
+                $scope.getTaxes(data.zipCode, data.city ? data.city : -1);
+            })
+            .error(function(data, status, headers, config) {
+
+            });
+
+      }
+
+      $rootScope.$on('Category_Change', function() {
+        $scope.category = fdService.getCategoryFromSession();
+      });
+
+    };
+
+
+    /**
+     * Get taxes by city and state
+     * @method getTaxes
+     * @param zip
+     * @param city
+     */
+    $scope.getTaxes = function(zip, city) {
+      if (!zip || !city) {
+        return;
+      }
+      fdService.getTaxes(zip, city)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.taxPercent = data.salesTax;
+          $scope.cartChanged();
+        })
+        .error(function(data, status, headers, config) {
+          $rootScope.cart.taxPercent = -2;
+          $scope.cartChanged();
         });
     };
 
+
     /**
-     * Redirect to checkout
+     * Redirect to the checkout page
      * @method goToCheckout
-     * @param {Boolean} do nothing if true
+     * @param disabled
      */
     $scope.goToCheckout = function(disabled) {
       if (disabled || !$rootScope.cart.purchaseEnabled) {
@@ -145,7 +181,7 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
     /**
      * Add product to the cart
      * @method addToCart
-     * @param {Object} product
+     * @param {Object} bundle product object
      */
     $scope.addToCart = function(bundle) {
       if (!bundle) {
@@ -156,43 +192,91 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
 
       var pid = bundle.productId;
 
+      var category = fdService.getCategoryFromSession();
+
       if (!Object.keys(bundle).length) {
         return;
       }
-      if ($rootScope.cart.data[pid]) {
-        var qty = parseInt($rootScope.cart.data[pid].qty);
-        if (qty < 10) {
-          qty++;
-          $rootScope.cart.data[pid].qty = qty.toString();
+
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+      if (bundle.offeringTypes && bundle.offeringTypes.indexOf('Transactions') > -1) {
+
+        if (-1 !== $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(bundle.productId)) {
+          return;
         }
+
+        var pr = {
+          id: bundle.productId,
+          name: bundle.productName,
+          price: bundle.price,
+          type: bundle.productType,
+          term: bundle.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          parentProduct: {
+            id: null,
+            name: null,
+            rate: 0,
+            fee: 0,
+          },
+          qty: 1,
+        };
+
+        $rootScope.cart.transaction_products.push(pr);
+
       } else {
-        $rootScope.cart.data[pid] = {
+
+        var pr = {
           id: pid,
           name: bundle.productName,
           price: bundle.price,
+          defaultPrice: bundle.price,
           individualPurchaseEnabled: bundle.pinPad,
           pricingModel: bundle.pricingModel,
           productType: bundle.productType,
-          term: CONST.PURCHASE_CODE,
+          term: bundle.defaultPurchaseType,
           pmodel: null,
-          qty: "1"
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1
         };
+
+        var index = fdService.getCartProductIndex($rootScope.cart, pr);
+
+        if (-1 !== index) {
+          pr = $rootScope.cart.data[index];
+          pr.qty++;
+          pr.price = bundle.price;
+          pr.defaultPrice = bundle.price;
+          if (pr.qty > 10) {
+            pr.qty = 10;
+          }
+
+          $rootScope.cart.data[index] = pr;
+        } else {
+          $rootScope.cart.data.push(pr);
+        }
       }
 
-      // Validate if cart is ready to checkout
+      fdService.resetCartOverridePricing($rootScope.cart);
       fdService.validateCart($rootScope.cart)
         .success(function(data, status, headers, config) {
           $rootScope.cart.validation = data;
           $scope.cartChanged();
+          if (data.iscartvalid) {
+            fdService.updatePricing(function() {
+              $rootScope.cart = fdService.getCart();
+            });
+          }
         })
         .error(function(data, status, headers, config) {
-          console.log('error');
+
         });
 
       $scope.cartChanged();
       fdService.clearOrderId();
 
-      //Scroll to the cart in case of small screen
       if (window.matchMedia("(max-width: 740px)").matches) {
         $timeout(function() {
           $location.hash('order-summary-container');
@@ -200,14 +284,13 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
         });
       }
 
-      // Update pricing
-      fdService.updatePricing();
+
     };
 
     /**
      * Lease product
      * @method leaseProduct
-     * @param {Object} product
+     * @param {Object} bundle product object
      */
     $scope.leaseProduct = function(bundle) {
 
@@ -217,33 +300,36 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
         $anchorScroll();
       }
 
+      fdService.resetCartOverridePricing($rootScope.cart);
       fdService.leaseProduct(bundle, $rootScope.cart);
       $scope.cartChanged();
 
-      //Scroll to the cart in case of small screen
+
       if (window.matchMedia("(max-width: 740px)").matches) {
         $timeout(function() {
           $location.hash('order-summary-container');
           $anchorScroll();
         });
       }
-
-      // Update pricing
-      fdService.updatePricing();
-
-      // Validate if cart is ready to checkout
       fdService.validateCart($rootScope.cart)
         .success(function(data, status, headers, config) {
           $rootScope.cart.validation = data;
           $scope.cartChanged();
+          if (data.iscartvalid) {
+            fdService.updatePricing(function() {
+              $rootScope.cart = fdService.getCart();
+            });
+          }
         })
         .error(function(data, status, headers, config) {
-          console.log('error');
+
         });
+
+
     };
 
     /**
-     * Calling in case of changing cart.
+     * Cart Changed
      * @method cartChanged
      */
     $scope.cartChanged = function() {
@@ -251,11 +337,15 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
     };
 
     /**
-     * Change active image
+     * Change current active image
      * @method changeImage
-     * @param {String} img
+     * @param img
+     * @param {number} timeout
      */
-    $scope.changeImage = function(img) {
+    $scope.changeImage = function(img, to) {
+      if (undefined == to) {
+        to = 100;
+      }
       if (imgPromise) {
         $timeout.cancel(imgPromise);
       }
@@ -268,10 +358,15 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
           } else {
             $scope.cimage = $rootScope.placeholderImageUrl;
           }
+
         }
-      }, 100);
+
+      }, to);
     };
     ///////////////// MAIN ////////////////////////////////
+
+
     _init();
+
   }
 ]);

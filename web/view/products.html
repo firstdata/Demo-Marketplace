@@ -18,7 +18,7 @@
         <span class="icon"><i class="fa fa-2x fa-search"></i></span>
         <input id="search-products"  type="text" placeholder="i.e. Barcode Scanner" ng-model="keyword" ng-change="search()" />
         <div class="inline-block">
-          <select id="categoryfilter" ng-disabled="categoryDisabled" class="js-example-basic-multiple" multiple="multiple" use-select2 placeholder="All Business Categories" ng-model="businessCategory" ng-change="changeCategory()" ng-options="c.name for c in categories track by c.id.toString()"></select>
+          <select id="categoryfilter" ng-disabled="categoryDisabled" class="js-example-basic-multiple" placeholder="All Business Categories" ng-model="category" ng-change="changeCategory()" ng-options="c.name for c in categories track by c.id.toString()"></select>
         </div>
       </form>
     </div>

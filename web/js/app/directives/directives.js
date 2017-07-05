@@ -19,6 +19,27 @@ app.directive("compareTo", function() {
         }
     };
 });
+/**
+ * Compare Numbers
+ */
+app.directive("compareNumTo", function() {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareNumTo"
+        },
+        link: function(scope, element, attributes, ngModel) {
+            ngModel.$validators.compareNumTo = function(modelValue) {
+                var l = (typeof modelValue == 'undefined' ? '' : modelValue);
+                var r = (typeof scope.otherModelValue == 'undefined' ? '' : scope.otherModelValue);
+                return l === r;
+            };
+            scope.$watch("otherModelValue", function() {
+                ngModel.$validate();
+            });
+        }
+    };
+});
 
 /**
  * toggle mobile menu
@@ -37,6 +58,38 @@ app.directive("toggleMenu", function() {
 app.directive("sketch", function() {
     return function(scope, element, attrs) {
         element.sketch();
+    };
+});
+
+/**
+ * Add Video Modal Directive
+ */
+app.directive("addVideoModal", function() {
+    return function(scope, element, attrs) {
+        element.on('click', function() {
+            $(attrs.addVideoModal).modal('show');
+            $(attrs.addVideoModal).on('hidden.bs.modal', function() {
+                $(attrs.addVideoModal + ' iframe').attr("src", $(attrs.addVideoModal + ' iframe').attr("src"));
+                var video = $(attrs.addVideoModal + ' video')[0];
+                if (video && !video.paused) {
+                    video.pause();
+                }
+            });
+        });
+    };
+});
+
+/**
+ * Open Video Directive
+ */
+app.directive("openVideo", function() {
+    return function(scope, element, attrs) {
+        element.YouTubePopup({
+            autoplay: true,
+            draggable: false,
+            title: 'Clover Overview',
+            useYoutTubeTitle: false
+        });
     };
 });
 
@@ -126,6 +179,11 @@ app.directive('ssnField', function($filter) {
                 var formatted;
                 formatted = ssnReverse(value);
                 element.val(ssnFilter(formatted));
+                setTimeout(function() {
+                    var strLength = ssnFilter(formatted).length;
+                    element[0].focus();
+                    element[0].setSelectionRange(strLength, strLength);
+                }, 10);
                 return formatted;
             };
             modelCtrl.$formatters.push(formatter);
@@ -169,7 +227,40 @@ app.directive('formatPhone', function($filter) {
                 var formatted;
                 formatted = phoneReverse(value);
                 element.val(phoneFilter(formatted));
+                setTimeout(function() {
+                    var strLength = phoneFilter(formatted).length;
+                    element[0].focus();
+                    element[0].setSelectionRange(strLength, strLength);
+                }, 10);
                 return formatted;
+            };
+            modelCtrl.$formatters.push(formatter);
+            return modelCtrl.$parsers.unshift(parser);
+        }
+    };
+});
+
+/**
+ * Format Number
+ */
+app.directive('formatNum', function($filter) {
+    var numFilter = $filter('number');
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, modelCtrl) {
+            var formatter, parser;
+            formatter = function(value) {
+                return numFilter(value);
+            };
+            parser = function(value) {
+                var formatted;
+                var val = value.split('.');
+                var decimals = val[1] != undefined ? '.'+val[1] : '';
+                formatted = val[0].replace(/\D/g, "")+decimals;
+                if(decimals != '.')
+                    element.val(numFilter(formatted));
+                return parseFloat(formatted);
             };
             modelCtrl.$formatters.push(formatter);
             return modelCtrl.$parsers.unshift(parser);
@@ -191,13 +282,20 @@ app.directive('ngMin', function() {
             scope.$watch(attr.ngMin, function() {
                 ctrl.$setViewValue(ctrl.$viewValue);
             });
+            ctrl.$validators.ngMin = function(value) {
+                var minVal = parseFloat(attr.ngMin) || 0;
+                return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= minVal;
+            };
+            attr.$observe('min', function(val) {
+                ctrl.$validate();
+            });
             var minValidator = function(value) {
-                var min = scope.$eval(attr.ngMin) || 0;
-                if (!isEmpty(value) && value <= min) {
-                    ctrl.$setValidity('ngMin', false);
-                    return undefined;
-                } else {
+                var min = parseFloat(attr.ngMin) || 0;//scope.$eval(attr.ngMin) || 0;
+                if (!isEmpty(value) && value >= min) {
                     ctrl.$setValidity('ngMin', true);
+                    return value;
+                } else {
+                    ctrl.$setValidity('ngMin', false);
                     return value;
                 }
             };
@@ -221,13 +319,20 @@ app.directive('ngMax', function() {
             scope.$watch(attr.ngMax, function() {
                 ctrl.$setViewValue(ctrl.$viewValue);
             });
+            ctrl.$validators.ngMax = function(value) {
+                var maxVal = parseFloat(attr.ngMax) || Infinity;
+                return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= maxVal;
+            };
+            attr.$observe('max', function(val) {
+                ctrl.$validate();
+            });
             var maxValidator = function(value) {
-                var max = scope.$eval(attr.ngMax) || Infinity;
-                if (!isEmpty(value) && value >= max) {
-                    ctrl.$setValidity('ngMax', false);
-                    return undefined;
-                } else {
+                var max = parseFloat(attr.ngMax) || Infinity;//scope.$eval(attr.ngMax) || Infinity;
+                if (!isEmpty(value) && value <= max) {
                     ctrl.$setValidity('ngMax', true);
+                    return value;
+                } else {
+                    ctrl.$setValidity('ngMax', false);
                     return value;
                 }
             };
@@ -256,7 +361,8 @@ app.directive('decimalPlaces', function($parse, $filter) {
                 }
             });
             ele.bind('focusout', function(e) {
-                ngModel.$setViewValue($filter('decimalConvert')(scope.modelValue));
+                if(scope.modelValue)
+                    ngModel.$setViewValue($filter('decimalConvert')(scope.modelValue));
                 ngModel.$render();
             });
         }
@@ -286,8 +392,6 @@ app.directive('goTo', ['$location', '$timeout', function($location, $timeout) {
                 $timeout(function() {
                     $location.path(attrs.goTo);
                 });
-                //              scope.$apply(function() {
-                //              });
             });
         }
     }

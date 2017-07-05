@@ -20,7 +20,7 @@
             <h1 class="align-center" style="margin-top:20px">Let's sign you up.</h1>
             <p class="align-center subhead "> Signing up for First Data Solutions is fast and free!
                 <br/>
-        <span class="small">Please note that the transaction fees offered apply only if you complete this application online process and your application is approved.
+                <span class="small">Please note that the transaction fees offered apply only if you complete this application online process and your application is approved.
         </span>
             </p>
             <p id="form-error" ng-show="form_error">Your form cannot be submitted. Please check the fields highlighted in red. Make sure all fields are completed and your information is correct.</p>
@@ -132,13 +132,10 @@
                                     <option ng-repeat="y in [] | range:thisYear:1900" ng-value="y">{{y}}</option>
                                 </select>
                             </label>
-                            <!-- Added common error messages for Year and month-->
                             <p ng-show="signupForm.YEAR_BUSINESS_STARTED.$touched && signupForm.YEAR_BUSINESS_STARTED.$error.required ||  (signupForm.MONTH_BUSINESS_STARTED.$touched && signupForm.MONTH_BUSINESS_STARTED.$error.required)" class="form-error-detail">
-                            <i class="fa fa-info-circle"></i> Select the year and month of your business started .</p>
+                                <i class="fa fa-info-circle"></i> Select the year and month of your business started .</p>
                             <p ng-show="signupForm.YEAR_BUSINESS_STARTED.$touched && signupForm.YEAR_BUSINESS_STARTED.$error.min" class="form-error-detail">
                                 <i class="fa fa-info-circle"></i> Enter a year past 1950 .</p>
-                            <!--<p ng-show="signupForm.MONTH_BUSINESS_STARTED.$touched && signupForm.MONTH_BUSINESS_STARTED.$error.required" class="form-error-detail">
-                                <i class="fa fa-info-circle"></i> Select the month your business started .</p> -->
                             <p ng-show="signupForm.MONTH_BUSINESS_STARTED.$touched && signupForm.MONTH_BUSINESS_STARTED.$error.excluded" class="form-error-detail">
                                 <i class="fa fa-info-circle"></i> Date cannot be future date .</p>
                         </div>
@@ -163,7 +160,6 @@
 
                         </div>
                         <div class="column-4" style="padding:0 0 0 8px;">
-                            <!-- Removed unnecessary(year and Month) validations from State of incorporation -->
                             <label class="fancy-field"  fancy-field ng-class="{'error': (signupForm.INCORPORATION_STATE.$touched && signupForm.INCORPORATION_STATE.$invalid)}">
                                 <select placeholder="State of incorporation" ng-model="formData.INCORPORATION_STATE" name="INCORPORATION_STATE" required="required">
                                     <option value="">State of incorporation</option>
@@ -240,7 +236,6 @@
                                 <i class="fa fa-info-circle"></i> Total must be 100%.</p>
                         </div>
 
-                        <!--Start: New field added for Internet -->
                         <div class="column-4" style="padding: 5px 0px 0 0;">
                             <label class="fancy-field" for="internetPay" fancy-field  ng-class="{'error': (signupForm.INTERNET_PAY.$touched && signupForm.INTERNET_PAY.$invalid) || (signupForm.FACE_TO_FACE.$touched && signupForm.FACE_TO_FACE.$invalid) || (signupForm.PHONE_OR_EMAIL.$touched && signupForm.PHONE_OR_EMAIL.$invalid)}">
                                 <select placeholder="Internet" id="internetPay" name="INTERNET_PAY" required="required" ng-model="formData.INTERNET_PAY" ng-change="faceToFaceChange(2)">
@@ -252,10 +247,6 @@
                             <p ng-show="signupForm.INTERNET_PAY.$touched && signupForm.INTERNET_PAY.$error.required" class="form-error-detail">
                                 <i class="fa fa-info-circle"></i> Total must be 100%.</p>
                         </div>
-                        <!--End: New field added for Internet -->
-
-
-
                         <p ng-show="signupForm.PHONE_OR_EMAIL.$error.size" class="form-error-detail">
                             <i class="fa fa-info-circle"></i>Either Phone/Mail Order or Internet payments should be greater than 80% for E-Commerce merchants.</p>
                         <p ng-show="signupForm.PHONE_OR_EMAIL.$error.total" class="form-error-detail">
@@ -287,35 +278,10 @@
                     <div class="form-element" >
                         <label class="fancy-field" fancy-field ng-class="{'error': signupForm.annualVolume.$touched && signupForm.annualVolume.$invalid}">
                             <input type="text" placeholder="Anticipated annual credit card sales" ng-model="formData.annualVolume" name="annualVolume" readonly>
-                            <!--<select placeholder="Anticipated annual credit card sales" ng-model="formData.annualVolume" name="annualVolume" required="required">
-                                <option value="">Anticipated annual credit card sales</option>
-                                <option value="Under $100,000">Under $100,000</option>
-                                <option value="$100,001 - $200,000">$100,001 - $200,000</option>
-                                <option value="$200,001 - $300,000">$200,001 - $300,000</option>
-                                <option value="$300,001 - $400,000">$300,001 - $400,000</option>
-                                <option value="$400,001 - $500,000">$400,001 - $500,000</option>
-                                <option value="$500,001 - $600,000">$500,001 - $600,000</option>
-                                <option value="$600,001 - $700,000">$600,001 - $700,000</option>
-                                <option value="$700,001 - $800,000">$700,001 - $800,000</option>
-                                <option value="$800,001 - $900,000">$800,001 - $900,000</option>
-                                <option value="$900,001 - $1M">$900,001 - $1M</option>
-                                <option value="Over $1M">Over $1M</option>
-                            </select>-->
                         </label>
                         <p ng-show="signupForm.annualVolume.$touched && signupForm.annualVolume.$error.required" class="form-error-detail">
                             <i class="fa fa-info-circle"></i> Select anticipated annual sales.</p>
                     </div>
-                    <!--<div class="form-element">
-                        <label class="fancy-field" fancy-field ng-class="{'error': signupForm.business_address_same.$touched && signupForm.business_address_same.$invalid}">
-                            <select placeholder="Is business address the same as owners home address?" ng-model="formData.business_address_same" name="business_address_same" required="required">
-                                <option value="">Is business address the same as owners home address?</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </label>
-                        <p ng-show="signupForm.business_address_same.$touched && signupForm.business_address_same.$error.required" class="form-error-detail">
-                            <i class="fa fa-info-circle"></i>Please select any option.</p>
-                    </div>-->
                     <div class="form-element multiple">
                         <p>Primary Business Address</p>
                         <label class="fancy-field"  fancy-field style="margin-bottom: 8px;" ng-class="{'error': (signupForm.business_address1.$touched && signupForm.business_address1.$invalid) || (signupForm.business_address1.$touched && signupForm.business_address1.$invalid)}">
@@ -372,10 +338,10 @@
                         </div>
                         <div class="column-4" style="padding-left:8px; padding-top:0; padding-bottom:0; padding-right: 0px;">
                             <label class="fancy-field" for="title1" fancy-field ng-class="{'error': signupForm.title1.$touched && signupForm.title1.$invalid}">
-                                  <select id="title1" placeholder="Title" ng-model="formData.title1" name="title1" required="required">
+                                <select id="title1" placeholder="Title" ng-model="formData.title1" name="title1" required="required">
                                     <option value="">Title</option>
-                                      <option ng-repeat="t in titles" value="{{ t }}">{{ t }}</option>
-                                  </select>
+                                    <option ng-repeat="t in titles" value="{{ t }}">{{ t }}</option>
+                                </select>
                             </label>
                             <p ng-show="signupForm.title1.$touched && signupForm.title1.$error.required" class="form-error-detail">
                                 <i class="fa fa-info-circle"></i> Select your title.</p>

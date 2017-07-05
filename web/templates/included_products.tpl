@@ -3,7 +3,7 @@
    <div class="container" id="product-contents">
      <h3>Includes</h3>
      <div>
-       <a class="product-content column-2" ng-repeat="p in includes" data-toggle="modal" data-target="#include-{{p.productId}}-{{timestamp}}">
+       <a class="product-content column-2 link" ng-repeat="p in includes" data-toggle="modal" data-target="#include-{{p.productId}}-{{timestamp}}">
          <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}" />
          <p>{{p.productName}}</p>
        </a>

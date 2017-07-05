@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html data-ng-app="fdApp" ng-controller="MainCtrl">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
-    <link rel='shortcut icon' href='img/favicon.ico' type='image/x-icon' />
+    <link rel='shortcut icon' href='img/favicon.ico' type='image/x-icon'/>
     <title>Buy | First Data</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -11,6 +12,7 @@
     <!-- <link rel="stylesheet" href="https://d3v2y4zgl9ajcu.cloudfront.net/etc/designs/firstdatacomDesign/firstdatacom-responsive/libs/firstdata-responsive-headlibs.min.8df073344dc98a664ef32dff87a5c174.css"> -->
     <link rel="stylesheet" href="stylesheets/main.css?rel=1469720518583" media="all" />
     <link rel="stylesheet" href="stylesheets/layouts/terms-print.css" media="print" />
+    <link rel="stylesheet" href="stylesheets/layouts/terms-print/mpa-print.css" media="print" />
     <!--[if lte IE 8]>
     <script>
         document.createElement('ng-include');
@@ -32,11 +34,12 @@
 <body ng-attr-id="{{body_id}}" ng-class="{bodyClass: bodyClass, 'noscroll': isOverlay()}">
 
 <div id="full_body">
+    <ng-include ng-if="showEsignature" src="'templates/e-signature.tpl'"></ng-include>
     <header>
         <div id="top">
             <nav class="container">
                 <a id="logo" href="#/"><img src="img/logo.svg" /></a>
-                <a ng-show="cart.total_qty && !orderId" id="cart-icon" href="#/checkout/shipping"><img ng-src="img/cart.svg"/><span><any ng-bind="cart.total_qty"></any></span></a>
+                <a ng-show="cart.total_qty && !orderId" class="link" id="cart-icon" ng-click="proceedToCheckout()"><img ng-src="img/cart.svg"/><span><any ng-bind="cart.total_qty"></any></span></a>
                 <!--<ul id="main-menu" class="">-->
                     <!--<li><a class="nav-main-item" href="https://www.firstdata.com/en_us/products-all.html">Solutions</a></li>-->
                     <!--<li><a class="nav-main-item" href="https://www.firstdata.com/en_us/insights/landing.html">Insights</a></li>-->

@@ -632,6 +632,7 @@ var app = angular.module('fdApp', ['ngRoute','ui.bootstrap', 'ngResource', 'infi
  * fdApp routes
  */
 app.config(['$routeProvider', function ($routeProvider) {
+
   $routeProvider
     .when('/',{
       controller: 'IndexCtrl',
@@ -644,8 +645,17 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
+    .when('/solutions/:sid',{
+      controller: 'SolutionCtrl',
+      templateUrl: 'view/solution.html',
+      resolve: {
+        page: function($route){
+          $route.current.params.page = 'solutions';
+        }
+      }
+    })
     .when('/product/:pid',{
-      controller: 'ProductCtrl',
+      controller: 'SolutionCtrl',
       templateUrl: 'view/product.html',
       resolve: {
         page: function($route){
@@ -684,7 +694,7 @@ app.config(['$routeProvider', function ($routeProvider) {
       }
     })
     .when('/product/:bid',{
-      controller: 'ProductCtrl',
+      controller: 'SolutionCtrl',
       templateUrl: 'view/product.html',
       resolve: {
         page: function($route){
@@ -785,6 +795,16 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
+    .when('/products/:pid/recommended-products',{
+      controller: 'RecommendedProductsCtrl',
+      templateUrl: 'view/recommended_products.html',
+      title: 'Recommended Products | First Data',
+      resolve: {
+        page: function($route){
+          $route.current.params.page = 'Recommended Products';
+        }
+      }
+    })
     .when('/products/:type/:typename',{
       controller: 'ProductsCtrl',
       templateUrl: 'view/products.html',
@@ -792,6 +812,16 @@ app.config(['$routeProvider', function ($routeProvider) {
       resolve: {
         page: function($route){
           $route.current.params.page = 'products';
+        }
+      }
+    })
+    .when('/options/:typename',{
+      controller: 'OptionsCtrl',
+      templateUrl: 'view/options.html',
+      title: 'Options | First Data',
+      resolve: {
+        page: function($route){
+          $route.current.params.page = 'options';
         }
       }
     })
@@ -805,6 +835,62 @@ app.config(['$routeProvider', function ($routeProvider) {
           $route.current.params.page = 'signup';
          }
        }
+    })
+    .when('/signup/owner',{
+       controller: 'SignupOwnerCtrl',
+       templateUrl: 'view/signup/owner.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-owner';
+         }
+       }
+    })
+    .when('/signup/location',{
+       controller: 'SignupLocationCtrl',
+       templateUrl: 'view/signup/location.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-location';
+         }
+       }
+    })
+    .when('/signup/location/:num',{
+       controller: 'SignupLocationCtrl',
+       templateUrl: 'view/signup/location.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-location';
+         }
+       }
+    })
+    .when('/signup/setup',{
+       controller: 'SignupSetupCtrl',
+       templateUrl: 'view/signup/setup.html',
+       title: 'Signup | First Data Marketplace',
+       resolve: {
+          page: function($route){
+            $route.current.params.nologin = true;
+            $route.current.params.page = 'signup-setup';
+         }
+       }
+    })
+    .when('/signup/terms', {
+        controller: 'SignupTermsCtrl',
+        templateUrl: 'view/signup/terms.html',
+        title: 'Terms & Conditions | First Data Marketplace',
+        resolve: {
+            page: function($route) {
+                $route.current.params.eSignature = true;
+                $route.current.params.nologin = true;
+                $route.current.params.page = 'merchant-agreement';
+            }
+        }
     })
     .when('/terms',{
        controller: 'TCCtrl',
@@ -828,9 +914,55 @@ app.config(['$routeProvider', function ($routeProvider) {
         }
       }
     })
+    .when('/multi-locations',{
+       controller: 'MultiLocationsCtrl',
+       templateUrl: 'view/multi-locations.html',
+       title: 'Number of Locations | First Data Marketplace',
+       resolve: {
+           page: function($route){
+              $route.current.params.page = 'multi-locations';
+           }
+       }
+    })
     .otherwise({ redirectTo: '/404' });
   
 }]);
+
+app.config([
+  '$httpProvider',
+  function($httpProvider) {
+
+    $httpProvider.interceptors.push(['$rootScope', '$q', '$location', function($rootScope, $q, $location) {
+      return {
+        'response': function(response) {
+          if(response.status === 200 && response.config.method === 'POST'){
+            $rootScope.$emit('resetSessionTimeout');
+          }
+          return response || $q.when(response);
+        },
+        'responseError': function(response) {
+
+          var status = response.status;
+          var data = response.data;
+          if (status === 401) {
+            if (data.redirectUrl){
+              $rootScope.$emit('logout', [data]);
+            } else {
+              $location.path('/401');
+            }
+          } else if (status === 404) {
+            $location.path('/404');
+          } else if (status === 400 || status === 409 || status === 503 || status === -1) {
+            //Caller will handle
+          } else {
+            $location.path('/400');
+          }
+          return $q.reject(response);
+        }
+      };
+    }]);
+  }
+]);
 
 /**
  * Init titles and referrer url
@@ -910,434 +1042,1193 @@ app.run(['$rootScope', function($rootScope) {
         {'abbr': 'WI', 'name': 'Wisconsin'},
         {'abbr': 'WY', 'name': 'Wyoming'}
       ],
-      
-      SHIPPING_METHODS: {
-        1: {name: '$19.99 Standard Shipping (4-5 Business Days)', price: 19.99},
-        2: {name: 'FREE Standard Shipping (4-5 business days)', price: 0},
-        3: {name: '$11.97 Two-Day Shipping', price: 11.97},
-        4: {name: '$39.99 One-Day Shipping', price: 39.99},
+      citySpecialChar: {'St.':'Saint','ñ':'n',"'":" "},
 
+      SHIPPING_METHODS:{
+          "1":{"id":93224,"productId":50712,"supplierProductName":"Gnd","supplierName":"MAMA","productType":"SHIPPING","productName":"Gnd","productShortDescription":"Shipping Fee - Ground Service","productLongDescription":"Shipping Fee - Ground Service","defaultPurchaseType":"P","price":19.95,"productWithOptions":false,"pinPad":false,"imageUrls":[],"offeringTypes":["Shipping"],"categoryIds":[],"tags":[],"name":"Shipping Fee - Ground Service"},
+          "2":{"id":93226,"productId":50714,"supplierProductName":"2da","supplierName":"MAMA","productType":"SHIPPING","productName":"2da","productShortDescription":"Shipping Fee - 2 Day Service","productLongDescription":"Shipping Fee - 2 Day Service","defaultPurchaseType":"P","price":19.95,"productWithOptions":false,"pinPad":false,"imageUrls":[],"offeringTypes":["Shipping"],"categoryIds":[],"tags":[],"name":"Shipping Fee - 2 Day Service"},
+          "3":{"id":93227,"productId":50715,"supplierProductName":"1da","supplierName":"MAMA","productType":"SHIPPING","productName":"1da","productShortDescription":"Shipping Fee - Priority Overnight","productLongDescription":"Shipping Fee - Priority Overnight","defaultPurchaseType":"P","price":35.95,"productWithOptions":false,"pinPad":false,"imageUrls":[],"offeringTypes":["Shipping"],"categoryIds":[],"tags":[],"name":"Shipping Fee - Priority Overnight"}
       },
       PURCHASE_CODE: 'P',
       OWNED_CODE: 'O',
+      FSPFUNDTYPES : ['deposits', 'nonBankAdjustments', 'depositAdjustments', 'chargebackReversals', 'interchangeAssessments', 'discountServices', 'fees', 'financialAdjustments', 'chargebacks'],
+      OPTIONSPRODUCTTYPES : ['Telecheck'],
                 
   }
   app.constant('CONST', constants);
 })();;/**
  * Cart Controller
  */
-app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', 'CONST', '$location', '$timeout',
-    function ($scope, $rootScope, $window, fdService, $routeParams, CONST, $location, $timeout) {
+app.controller('CartCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', 'CONST', '$location', '$timeout', 'filterFilter',
+  function($scope, $rootScope, $window, fdService, $routeParams, CONST, $location, $timeout, filterFilter) {
 
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
+    /**
+     * Init function
+     * @private
+     * @method _init
+     */
+    var _init = function() {
 
-    $scope.clickedCheckout = false;
-    $scope.showRecFee = true;
-    $scope.transactionFee = true;
-    $scope.allowExpand = true;
+      $scope.clickedCheckout = false;
+      $scope.showRecFee = true;
+      $scope.transactionFee = true;
+      $scope.disableReviewOrder = false;
+      $scope.allowExpand = true;
 
-    $scope.acquiringPricing = [];
-    $scope.equipmentPricing = [];
-    $scope.globalPricing = [];
+      $scope.acquiringPricing = [];
+      $scope.equipmentPricing = [];
+      $scope.globalPricing = [];
 
-    $scope.page = $routeParams.page;
+      $scope.page = $routeParams.page;
 
 
-    $scope.orderId = fdService.getOrderId();
-
-    $rootScope.cart = fdService.getCart();
-
-    $scope.$watch(function () {
-      return $window.sessionStorage;
-    }, function (newVal, oldVal) {
       $scope.orderId = fdService.getOrderId();
-    }, true);
 
-    $scope.$watch(function () {
-      return $rootScope.cart;
-    }, function (newVal, oldVal) {
-      $scope.cart = newVal;
-    }, true);
+      $rootScope.cart = fdService.getCart();
 
-    if (('shipping' == $scope.page && $scope.orderId) || 'thankyou' == $scope.page) {
-      $scope.allowExpand = false;
-      $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
-    }
+      $scope.$watch(function() {
+        return $window.sessionStorage;
+      }, function(newVal, oldVal) {
+        $scope.orderId = fdService.getOrderId();
+      }, true);
 
-    $("#view-fees-modal").on('show.bs.modal', function () {
-      $scope.acquiringPricing = fdService.getAcquiringPricingStorage();
-      console.log($scope.acquiringPricing)
-      $scope.equipmentPricing = fdService.getEquipmentPricingStorage();
-      $scope.globalPricing = fdService.getGlobalPricingStorage();
-      if (!$scope.$$phase) {
-        $scope.$apply();
+      $scope.$watch(function() {
+        return $rootScope.cart;
+      }, function(newVal, oldVal) {
+        $scope.cart = newVal;
+      }, true);
+
+      if (($scope.orderId &&
+                ('shipping' == $scope.page
+                    || 'multi-locations' == $scope.page
+                    || 'transaction_info' == $scope.page
+                  ))
+                  || 'thankyou' == $scope.page
+                  || 'summary' == $scope.page
+                  || 'proposal' == $scope.page) {
+        $scope.allowExpand = false;
+        $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
       }
-    });
-  };
 
-  /**
-   *
-   * remove product from cart
-   * @param pid product Id
-   */
-  $scope.removeFromCart = function(pid){
-    delete $rootScope.cart.data[pid];
-    fdService.validateCart($rootScope.cart)
-      .success(function(data, status, headers, config) {
-        $rootScope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
+      $("#view-fees-modal").on('show.bs.modal', function() {
+        $scope.acquiringPricing = fdService.getAcquiringPricingStorage();
+        $scope.acquiringDataGrouping($scope.acquiringPricing);
+        console.log($scope.acquiringPricing)
+        $scope.equipmentPricing = fdService.getEquipmentPricingStorage();
+        $scope.globalPricing = fdService.getGlobalPricingStorage();
+        if (!$scope.$$phase) {
+          $scope.$apply();
+        }
       });
-      
-    fdService.updatePricing();
-    $scope.cartChanged();
-  };
+    };
 
-  /**
-   * Calling in case of changing quantity.
-   */
-  $scope.qtyChanged = function(){
-    fdService.updatePricing();
-    $scope.cartChanged();
-  };
+    /**
+     * Acquiring Data Grouping
+     * @method acquiringDataGrouping
+     * @param data acquiringData
+     */
+    $scope.acquiringDataGrouping = function(data) {
+        var result = {};
+        var discountRates = [];
+        var groupedDiscountRates = {};
+        if(undefined != data && undefined != data.discountRates){
+            for (var i = 0; i < data.discountRates.length; i++) {
+                var temp = data.discountRates[i];
+                if (groupedDiscountRates[data.discountRates[i].groupName] && data.discountRates[i].groupName != '') {
+                    groupedDiscountRates[data.discountRates[i].groupName].push(temp);
+                } else {
+                    if (data.discountRates[i].groupName != '')
+                        groupedDiscountRates[data.discountRates[i].groupName] = [temp];
+                    else {
+                        discountRates.push(temp);
+                    }
+                }
+            }
+        }
+        //setup cardPresentDiscountRates
+        if(undefined != data && undefined != data.cardPresentDiscountRates){
+            for (var i = 0; i < data.cardPresentDiscountRates.length; i++) {
+                var temp = data.cardPresentDiscountRates[i];
+                if (result[data.cardPresentDiscountRates[i].groupName] && data.cardPresentDiscountRates[i].groupName != '') {
+                    result[data.cardPresentDiscountRates[i].groupName][0].cardPresentDiscountRates.push(temp);
+                } else {
+                    var tempData = []; 
+                    tempData.push(temp);
 
-  /**
-   * Calling in case of changing cart.
-   */
-  $scope.cartChanged = function(){
-    fdService.clearOrderId();
-    $rootScope.cart = $scope.cart = fdService.cartChanged($scope.cart);
-    $scope.orderId = fdService.getOrderId();
-  };
+                    tempData[0].cardPresentDiscountRates = [];
+                    tempData[0].cardNotPresentDiscountRates = [];
 
-  /**
-   * Remove lease from cart
-   * @param p product object
-   */
-  $scope.removeLease = function(p){
-    $scope.cart.data[p.id].term = CONST.PURCHASE_CODE;
-    fdService.validateCart($scope.cart)
-      .success(function(data, status, headers, config) {
-        $scope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-    
-    fdService.updatePricing();
-    $scope.cartChanged();
-  };
+                    if (data.cardPresentDiscountRates[i].groupName != ''){
+                        tempData[0].cardPresentDiscountRates.push(angular.copy(temp));
+                        result[data.cardPresentDiscountRates[i].groupName]=tempData;
+                    }
+                }
+            }
+        }
+        //setup cardNotPresentDiscountRates
+        if(undefined != data && undefined != data.cardNotPresentDiscountRates){
+            for (var i = 0; i < data.cardNotPresentDiscountRates.length; i++) {
+                var temp = data.cardNotPresentDiscountRates[i];
+                if (result[data.cardNotPresentDiscountRates[i].groupName] && data.cardNotPresentDiscountRates[i].groupName != '') {
+                    result[data.cardNotPresentDiscountRates[i].groupName][0].cardNotPresentDiscountRates.push(temp);
+                } else {
+                    var tempData = [];
+                    tempData.push(temp);
 
-  /**
-   * Remove processing product from cart
-   * @param p processing product object
-   */
-  $scope.removeProcessing = function(p){
-    delete $scope.cart.payment_types.products[p.id];
-    if (!Object.keys($scope.cart.payment_types.products).length) {
-      $scope.cart.payment_types = null;
+                    tempData[0].cardPresentDiscountRates = [];
+                    tempData[0].cardNotPresentDiscountRates = [];
+
+                    if (data.cardNotPresentDiscountRates[i].groupName != ''){
+                        tempData[0].cardNotPresentDiscountRates.push(angular.copy(temp));
+                        result[data.cardNotPresentDiscountRates[i].groupName]=tempData;
+                    }
+                }
+            }
+        }
+        //setup scope arrays and objects
+        $scope.groupedPricingDetails = result;
+        $scope.discountRates = discountRates;
+        $scope.groupedDiscountRates = groupedDiscountRates;
     }
-    fdService.validateCart($scope.cart)
-      .success(function(data, status, headers, config) {
-        $scope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
 
-    fdService.updatePricing();
-    $scope.cartChanged();
-  };
+    /**
+     * Grouping button click
+     * @method grouping
+     * @param {number} index
+     */
+    $scope.grouping = function(index) {
+        angular.element('.toggle-rates-children' + index).children('i').toggleClass('fa-angle-double-down fa-angle-double-up');
+        angular.element('.toggle-rates-children' + index).parent('div').children('table.rate-child' + index).slideToggle('fast');
+    }
 
-  /**
-   * Remove payment types from cart
-   */
-  $scope.removePaymentTypes = function(){
-    $scope.cart.payment_types = null;
-    fdService.validateCart($scope.cart)
-      .success(function(data, status, headers, config) {
-        $scope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-      
-    fdService.updatePricing();
-    $scope.cartChanged();
-  };
+    /**
+     * Subgrouping button click
+     * @method grouping
+     * @param {number} index
+     */
+    $scope.subgrouping = function(index) {
+        angular.element('.toggle-rates-sub-children' + index).children('i').toggleClass('fa-angle-double-down fa-angle-double-up');
+        angular.element('.toggle-rates-sub-children' + index).parent('td').parent('tr').parent('tbody').parent('table').children('tbody.rate-sub-child').slideToggle('fast');
+    }
 
-  /**
-   * Change payment type to lease
-   * @param p leasing product object
-   */
-  $scope.leaseProduct = function(p){
-    $rootScope.cart = $scope.cart = fdService.leaseProduct(p, $scope.cart, p.id);
-    $scope.showRecFee = true;
-    fdService.updatePricing();
-    fdService.validateCart($scope.cart)
-      .success(function(data, status, headers, config) {
-        $scope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-  };
+    /**
+     * remove product from cart
+     * @method removeFromCart
+     * @param pid product Id
+     */
+    $scope.removeFromCart = function(index) {
+      $rootScope.cart.data.splice(index, 1);
+      // delete $rootScope.cart.data[pid];
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cart = $rootScope.cart;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
-  /**
-   * Save transaction info
-   */
-  $scope.saveTransactionInfo = function(){
+      $scope.cart = $rootScope.cart;
+      $scope.cartChanged();
 
-    $scope.transactionFormData.category = $scope.category.name;
-    fdService.storeTransactionInfo($scope.transactionFormData);
-    
-    fdService.initPricingData(function(status){
-      if (status) {
+      if (0 === $scope.cart.total_qty) {
+        $location.path('/');
+      }
+    };
+
+    /**
+     * Calling in case of changing quantity.
+     * @method qtyChanged
+     */
+    $scope.qtyChanged = function() {
+      fdService.resetCartOverridePricing($scope.cart);
+      fdService.updatePricing(function() {
         $rootScope.cart = $scope.cart = fdService.getCart();
-        $location.path('/checkout/shipping');
-      } else {
-        $location.path('400');
-      }
-    });
-  };
-
-  /**
-   * Get transaction info
-   * @return {Object} with transaction info
-   */
-  $scope.getTI = function(){
-    return fdService.getTransactionInfo();
-  };
-
-  /**
-   * Place order
-   */
-  $scope.placeOrder = function(){
-    var orderId = fdService.getOrderId();
-    fdService.placeOrder(orderId)
-      .success(function(data, status, headers, config) {
-        var cart = fdService.getCart();
-        fdService.storeOrderId(data.orderId);
-        fdService.storeOrderedCart(data.orderId, cart);
-        $scope.gotoUrl('/checkout/thankyou');
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-        $location.path('400');
       });
-  };
+      $scope.cartChanged();
+    };
 
-  /**
-   * Redirect to url
-   * @param url where to redirect
-   */
-  $scope.gotoUrl = function(url){
-    $location.path(url);
-  };
+    /**
+     * Calling in case of changing cart.
+     * @method cartChanged
+     */
+    $scope.cartChanged = function() {
+      fdService.clearOrderId();
+      $rootScope.cart = $scope.cart = fdService.cartChanged($scope.cart);
+      $scope.orderId = fdService.getOrderId();
+    };
 
-  /**
-   * Redirect to the checkout page or transation info
-   */
-  $scope.proceedToCheckout = function(){
-    if ($scope.getTI()) {
-      var url = '/checkout/shipping';
-    } else {
-      var url = '/transaction/info';
-    }
-    $scope.gotoUrl(url);
-  };
+    /**
+     * Remove lease from cart
+     * @method removeLease
+     * @param p product object
+     */
+    $scope.removeLease = function(p) {
+      $scope.cart.data[p.id].term = CONST.PURCHASE_CODE;
+      fdService.validateCart($scope.cart)
+        .success(function(data, status, headers, config) {
+          $scope.cart.validation = data;
+          $scope.cartChanged();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
-  /**
-   * Check if cart edit is allowed
-   * @return {boolean}
-   */
-  $scope.isAllowEdit = function(){
-    if ('shipping' == $scope.page) {
-      return false;
-    }
-    if ('thankyou' == $scope.page) {
-      return false;
-    }
-    if ('summary' == $scope.page) {
-      return false;
-    }
-    if ('proposal' == $scope.page) {
-      return false;
-    }
-    if ('transaction_info' == $scope.page) {
-      return false;
-    }
-    
-    return true;
-  };
+      fdService.updatePricing();
+      $scope.cartChanged();
+    };
 
-  ///////////////// MAIN ////////////////////////////////
+    /**
+     * Remove processing product from cart
+     * @method removeProcessing
+     * @param p processing product object
+     */
+    $scope.removeProcessing = function(p) {
+      delete $scope.cart.payment_types.products[p.id];
+      if (!Object.keys($scope.cart.payment_types.products).length) {
+        $scope.cart.payment_types = null;
+      }
+      fdService.validateCart($scope.cart)
+        .success(function(data, status, headers, config) {
+          $scope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
-  _init();
-  
-}]);;/**
+      $scope.cartChanged();
+    };
+
+    /**
+     * remove transaction product
+     * @method removeTransactionProduct
+     * @param p
+     */
+    $scope.removeTransactionProduct = function(p) {
+
+      var index =  $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(p.id);
+
+      if (-1 === index) {
+        return;
+      }
+
+      $rootScope.cart.transaction_products.splice(index, 1);
+
+      fdService.validateCart($scope.cart)
+        .success(function(data, status, headers, config) {
+          $scope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      $scope.cartChanged();
+    };
+
+    /**
+     * Remove payment types from cart
+     * @method removePaymentTypes
+     */
+    $scope.removePaymentTypes = function() {
+      $scope.cart.payment_types = null;
+      fdService.validateCart($scope.cart)
+        .success(function(data, status, headers, config) {
+          $scope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      $scope.cartChanged();
+    };
+
+    /**
+     * Lease product
+     * @method leaseProduct
+     * @param {Object} p product
+     */
+    $scope.leaseProduct = function(p) {
+
+      var index = fdService.getCartProductIndex($rootScope.cart, p);
+      $scope.cart.data.splice(index, 1);
+
+      $rootScope.cart = $scope.cart = fdService.leaseProduct(p, $scope.cart, p.category);
+      $scope.showRecFee = true;
+      fdService.validateCart($scope.cart)
+        .success(function(data, status, headers, config) {
+          $scope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+    };
+
+    /**
+     * Save transaction info in session
+     * @method saveTransactionInfo
+     */
+    $scope.saveTransactionInfo = function() {
+
+      $scope.transactionFormData.category = $scope.category.name;
+      fdService.storeTransactionInfo($scope.transactionFormData);
+
+      fdService.initPricingData(function(status) {
+        if (status) {
+          $rootScope.cart = $scope.cart = fdService.getCart();
+          $location.path('/checkout/shipping');
+        } else {
+          $location.path('400');
+        }
+      }, null, fdService.getEquipmentPricingStorage(), fdService.getGlobalPricingStorage());
+    };
+
+    /**
+     * Submit proposal
+     * @method sendProp
+     */
+    $scope.sendProp = function() {
+      fdService.submitProposal();
+    };
+
+    /**
+     * Get transaction info
+     * @method getTI
+     * @return {Object} with transaction info
+     */
+    $scope.getTI = function() {
+      return fdService.getTransactionInfo();
+    };
+
+    /**
+     * Call review order service
+     * @method reviewOrder
+     */
+    $scope.reviewOrder = function() {
+      if ($scope.disableReviewOrder)
+        return;
+      $scope.disableReviewOrder = true;
+      var orderId = fdService.getOrderId();
+      $rootScope.$emit('Update_address_cart');
+      fdService.reviewOrder(orderId)
+        .success(function(data, status, headers, config) {
+          $scope.disableReviewOrder = false;
+          var cart = orderId ? fdService.getOrderedCart(orderId) : fdService.getCart();
+          fdService.storeOrderId(data.orderId);
+          fdService.storeOrderedCart(data.orderId, cart);
+          fdService.clearTmpOrderId();
+          $scope.gotoUrl('/checkout/summary');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.disableReviewOrder = false;
+          console.log('error');
+        });
+    };
+
+    /**
+     * Redirect to url
+     * @method gotoUrl
+     * @param url where to redirect
+     */
+    $scope.gotoUrl = function(url) {
+      $location.path(url);
+    };
+
+    /**
+     * return pricing forms OK status
+     * @method pricingFormsOk
+     * @return {boolean}
+     */
+    $scope.pricingFormsOk = function() {
+      if (typeof $rootScope._pricingFormsOk == 'function') {
+        return $rootScope._pricingFormsOk();
+      }
+      return true;
+    };
+
+    /**
+     * Redirect to the checkout page or transation info
+     * @method proceedToCheckout
+     */
+    $scope.proceedToCheckout = function() {
+      var ep = fdService.getEquipmentPricingStorage();
+      var url;
+      if ($rootScope.cart.num_locations > 1 && !$rootScope.cart.num_locations_selected) {
+        url = '/multi-locations';
+      } else if ($scope.getTI() && ep) {
+        url = '/checkout/shipping';
+      } else {
+        url = '/transaction/info';
+      }
+      $timeout(function() {
+        $scope.gotoUrl(url);
+      });
+    };
+
+    /**
+     * Redirect to checkout page from multi locations
+     * @method proceedToCheckoutML
+     */
+    $scope.proceedToCheckoutML = function() {
+
+      var ep = fdService.getEquipmentPricingStorage();
+      if ($scope.getTI() && ep) {
+        var url = '/checkout/shipping';
+      } else {
+        var url = '/transaction/info';
+      }
+      $timeout(function() {
+        $scope.gotoUrl(url);
+      });
+    };
+
+    /**
+     * Check if cart edit is allowed
+     * @method isAllowEdit
+     * @return {boolean}
+     */
+    $scope.isAllowEdit = function() {
+      if ('shipping' == $scope.page) {
+        return false;
+      }
+      if ('thankyou' == $scope.page) {
+        return false;
+      }
+      if ('summary' == $scope.page) {
+        return false;
+      }
+      if ('proposal' == $scope.page) {
+        return false;
+      }
+      if ('transaction_info' == $scope.page) {
+        return false;
+      }
+      if ('cart' == $scope.page) {
+        return false;
+      }
+
+      return true;
+    };
+
+    /**
+     * Check if products clickable
+     * @method isProductsClickable
+     * @return {boolean}
+     */
+    $scope.isProductsClickable = function() {
+      if ('thankyou' == $scope.page) {
+        return false;
+      }
+      if ('summary' == $scope.page) {
+        return false;
+      }
+      if ('proposal' == $scope.page) {
+        return false;
+      }
+      if ('cart' == $scope.page) {
+        return false;
+      }
+      return true;
+    };
+
+    /**
+     * Load unique lease options
+     * @method models
+     * @param {} pricingModel
+     * @return {} filteredOptions
+     */
+    $scope.models = function(pricingModel) {
+      var filteredOptions = [];
+      angular.forEach(pricingModel, function(item) {
+        var index = filteredOptions.map(function(p) {
+          return p.paymentType;
+        }).indexOf(item.paymentType);
+        if (index === -1) {
+          filteredOptions.push(item);
+        } else {
+          filteredOptions[index] = item;
+        }
+      });
+      return filteredOptions;
+    };
+
+    /**
+     * Payment Type Changed
+     * @method paymentTypeChanged
+     * @param product
+     */
+    $scope.paymentTypeChanged = function(product) {
+      var leaseTypes = [];
+      var index = 0;
+      if (product.termPaymentType == 'Lease') {
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'LT'});
+        //check for LT36 type lease if available.
+        var leaseIndex = leaseTypes.map(function(p) {return p.purchaseType;}).indexOf('LT36');
+        index = leaseIndex == -1 ? 0 : leaseIndex;
+      } else if (product.termPaymentType == 'Installment') {
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'IP'});
+      } else if (product.termPaymentType == 'Rent') {
+        leaseTypes = filterFilter(product.pricingModel, {purchaseType: 'R'});
+      }
+      if (leaseTypes.length > 0) {
+        product.term = leaseTypes[index].purchaseType;
+      }
+      $scope.qtyChanged();
+    };
+
+    /**
+     * Change Category
+     * @method changeCategory
+     * @param categoryName
+     */
+    $scope.changeCategory = function(categoryName) {
+      if (!$scope.categories) {
+        fdService.getCategories().success(function(data, status, headers, config) {
+            $scope.categories = data;
+            $scope.updateCategoryInSession(categoryName);
+          })
+          .error(function(data, status, headers, config) {
+            $location.path('/400');
+          });
+      } else {
+        $scope.updateCategoryInSession(categoryName);
+      }
+    }
+
+    /**
+     * Update Category in Session
+     * @method updateCategoryInSession
+     * @param categoryName
+     */
+    $scope.updateCategoryInSession = function(categoryName) {
+         var index = $scope.categories.map(function(cat) { return cat.name; }).indexOf(categoryName);
+      if (index != -1) {
+        var category = $scope.categories[index];
+        fdService.storeCategoryInSession(category);
+        $rootScope.$emit('Category_Change');
+      }
+    }
+
+    ///////////////// MAIN ////////////////////////////////
+
+    _init();
+
+  }
+]);;/**
  * Checkout Controller
  */
 app.controller('CheckoutCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$location', '$window', '$timeout', 'fdService',
-    function ($scope, $rootScope, $routeParams, $filter, $location, $window, $timeout, fdService) {
+  function($scope, $rootScope, $routeParams, $filter, $location, $window, $timeout, fdService) {
 
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
-    $rootScope.body_id = 'checkout';
-    $rootScope.bodyClass = '';
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
 
-    $scope.warningFlag = false;
+      $rootScope.body_id = 'checkout';
+      $rootScope.bodyClass = '';
+      $scope.colorLogo = true;
+      if (typeof($rootScope.openPane) === 'function')
+        $rootScope.openPane();
 
-    $scope.shippingMethod = 'free';
+      $scope.shippingMethod = 'free';
+      //$scope.shippingMethods = fdService.getSessionShippingMethods();
 
-    $scope.placeOrderInProgress = false;
-    $scope.signupInProgress = false;
+      $scope.placeOrderInProgress = false;
+      $scope.signupInProgress = false;
 
-    $scope.form_error = false;
+      $scope.form_error = false;
 
-    $scope.monthlyFee = false;
-    $scope.transactionFee = false;
+      $scope.monthlyFee = false;
+      $scope.transactionFee = false;
 
-    $scope.phoneNumberPattern = (/^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/);
-    $scope.addressPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
-    $scope.companyPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.phoneNumberPattern = (/^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/);
+      $scope.addressPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.companyPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.emailPattern = (/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)?(\.(AERO|INT|GG|GH|GI|GL|GM|GN|GP|GQ|GR|GS|JOBS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|MIL|ID|IE|IL|IM|IN|IO|IQ|IR|IS|IT|MOBI|JE|JM|JO|JP|KE|KG|KH|KI|KM|KN|MUSEUM|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|NAME|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|NET|MG|MH|MK|ML|MM|MN|MO|MP|MQ|MR|ORG|MS|MT|MU|MV|MW|MX|MY|MZ|NA|NC|PRO|NE|NF|NG|NI|NL|NO|NP|NR|NU|NZ|TEL|OM|PA|PE|PF|PG|PH|PK|PL|PM|PN|ASIA|TRAVEL|PR|PS|PT|PW|PY|QA|RE|RO|RS|RU|AC|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|AD|SK|SL|SM|SN|SO|SR|ST|SU|SV|SY|AE|SZ|TC|TD|TF|TG|TH|TJ|TK|TL|TM|AF|TN|TO|TP|TR|TT|TV|TW|TZ|UA|UG|AG|UK|UM|US|UY|UZ|VA|VC|VE|VG|VI|AI|VN|VU|WF|WS|YE|YT|YU|ZA|ZM|AL|AM|AN|BIZ|AO|AQ|AR|AS|AT|AU|AW|AX|AZ|BA|CAT|BB|BD|BE|BF|BG|BH|BI|BJ|BM|BN|COM|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CC|COOP|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|EDU|CR|CU|CV|CX|CY|CZ|DE|DJ|DK|DM|GOV|DO|DZ|EC|EE|EG|ER|ES|ET|EU|FI|INFO|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|aero|int|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|jobs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|mil|id|ie|il|im|in|io|iq|ir|is|it|mobi|je|jm|jo|jp|ke|kg|kh|ki|km|kn|museum|kp|kr|kw|ky|kz|la|lb|lc|li|lk|name|lr|ls|lt|lu|lv|ly|ma|mc|md|me|net|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|org|ms|mt|mu|mv|mw|mx|my|mz|na|nc|pro|ne|nf|ng|ni|nl|no|np|nr|nu|nz|tel|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|asia|travel|pr|ps|pt|pw|py|qa|re|ro|rs|ru|ac|rw|sa|sb|sc|sd|se|sg|sh|si|sj|ad|sk|sl|sm|sn|so|sr|st|su|sv|sy|ae|sz|tc|td|tf|tg|th|tj|tk|tl|tm|af|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|ag|uk|um|us|uy|uz|va|vc|ve|vg|vi|ai|vn|vu|wf|ws|ye|yt|yu|za|zm|al|am|an|biz|ao|aq|ar|as|at|au|aw|ax|az|ba|cat|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|com|bo|br|bs|bt|bv|bw|by|bz|ca|cc|coop|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|edu|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|gov|do|dz|ec|ee|eg|er|es|et|eu|fi|info|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf))$/);
 
-    $scope.orderId = fdService.getOrderId();
+      $scope.warningFlag = false;
 
-    $scope.states_list = $rootScope.CONST.STATES;
+      $scope.orderId = fdService.getOrderId();
 
-    if ($scope.orderId) {
-      $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
-    } else {
-      $scope.cart = $rootScope.cart = fdService.getCart();
-    }
-    $scope.page = $routeParams.page;
+      $scope.states_list = $rootScope.CONST.STATES;
 
-    if ('shipping' == $scope.page) {
-      $timeout(function() {
+      var updateAddressListener = $rootScope.$on('Update_address_cart', function() {
+        $scope.cartChanged();
+      });
 
-        angular.forEach($scope.shippingForm.$error, function (field) {
-          angular.forEach(field, function(errorField){
-            if (errorField.$viewValue) {
-              errorField.$setTouched();
-              errorField.$setDirty();
-            }
-          })
-        });
-      }, 0);
-      $rootScope.body_id = 'shipping';
+      $scope.$on('$destroy', updateAddressListener);
 
-    } else if ('thankyou' == $scope.page) {
-      $rootScope.bodyClass = 'checkout';
-    }
 
-    $scope.$on('$locationChangeStart', function(evt, absNewUrl, absOldUrl) {
-      absOldUrl = absOldUrl.split('#');
-      absNewUrl = absNewUrl.split('#');
-      if (!$scope.warningFlag && absNewUrl[1] == '/transaction/info' && absOldUrl[1] == '/checkout/shipping') {
-        evt.preventDefault();
-        $timeout(function() {
-          angular.element('.backButtonClass').trigger('click');
-        });
+      /**
+       * $locationChangeStart event listener function
+       */
+      $scope.$on('$locationChangeStart', function(evt, absNewUrl, absOldUrl) {
+        absOldUrl = absOldUrl.split('#');
+        absNewUrl = absNewUrl.split('#');
+        if (!$scope.warningFlag && absNewUrl[1] == '/transaction/info' && absOldUrl[1] == '/checkout/shipping') {
+          evt.preventDefault();
+          $timeout(function() {
+            angular.element('.backButtonClass').trigger('click');
+          });
+        }
+      });
+
+      if ($scope.orderId) {
+        $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
+      } else {
+        $scope.cart = $rootScope.cart = fdService.getCart();
       }
-    });
-  };
+      $scope.page = $routeParams.page;
 
-  /**
-   * Redirect to transaction info
-   */
-  $scope.gotoTransaction = function() {
-    $scope.warningFlag = true;
-    $location.path("/transaction/info");
-    angular.element('.modal-backdrop').removeClass('modal-backdrop');
-    angular.element('body').css('overflow','auto');
-  };
+      if ('shipping' == $scope.page) {
 
-  /**
-   * Call this method when cart was changed
-   */
-  $scope.cartChanged = function(){
-    if ($scope.orderId) {
-      $rootScope.cart = $scope.cart = fdService.orderedCartChanged($scope.orderId, $scope.cart);
-    } else {
-      $rootScope.cart = $scope.cart = fdService.cartChanged($rootScope.cart);
+        $scope.one_step = $routeParams.one_step;
+        if ((!$scope.cart.shippingAddress[0].city || !$scope.cart.shippingAddress[0].state) && $scope.cart.shippingAddress[0].zip) {
+          $scope.lookupZip(0);
+        }
+        $timeout(function() {
+
+          if (-2 == $scope.cart.taxPercent) {
+            $scope.shippingForm.zip_0.$setValidity("no_tax", false);
+          } else {
+            $scope.shippingForm.zip_0.$setValidity("no_tax", true);
+          }
+
+          if ($scope.cart.shippingAddress[0].firstname && $scope.cart.shippingAddress[0].lastname) {
+            if ($scope.cart.shippingAddress[0].firstname.length + $scope.cart.shippingAddress[0].lastname.length > 24) {
+              $scope.shippingForm.firstname_0.$setValidity("max_length", false);
+              $scope.shippingForm.lastname_0.$setValidity("max_length", false);
+            }
+          }
+
+          angular.forEach($scope.shippingForm.$error, function(field) {
+            angular.forEach(field, function(errorField) {
+              if (errorField.$viewValue) {
+                errorField.$setTouched();
+                errorField.$setDirty();
+              }
+            })
+          });
+        }, 0);
+
+        $scope.shippingProdsCart = [];
+        $scope.shippingProdsCart.data = [];
+        for (var p in $scope.cart.data) {
+          for (var q = 0; q < $scope.cart.data[p].qty; q++) {
+            $scope.shippingProdsCart.data.push($scope.cart.data[p]);
+          }
+        };
+
+        if ($scope.orderId) {
+
+          $scope.shipping_prods = {};
+          $scope.shipping_prods_value = {};
+
+          for (var i = 0; i < $scope.cart.shippingAddress.length; i++) {
+            $scope.shipping_prods_value[i] = {};
+            $scope.shipping_prods[i] = {};
+            for (var p = 0; p < $scope.cart.shippingAddress[i].productstoShip.length; p++) {
+              if ($scope.cart.shippingAddress[i].productstoShip[p].prodId && $scope.cart.shippingAddress[i].productstoShip[p].term) {
+                for (var t = 0; t < $scope.shippingProdsCart.data.length; t++) {
+                  if ($scope.shippingProdsCart.data[t].id == $scope.cart.shippingAddress[i].productstoShip[p].prodId && $scope.shippingProdsCart.data[t].term == $scope.cart.shippingAddress[i].productstoShip[p].term) {
+                    $scope.shipping_prods[i][t] = true;
+                  } else {
+                    $scope.shipping_prods[i][t] = false;
+                  }
+                  $scope.shipping_prods_value[i][t] = true;
+                }
+              }
+            }
+          }
+
+        } else {
+
+          $scope.cart.shippingAddress[0].productstoShip = [];
+          $scope.shipping_prods = {};
+          $scope.shipping_prods_value = {};
+
+          for (var i = 0; i < $scope.cart.num_locations_selected; i++) {
+            $scope.shipping_prods_value[i] = {};
+            $scope.shipping_prods[i] = {};
+            for (var t = 0; t < $scope.shippingProdsCart.data.length; t++) {
+              if (i == 0) {
+                $scope.cart.shippingAddress[0].productstoShip.push({
+                  prodId: $scope.shippingProdsCart.data[t].id,
+                  term: $scope.shippingProdsCart.data[t].term,
+                });
+                $scope.shipping_prods[i][t] = true;
+              } else {
+                $scope.shipping_prods[i][t] = false;
+              }
+              $scope.shipping_prods_value[i][t] = true;
+            }
+          }
+        }
+      }
+
+      if ('shipping' == $scope.page) {
+        $rootScope.body_id = 'shipping';
+        if (typeof($rootScope.openPane) === 'function') {
+          $rootScope.openPane();
+        }
+
+
+      } else if ('thankyou' == $scope.page) {
+        $rootScope.bodyClass = 'checkout';
+        if (typeof($rootScope.closePane) === 'function')
+          $rootScope.closePane();
+      } else if ('cart' == $scope.page) {
+        $scope.getTaxes();
+      }
+
+
+    };
+
+    /**
+     * setFullName function
+     * @method setFullName
+     * @param {} index
+     * @return
+     */
+    $scope.setFullName = function(index) {
+      if ($scope.cart.shippingAddress[index].firstname && $scope.cart.shippingAddress[index].lastname) {
+        $scope.cart.shippingAddress[index].name = $scope.cart.shippingAddress[index].firstname + ' ' + $scope.cart.shippingAddress[index].lastname;
+        if ($scope.cart.shippingAddress[index].name.length > 24) {
+          $scope.shippingForm['firstname_' + index].$setValidity("max_length", false);
+          $scope.shippingForm['firstname_' + index].$setTouched(true);
+          $scope.shippingForm['lastname_' + index].$setValidity("max_length", false);
+          $scope.shippingForm['lastname_' + index].$setTouched(true);
+        } else {
+          $scope.shippingForm['firstname_' + index].$setValidity("max_length", true);
+          $scope.shippingForm['lastname_' + index].$setValidity("max_length", true);
+        }
+      }
+    };
+
+    /**
+     * Redirect to transaction info
+     * @method gotoTransaction
+     * @return
+     */
+    $scope.gotoTransaction = function() {
+      $scope.warningFlag = true;
+      $location.path("/transaction/info");
+      angular.element('.modal-backdrop').removeClass('modal-backdrop');
+      angular.element('body').css('overflow', 'auto');
+
     }
-  };
 
-  /**
-   * Call this method when shipping method was changed
-   */
-  $scope.shippingMethodChanged = function(){
-    $rootScope.cart = $scope.cart;
-    $scope.cartChanged();
-  };
+    /**
+     * gotoTransaction function
+     * @method gotoMLocation
+     * @return
+     */
+    $scope.gotoMLocation = function() {
 
-  /**
-   * Redirect to the signup page
-   */
-  $scope.gotoSignup = function(){
-    if ($scope.signupInProgress) {
-      return;
-    }
-    $window.location.href = '/v1/signup/' + $scope.order_hash;
-    $scope.signupInProgress = true;
-  };
+      $scope.warningFlag = true;
+      $location.path("/multi-locations");
+      angular.element('.modal-backdrop').removeClass('modal-backdrop');
+      angular.element('body').css('overflow', 'auto');
 
-  /**
-   * Redirect to the summary page
-   */
-  $scope.gotoSummary = function () {
-    $rootScope.cart = $scope.cart;
-    $scope.cartChanged();
-    $location.path('/checkout/summary');
-  }
-
-  /**
-   * Lookup city and state by zip code using google API
-   */
-  $scope.lookupZip = function(){
-    if (!$scope.cart.shippingAddress.zip) {
-      return;
     }
 
-    fdService.lookupByZip($scope.cart.shippingAddress.zip, function(city, state){
-      if (!city || !state) {
+    /**
+     * @method resendProposal
+     * @param {orderId}
+     * @return
+     */
+    $scope.resendProposal = function(orderId){
+        $scope.clickedResend = true;
+        fdService.resendProposal(orderId)
+            .success(function(data, status, headers, config) {
+                $scope.clickedResend = false;
+            })
+            .error(function(data, status, headers, config) {
+                $rootScope.closePane();
+                $scope.clickedResend = false;
+                $location.path('400');
+            });
+  };
+
+    /**
+     * Call this method when cart was changed
+     * @method cartChanged
+     * @return
+     */
+    $scope.cartChanged = function() {
+      $scope.orderId = fdService.getOrderId();
+      $rootScope.cart.shippingAddress = $scope.cart.shippingAddress;
+      if ($scope.orderId) {
+        $rootScope.cart = $scope.cart = fdService.orderedCartChanged($scope.orderId, $rootScope.cart);
+      } else {
+        $rootScope.cart = $scope.cart = fdService.cartChanged($rootScope.cart);
+      }
+    };
+
+    /**
+     * Call this method when shipping method was changed
+     * @method shippingMethosChanged
+     * @return
+     */
+    $scope.shippingMethosChanged = function() {
+      $rootScope.cart = $scope.cart;
+      $scope.cartChanged();
+    };
+
+    /**
+     * Redirect to the signup page
+     * @method gotoSignup
+     * @return
+     */
+    $scope.gotoSignup = function() {
+      if ($scope.signupInProgress) {
         return;
       }
-      $scope.cart.shippingAddress.city = city;
-      $scope.cart.shippingAddress.state = state;
-      $timeout(function() {
-        angular.element('[name=state]').trigger('change');
-        angular.element('[name=city]').trigger('keyup');
+      $window.location.href = '/v1/signup/owner/' + $scope.order_hash;
+      $scope.signupInProgress = true;
+    };
 
-        angular.forEach($scope.shippingForm.$error, function (field) {
-          angular.forEach(field, function(errorField){
-            if (errorField.$viewValue) {
-              errorField.$setTouched();
-            }
+    /**
+     * submitShipping function
+     * @method submitShipping
+     * @param {Boolean} disabled
+     * @return
+     */
+    $scope.submitShipping = function(disabled) {
+      if (disabled) {
+        return;
+      }
+
+      if (!$scope.shippingForm.$valid) {
+        $scope.form_error = true;
+        angular.forEach($scope.shippingForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
+            errorField.$setTouched();
           })
         });
+        return;
+      }
 
-      }, 0);
-    });
-  };
+      $rootScope.cart = $scope.cart;
+      $scope.cartChanged();
+      $location.path('/checkout/summary');
+    };
 
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-}]);;/**
+    /**
+     * _placeOrder function
+     * @method _placeOrder
+     * @param {Boolean} disabled
+     * @return CallExpression
+     */
+    $rootScope._placeOrder = function(disabled) {
+      return $scope.placeOrder(disabled);
+    };
+
+    /**
+     * placeOrder function
+     * @method placeOrder
+     * @param {Boolean} disabled
+     */
+    $scope.placeOrder = function(disabled) {
+      if (disabled) {
+        return;
+      }
+
+      if ($scope.placeOrderInProgress) {
+        return;
+      }
+      $scope.placeOrderInProgress = true;
+
+      $scope.cartChanged();
+
+      if (!$scope.orderId) {
+        return;
+      }
+
+      fdService.getCartDetails($scope.orderId)
+        .success(function(data, status, headers, config) {
+          fdService.submitOrder()
+            .success(function(data, status, headers, config) {
+              fdService.storeOrderedCart($scope.orderId, $rootScope.cart);
+              fdService.clearCart();
+              $rootScope.cart = $scope.cart = fdService.getCart();
+              $scope.placeOrderInProgress = false;
+              if ($rootScope.resetPane) {
+                $rootScope.resetPane();
+              }
+              $location.path('/checkout/thankyou/');
+            })
+            .error(function(data, status, headers, config) {
+              $scope.placeOrderInProgress = false;
+            });
+        })
+        .error(function(data, status, headers, config) {
+          $scope.placeOrderInProgress = false;
+          $location.path('400');
+        });
+
+
+      return;
+
+      fdService.submitOrder()
+        .success(function(data, status, headers, config) {
+          fdService.storeOrderedCart($scope.orderId, $rootScope.cart);
+          fdService.clearCart();
+          $rootScope.cart = $scope.cart = fdService.getCart();
+          $scope.placeOrderInProgress = false;
+          if ($rootScope.resetPane) {
+            $rootScope.resetPane();
+          }
+          $location.path('/checkout/thankyou/');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.placeOrderInProgress = false;
+        });
+    };
+
+    /**
+     * check if place order in progress
+     * @method _isPlaceOrderInProgress
+     * @return {boolean}
+     */
+    $rootScope._isPlaceOrderInProgress = function() {
+      return $scope.placeOrderInProgress;
+    };
+
+    /**
+     * getTaxes function
+     * @method getTaxes
+     */
+    $scope.getTaxes = function() {
+      if (!$scope.cart.shippingAddress[0].zip || !$scope.cart.shippingAddress[0].city) {
+        return;
+      }
+      fdService.getTaxes($scope.cart.shippingAddress[0].zip, $scope.cart.shippingAddress[0].city)
+        .success(function(data, status, headers, config) {
+          $scope.cart.taxPercent = data.salesTax;
+          $rootScope.cart = $scope.cart;
+          $scope.cartChanged();
+          if ('shipping' == $scope.page) {
+            $scope.shippingForm.zip_0.$setValidity("no_tax", true);
+            $scope.shippingForm.zip_0.$setTouched();
+            $scope.shippingForm.zip_0.$setDirty();
+          }
+        })
+        .error(function(data, status, headers, config) {
+          if ('shipping' == $scope.page) {
+            $scope.shippingForm.zip_0.$setValidity("no_tax", false);
+            $scope.shippingForm.zip_0.$setTouched();
+            $scope.shippingForm.zip_0.$setDirty();
+          }
+          $scope.cart.taxPercent = -2;
+          $rootScope.cart = $scope.cart;
+          $scope.cartChanged();
+        });
+    };
+
+    /**
+     * Redirect to the summary page
+     * @method gotoSummary
+     */
+    $scope.gotoSummary = function() {
+      $rootScope.cart = $scope.cart;
+      $scope.cartChanged();
+      $location.path('/checkout/summary');
+    }
+
+    /**
+     * Lookup city and state by zip code using google API
+     * @method lookupZip
+     * @param {} index
+     */
+    $scope.lookupZip = function(index) {
+      if (!$scope.cart.shippingAddress[index].zip) {
+        return;
+      } else if ($scope.shippingForm && $scope.cart.shippingAddress[index].zip == '00000') {
+        $scope.shippingForm['zip_' + index].$setValidity("zipnotValid", false);
+      } else if ($scope.shippingForm) {
+        $scope.shippingForm['zip_' + index].$setValidity("zipnotValid", true);
+      }
+
+
+      fdService.lookupByZip($scope.cart.shippingAddress[index].zip, function(city, state) {
+        if (!city || !state) {
+          return;
+        }
+        $scope.cart.shippingAddress[index].city = city.substring(0, 24);
+        $scope.cart.shippingAddress[index].state = state;
+        $timeout(function() {
+          angular.element('[name^=state]').trigger('change');
+          angular.element('[name^=city]').trigger('keyup');
+
+          angular.forEach($scope.shippingForm.$error, function(field) {
+            angular.forEach(field, function(errorField) {
+              if (errorField.$viewValue) {
+                errorField.$setTouched();
+              }
+            })
+          });
+
+        }, 0);
+        $scope.getTaxes();
+      });
+    };
+
+    /**
+     * Validate Business
+     * @method validateBusiness
+     * @param {} index
+     */
+    $scope.validateBusiness = function(index) {
+      fdService.validateBusiness($scope.shippingForm['email_' + index], $scope.cart.shippingAddress[index].email);
+    }
+
+
+    /**
+     * Add shipping address
+     * @method addAddress
+     */
+    $scope.addAddress = function() {
+      if ($scope.cart.shippingAddress.length >= $scope.cart.num_locations_selected) {
+        return;
+      }
+      $scope.cart.shippingAddress.push({
+        productstoShip: []
+      });
+    };
+
+    /**
+     * remove shipping address
+     * @method removeAddress
+     * @param {} index
+     */
+    $scope.removeAddress = function(index) {
+      if (!index) {
+        return;
+      }
+      $scope.cart.shippingAddress.splice(index, 1);
+    };
+
+    /**
+     * on product in shipping page was checked / unchecked
+     * @method productAddressChecked
+     * @param {Object} p product
+     * @param {Object} ad address
+     * @param {numeric} index product index
+     * @param {numeric} prod_index product index
+     * @param {numeric} address_index address index
+     */
+    $scope.productAddressChecked = function(p, ad, index, prod_index, address_index) {
+
+      var check = $scope.shipping_prods[index][prod_index][address_index];
+
+      if (check) {
+        ad.productstoShip.push({
+          prodId: p.id,
+          term: p.term,
+        });
+
+        p.address_num = p.address_num ? (p.address_num + 1) : 1;
+      } else {
+        for (var i = 0; i < ad.productstoShip.length; i++) {
+          if (ad.productstoShip[i].prodId === p.id && ad.productstoShip[i].term === p.term) {
+            ad.productstoShip.splice(i, 1);
+            p.address_num--;
+            break;
+          }
+        }
+      }
+    };
+
+    /**
+     * on product in shipping page was checked / unchecked
+     * @method productAddressSelected
+     * @param {Object} p product
+     * @param {Object} ad address
+     * @param {numeric} address_index address index
+     * @param {numeric} prod_index product index
+     */
+    $scope.productAddressSelected = function(p, ad, address_index, prod_index) {
+      var breakLoop = false;
+      for (var l = 0; l < $scope.cart.shippingAddress.length && !breakLoop; l++) {
+        for (var i = 0; i < $scope.cart.shippingAddress[l].productstoShip.length && !breakLoop; i++) {
+          if ($scope.cart.shippingAddress[l].productstoShip[i].prodId === p.id && $scope.cart.shippingAddress[l].productstoShip[i].term === p.term) {
+            $scope.cart.shippingAddress[l].productstoShip.splice(i, 1);
+            breakLoop = true;
+          }
+        }
+      }
+
+      $scope.cart.shippingAddress[address_index].productstoShip.push({
+        prodId: p.id,
+        term: p.term,
+      });
+
+    };
+
+
+    /**
+     * check if check box should be disabled
+     * @method productAddressDisabled
+     * @param p
+     * @param ad
+     * @param index
+     * @param prod_index
+     * @param address_index
+     * @return {boolean}
+     */
+    $scope.productAddressDisabled = function(p, ad, index, prod_index, address_index) {
+      var check = $scope.shipping_prods[index] && $scope.shipping_prods[index][prod_index] && $scope.shipping_prods[index][prod_index][address_index];
+
+      if ($scope.cart.shippingAddress.length === 1) {
+        if (check) {
+          return true;
+        }
+        return false;
+      }
+
+      if (check) {
+        return false;
+      }
+
+      if (p.address_num >= p.qty) {
+        return true;
+      }
+
+      return false;
+    };
+
+
+    /**
+     * getShippingForm function
+     * @method getShippingForm
+     * @return shippingForm
+     */
+    $rootScope.getShippingForm = function() {
+      return $scope.shippingForm;
+    };
+
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
  * Error Controller
  *
  */
@@ -1362,70 +2253,97 @@ app.controller('ErrorCtrl', ['$scope', '$location', 'fdService', '$window',
   _init();
   
 }]);;/**
- * Family Controller
+ * E-Signature Controller
  */
-app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', '$anchorScroll','CONST',
-    function ($scope, $rootScope, $window, fdService, $routeParams, $location, $anchorScroll, CONST) {
+app.controller('EsignatureCtrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
 
   /**
    * Init function
    * @private
    */
   var _init = function(){
-    $rootScope.body_id = 'product-detail';
-    $scope.family = [];
-    $scope.productInfo = [];
-    $scope.recommendedBundles = [];
-    $scope.includes = [];
-    $scope.faqs = [];
-    $scope.features = [];
-    $scope.specs = {};
-    $scope.fid = $routeParams.fid;
 
-    if (!$scope.fid) {
-      $location.path('invalid-item');
-      return;
-    }
-
-    $rootScope.cart = fdService.getCart();
-    fdService.getProductOptions($scope.fid)
-      .success(function(data, status, headers, config) {
-        $scope.family = data;
-
-        if ($scope.family.options && $scope.family.options.length){
-          console.log($scope.family.options)
-          $scope.loadProduct($scope.family.options[0].productId);
-        }
-      })
-      .error(function(data, status, headers, config) {
-        $scope.family = [];
-        console.log('error');
-      });
+    $scope.showAll = false;
+    $scope.showContinue = false;
+    $rootScope.$on('Agreement_Unsigned', function() {
+        $scope.showAll = true;
+    });
 
   };
 
-  /**
-   * Load product information by product Id
-   * @param id {int} product Id
-   */
-  $scope.loadProduct = function(id){
-    $scope.productId = id;
-    fdService.getProduct(id)
-      .success(function(data, status, headers, config) {
-        $scope.productInfo = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.productInfo = [];
-        console.log('error')
-      });
-  
+  $scope.clickContinue = function () {
+    $scope.showAll = false;
+  };
+
+  ///////////////// MAIN ////////////////////////////////
+
+  _init();
+
+}]);;/**
+ * Family Controller
+ */
+app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', '$anchorScroll', 'CONST',
+  function($scope, $rootScope, $window, fdService, $routeParams, $location, $anchorScroll, CONST) {
+
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+      $rootScope.body_id = 'product-detail';
+      $scope.family = [];
+      $scope.productInfo = [];
+      $scope.recommendedBundles = [];
+      $scope.includes = [];
+      $scope.faqs = [];
+      $scope.features = [];
+      $scope.specs = {};
+      $scope.fid = $routeParams.fid;
+
+      if (!$scope.fid) {
+        $location.path('invalid-item');
+        return;
+      }
+
+      $rootScope.cart = fdService.getCart();
+      fdService.getProductOptions($scope.fid)
+        .success(function(data, status, headers, config) {
+          $scope.family = data;
+
+          if ($scope.family.options && $scope.family.options.length) {
+            $scope.loadProduct($scope.family.options[0].productId);
+          }
+        })
+        .error(function(data, status, headers, config) {
+          $scope.family = [];
+          console.log('error');
+        });
+
+    };
+
+    /**
+     * Load product information by product Id
+     * @method loadProduct
+     * @param id {int} product Id
+     */
+    $scope.loadProduct = function(id) {
+      $scope.productId = id;
+      fdService.getProduct(id)
+        .success(function(data, status, headers, config) {
+          $scope.productInfo = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.productInfo = [];
+          console.log('error');
+        });
+
       fdService.getRecommendedBundles(id)
         .success(function(data, status, headers, config) {
           $scope.recommendedBundles = data;
         })
         .error(function(data, status, headers, config) {
           $scope.recommendedBundles = [];
-          console.log('error')
+          console.log('error');
         });
 
       fdService.getFaqs(id)
@@ -1434,16 +2352,16 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
         })
         .error(function(data, status, headers, config) {
           $scope.faqs = [];
-          console.log('error')
+          console.log('error');
         });
-      
+
       fdService.getFeatures(id)
         .success(function(data, status, headers, config) {
           $scope.features = data;
         })
         .error(function(data, status, headers, config) {
           $scope.features = [];
-          console.log('error')
+          console.log('error');
         });
       fdService.getSpecs(id)
         .success(function(data, status, headers, config) {
@@ -1451,490 +2369,878 @@ app.controller('FamilyCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$
         })
         .error(function(data, status, headers, config) {
           $scope.specs = {};
-          console.log('error')
+          console.log('error');
         });
-  };
+    };
 
-  /**
-   * Add product to cart
-   * @param {Object} bundle
-   */
-  $scope.addToCart = function(bundle){
+    /**
+     * Add product to cart
+     * @method addToCart
+     * @param {Object} bundle
+     * @param {} family
+     */
+    $scope.addToCart = function(bundle, family) {
 
-    if (!bundle) {
-      bundle = JSON.parse(JSON.stringify($scope.bundle_info));
-    } else {
-      $anchorScroll();
-    }
-    
-    var pid = bundle.productId;
-    
-    if (!Object.keys(bundle).length) {
-      return;
-    }
-    if ($rootScope.cart.data[pid]){
-      var qty = parseInt($rootScope.cart.data[pid].qty);
-      if (qty < 10) {
-        qty++;
-        $rootScope.cart.data[pid].qty = qty.toString();
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
+      } else {
+        $anchorScroll();
       }
-    } else {
-      $rootScope.cart.data[pid] = {
+
+      var category = fdService.getCategoryFromSession();
+
+      var pid = bundle.productId;
+
+      if (!Object.keys(bundle).length) {
+        return;
+      }
+
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+      if (bundle.offeringTypes && -1 === bundle.offeringTypes.indexOf("Transactions")) {
+
+
+
+        var pr = {
           id: pid,
           name: bundle.productName,
           price: bundle.price,
           individualPurchaseEnabled: bundle.pinPad,
           pricingModel: bundle.pricingModel,
           productType: bundle.productType,
-          term: CONST.OWNED_CODE, //Owned
+          term: bundle.defaultPurchaseType, //Owned
           pmodel: null,
-          qty: "1"
-      };
-    }
-    
-    fdService.validateCart($rootScope.cart)
-      .success(function(data, status, headers, config) {
-        $rootScope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-    
-    $scope.cartChanged();
-    fdService.clearOrderId();
-    
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1
+        };
 
-    if (window.matchMedia("(max-width: 740px)").matches) {
-      $timeout(function() {
-        $location.hash('order-summary-container');
-        $anchorScroll();
-      });
-    }
-    fdService.updatePricing();
-    
-  };
+        var index = fdService.getCartProductIndex($rootScope.cart, pr);
 
-  /**
-   * Redirect to checkout
-   * @param {boolean} if true, do nothing
-   */
-  $scope.goToCheckout = function(disabled){
-    if (disabled || !$rootScope.cart.purchaseEnabled) {
-      return;
-    }
-    $location.path('/checkout/shipping');
-  };
 
-  /**
-   * Call this method when cart was changed
-   */
-  $scope.cartChanged = function(){
-    $rootScope.cart = fdService.cartChanged($rootScope.cart);
-  };
-  
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-  
-}]);;/**
+        if (-1 !== index) {
+          pr = $rootScope.cart.data[index];
+          pr.qty++;
+          pr.price = bundle.price;
+          pr.defaultPrice = bundle.price;
+          if (pr.qty > 10) {
+            pr.qty = 10;
+          }
+
+          $rootScope.cart.data[index] = pr;
+        } else {
+          $rootScope.cart.data.push(pr);
+        }
+      } else {
+
+        if (-1 !== $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(bundle.productId)) {
+          return;
+        }
+
+        var pr = {
+          id: bundle.productId,
+          name: bundle.productName,
+          price: bundle.price,
+          type: bundle.productType,
+          term: bundle.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          parentProduct: {
+            id: family.productId,
+            name: family.productName,
+            rate: 0,
+            fee: 0,
+          },
+          qty: 1,
+        };
+
+        $rootScope.cart.transaction_products.push(pr);
+
+      }
+
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      $scope.cartChanged();
+      fdService.clearOrderId();
+
+
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+      fdService.updatePricing();
+
+    };
+
+    /**
+     * Redirect to checkout
+     * @method goToCheckout
+     * @param {} disabled
+     */
+    $scope.goToCheckout = function(disabled) {
+      if (disabled || !$rootScope.cart.purchaseEnabled) {
+        return;
+      }
+      $location.path('/checkout/shipping');
+    };
+
+    /**
+     * Call this method when cart was changed
+     * @method cartChanged
+     * @return
+     */
+    $scope.cartChanged = function() {
+      $rootScope.cart = fdService.cartChanged($rootScope.cart);
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+
+  }
+]);;/**
  * Index Controller
  */
 app.controller('IndexCtrl', ['$scope', '$rootScope', '$filter', '$location', '$anchorScroll', '$timeout', 'fdService',
-    function ($scope, $rootScope, $filter, $location, $anchorScroll, $timeout, fdService) {
+  function($scope, $rootScope, $filter, $location, $anchorScroll, $timeout, fdService) {
 
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
 
-    $rootScope.wrapperClass = 'home';
-    $rootScope.body_id = 'shop';
-    $scope.categories = [];
+      $rootScope.wrapperClass = 'home';
+      $rootScope.body_id = 'shop';
 
-    fdService.getCategories()
-      .success(function(data, status, headers, config) {
-        $scope.categories = data;
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error')
-      });
-  };
+      $rootScope.show_search = true;
 
-  /**
-   * Move to anchor
-   * @param {string} ancor
-   */
-  $scope.gotoAnchor = function(anc){
-    $timeout(function() {
-      $location.hash(anc);
-      $anchorScroll();
-    });
-  };
+      $scope.heroBundles = [];
+      $scope.alacarteBundles = [];
+      $scope.categories = [];
+      $scope.mcc_code = null;
+      $scope.mcc_codes = [];
+      $scope.guideMeOnly = false;
 
-  /**
-   * Change active category
-   * @param {Object} category
-   */
-  $scope.changeCategory = function(category){
-    fdService.storeCategoryInSession(category);
-    $location.path('/products/c');
-  };
+      fdService.getCategories()
+        .success(function(data, status, headers, config) {
+          $scope.categories = data;
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+    };
 
-  ///////////////// MAIN ////////////////////////////////
-
-  _init();
-}]);;/**
- * Main Controller
- */
-app.controller('MainCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', '$window', 'CONST', '$routeParams',
-    function ($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, $window, CONST, $routeParams) {
-
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
-    $scope.Math = window.Math;
-    $rootScope.CONST = CONST;
-
-    $rootScope.cart = fdService.getCart();
-
-    $rootScope.placeholderImageUrl = 'img/placeholder-product.jpg';
-
-    $scope.$watch(function () {
-      return fdService.getOrderId();
-    }, function (newVal, oldVal) {
-      $scope.orderId = fdService.getOrderId();
-    }, true);
-
-  };
-
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-}]);;/**
- * Processing Controller
- */
-app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', '$anchorScroll','CONST','$timeout',
-    function ($scope, $rootScope, $window, fdService, $routeParams, $location, $anchorScroll, CONST,$timeout) {
-
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
-
-    $rootScope.body_id = 'product-detail';
-
-    $scope.id = $routeParams.id;
-
-    //Redirect if no product Id provided
-    if (!$scope.id) {
-      $location.path('404');
-      return;
-    }
-
-    $scope.family = [];
-    $scope.faqs = [];
-    $scope.features = [];
-
-    $rootScope.cart = fdService.getCart();
-
-    fdService.getProductOptions($scope.id)
-      .success(function(data, status, headers, config) {
-        $scope.family = data;
-        $scope.bundle_info = {};
-        $scope.bundle_info.productName = $scope.family.productName;
-
-      })
-      .error(function(data, status, headers, config) {
-        $location.path('invalid-item');
-      });
-
-
-    fdService.getFaqs($scope.id)
-      .success(function(data, status, headers, config) {
-        $scope.faqs = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.faqs = [];
-        console.log('error')
-      });
-
-    fdService.getFeatures($scope.id)
-      .success(function(data, status, headers, config) {
-        $scope.features = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.features = [];
-        console.log('error')
-      });
-
-    $scope.timestamp = new Date().getTime();
-    fdService.getProductsList($scope.id)
-      .success(function(data, status, headers, config) {
-        $scope.includes = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.includes = [];
-        console.log('error')
-      });
-  };
-
-
-  /**
-   * Add processing product to cart
-   * @param {Object} parent product
-   * @param {Object} product
-   */
-  $scope.addToCart = function(family, product){
-
-    var fid = family.productId;
-    
-    if (!Object.keys(family).length) {
-      return;
-    }
-    var cart = fdService.getCart();
-    
-    if (!cart.payment_types || fid != cart.payment_types.id) {
-      cart.payment_types = {
-          id: fid,
-          name: family.productName,
-          products: {},
-      };
-    }
-    cart.payment_types.products[product.productId] = {
-        id: product.productId,
-        name: product.productName,
-        price: product.price,
-        type: product.productType,
-        term: CONST.PURCHASE_CODE,
-        qty: 1,
-    }
-
-    $rootScope.cart = fdService.cartChanged(cart);
-    
-    fdService.validateCart($rootScope.cart)
-      .success(function(data, status, headers, config) {
-        $rootScope.cart.validation = data;
-        $rootScope.cart = fdService.cartChanged($rootScope.cart);
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-    
-    fdService.clearOrderId();
-    fdService.updatePricing();
-
-    //Scroll to the cart in case of small screen
-    if (window.matchMedia("(max-width: 740px)").matches) {
-      $timeout(function() {
-        $location.hash('order-summary-container');
-        $anchorScroll();
-      });
-    }
-    
-  };
-
-  /**
-   * Redirect to the checkout page
-   * @param {Boolean} if true do nothing
-   */
-  $scope.goToCheckout = function(disabled){
-    if (disabled || !$rootScope.cart.purchaseEnabled) {
-      return;
-    }
-    $location.path('/checkout/shipping');
-  };
-
-  /**
-   * Calling in case of changing cart.
-   */
-  $scope.cartChanged = function(){
-    $rootScope.cart = fdService.cartChanged($rootScope.cart);
-  };
-
-  /**
-   * Scroll to anchor
-   * @param {String} anc
-   */
-  $scope.gotoAnchor = function(anc){
+    /**
+     * Move to anchor
+     * @method gotoAnchor
+     * @param {} anchor
+     * @return
+     */
+    $scope.gotoAnchor = function(anc) {
       $timeout(function() {
         $location.hash(anc);
         $anchorScroll();
       });
     };
-  
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-  
-}]);;/**
+
+    /**
+     * Filter Hero Products
+     * @method filterHero
+     * @param {} p
+     * @return Boolean
+     */
+    $scope.filterHero = function(p) {
+      if (p['tags']) {
+        if (p['tags'].indexOf('HOME') != -1) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    /**
+     * Change active category
+     * @method changeCategory
+     * @param {Object} category
+     */
+    $scope.changeCategory = function(category) {
+      fdService.storeCategoryInSession(category);
+      $location.path('/products/c');
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+
+    _init();
+  }
+]);;/**
+ * Main Controller
+ */
+app.controller('MainCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', '$window', 'CONST', '$routeParams',
+  function($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, $window, CONST, $routeParams) {
+
+    /**
+     * Redirect to checkout page
+     * @method proceedToCheckout
+     */
+    $scope.proceedToCheckout = function() {
+      var ep = fdService.getEquipmentPricingStorage();
+      var ti = fdService.getTransactionInfo();
+      var url;
+
+
+      if ($rootScope.cart.num_locations > 1 && !$rootScope.cart.num_locations_selected) {
+        url = '/multi-locations';
+      } else if (ti && ep) {
+        url = '/checkout/shipping';
+      } else {
+        url = '/transaction/info';
+      }
+
+      $timeout(function() {
+        $location.path(url);
+      });
+    };
+
+    /**
+     * Get Shipping Methods Function
+     * @method getShippingMethods
+     * @return
+     */
+    $scope.getShippingMethods = function() {
+      if (!fdService.getSessionShippingMethods()) {
+        fdService.getShippingMethods()
+          .success(function(data, status, headers, config) {
+            var shippingOptions = {};
+            data.sort(function(a, b) {
+              return a.price - b.price;
+            });
+            for (var i = 0; i < data.length; i++) {
+              data[i].name = data[i].productShortDescription;
+              shippingOptions[i + 1] = data[i];
+            }
+            fdService.storeShippingMethods(shippingOptions);
+          })
+          .error(function(data, status, headers, config) {
+            $location.path('400');
+          });
+      }
+    };
+
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+      $scope.Math = window.Math;
+      $rootScope.wrapperId = 'main-wrapper';
+      $rootScope.CONST = CONST;
+      $rootScope.headerTpl = 'templates/header.tpl';
+      $rootScope.cart = fdService.getCart();
+
+      $scope.$on('$routeChangeSuccess', function() {
+         if ($routeParams.eSignature) {
+           $scope.showEsignature = true;
+         } else {
+           $scope.showEsignature = false;
+         }
+      });
+
+      $scope.$watch(function() {
+        return fdService.getOrderId();
+      }, function(newVal, oldVal) {
+        $scope.orderId = fdService.getOrderId();
+      }, true);
+
+      $rootScope.placeholderImageUrl = 'img/placeholder-product.jpg';
+      // Check if touch device
+      if ('ontouchstart' in window || navigator.maxTouchPoints) {
+        $rootScope.isTouch = true;
+      } else {
+        $rootScope.isTouch = false;
+      }
+      $scope.currentYear = new Date().getFullYear();
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
+ * Multi Locations Controller
+ */
+app.controller('MultiLocationsCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', 'CONST',
+  function($scope, $rootScope, $window, fdService, $routeParams, $location, CONST) {
+
+    /**
+     * init function
+     * @private
+     */
+    var _init = function() {
+
+      $scope.orderId = fdService.getOrderId();
+
+      if ($scope.orderId) {
+        $scope.cart = $rootScope.cart = fdService.getOrderedCart($scope.orderId);
+      } else {
+        $scope.cart = $rootScope.cart = fdService.getCart();
+      }
+
+      // on cart changed
+      var offCartChanged = $rootScope.$on('cart-changed', function(e, cart) {
+        $scope.cart = cart;
+      });
+
+      // Clear pricing
+      fdService.clearAcquiringPricing();
+      fdService.clearGlobalPricing();
+      fdService.clearEquipmentPricing();
+
+      $rootScope.cart = fdService.cartChanged($scope.cart);
+
+      // Destroy on cart changed when scope destroyed to avoid multiple calls
+      $scope.$on('$destroy', function() {
+        offCartChanged();
+      });
+    };
+
+    /**
+     * change number of selected locations
+     * @method changeNumber
+     * @param {number} n
+     */
+    $scope.changeNumber = function(n) {
+
+      if ($scope.cart.num_locations < n) {
+        n = $scope.cart.num_locations;
+      }
+      $scope.cart.num_locations_selected = n;
+      $rootScope.cart = fdService.cartChanged($scope.cart);
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
+ * Options Controller
+ */
+app.controller('OptionsCtrl', ['$scope', '$rootScope', '$location', '$routeParams', '$anchorScroll', '$window', 'fdService', '$timeout', '$filter', 'CONST',
+  function($scope, $rootScope, $location, $routeParams, $anchorScroll, $window, fdService, $timeout, $filter, CONST) {
+    $rootScope.body_id = 'product-detail';
+
+    /**
+     * Product Thumb Image
+     * @method ProductThumbImg
+     * @param imgArray
+     */
+    $scope.ProductThumbImg = function(imgArray) {
+      if (imgArray.length == 0) {
+        return $rootScope.placeholderImageUrl;
+      }
+      for (var i in imgArray) {
+        if (imgArray[i].indexOf('/thumb/') !== -1) {
+          return imgArray[i];
+        }
+      }
+    };
+
+    /**
+     * Add product to cart
+     * @method addToCart
+     * @param {Object} product object
+     */
+    $scope.addToCart = function(product) {
+
+      var cart = fdService.getCart();
+
+      var category = fdService.getCategoryFromSession();
+      var cardNotPresent = product.cardNotPresent ? true : false;
+
+      var family = product.parentProduct;
+
+      if (!family) {
+
+        if (-1 !== cart.transaction_products.map(function(e) { return e.id; }).indexOf(product.productId)) {
+          return;
+        }
+
+        var pr = {
+          id: product.productId,
+          name: product.productName,
+          price: product.price,
+          type: product.productType,
+          term: product.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1,
+        };
+
+        cart.transaction_products.push(pr);
+
+
+      } else {
+        var fid = family.id;
+
+        if (!Object.keys(family).length) {
+          return;
+        }
+
+        if (!cart.payment_types || fid != cart.payment_types.id) {
+          cart.payment_types = {
+            id: fid,
+            name: family.name,
+            products: {},
+          };
+        }
+        cart.payment_types.products[product.productId] = {
+          id: product.productId,
+          name: product.productName,
+          price: product.price,
+          type: product.productType,
+          term: product.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1,
+        }
+      }
+
+
+
+      $rootScope.cart = fdService.cartChanged(cart);
+
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $rootScope.cart = fdService.cartChanged($rootScope.cart);
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      fdService.clearOrderId();
+
+
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+    };
+
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+      $scope.productType = $routeParams.typename;
+      $rootScope.cart = fdService.getCart();
+      if ($rootScope.cart.validation.carterrors) {
+        $scope.sortedValidation = $filter('orderBy')($rootScope.cart.validation.carterrors, '_errorOrder');
+        var currentCartError = $scope.sortedValidation[0];
+        $scope.productDisplayName = currentCartError.errormessage;
+      } else {
+        $scope.productDisplayName = $scope.productType.charAt(0) + $scope.productType.substr(1).toLowerCase();
+      }
+
+      fdService.getProductsByOptionType($scope.productType)
+        .success(function(data, status, headers, config) {
+          $scope.products = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.products = [];
+        });
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+
+  }
+]);;/**
+ * Processing Controller
+ */
+app.controller('ProcessingCtrl', ['$scope', '$rootScope', '$window', 'fdService', '$routeParams', '$location', '$anchorScroll', 'CONST', '$timeout',
+  function($scope, $rootScope, $window, fdService, $routeParams, $location, $anchorScroll, CONST, $timeout) {
+
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+      $scope.id = $routeParams.id;
+      $rootScope.body_id = 'product-detail';
+      $scope.family = [];
+      $scope.faqs = [];
+      $scope.features = [];
+
+      $rootScope.cart = fdService.getCart();
+
+      //Redirect if no product Id provided
+      if (!$scope.id) {
+        $location.path('404');
+        return;
+      }
+
+      fdService.getProductOptions($scope.id)
+        .success(function(data, status, headers, config) {
+          $scope.family = data;
+          $rootScope.recommendedProductName = $scope.family.productName;
+          $scope.bundle_info = {};
+          $scope.bundle_info.productName = $scope.family.productName;
+
+        })
+        .error(function(data, status, headers, config) {
+          $location.path('invalid-item');
+        });
+
+
+      fdService.getFaqs($scope.id)
+        .success(function(data, status, headers, config) {
+          $scope.faqs = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.faqs = [];
+          console.log('error');
+        });
+
+      fdService.getFeatures($scope.id)
+        .success(function(data, status, headers, config) {
+          $scope.features = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.features = [];
+          console.log('error');
+        });
+
+      $scope.timestamp = new Date().getTime();
+      fdService.getProductsList($scope.id)
+        .success(function(data, status, headers, config) {
+          $scope.includes = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.includes = [];
+          console.log('error');
+        });
+      //Get Recommended products list.
+      fdService.getRecommendedBundles($scope.id)
+        .success(function(data, status, headers, config) {
+          $scope.recommended = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.recommended = [];
+          console.log('error');
+        });
+
+    };
+
+    /**
+     * Add processing product to cart
+     * @method addToCart
+     * @param {Object} parent product
+     * @param {Object} product
+     */
+    $scope.addToCart = function(family, product) {
+
+      var cart = fdService.getCart();
+
+      var category = fdService.getCategoryFromSession();
+      var cardNotPresent = product.cardNotPresent ? true : false;
+
+      if (!family) {
+
+      if (-1 !== cart.transaction_products.map(function(e) { return e.id; }).indexOf(product.productId)) {
+          return;
+        }
+
+        var pr = {
+          id: product.productId,
+          name: product.productName,
+          price: product.price,
+          type: product.productType,
+          term: product.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          parentProduct: {
+            id: null,
+            name: null,
+            rate: 0,
+            fee: 0,
+          },
+          qty: 1,
+        };
+
+        cart.transaction_products.push(pr);
+
+
+      } else {
+        var fid = family.productId;
+
+        if (!Object.keys(family).length) {
+          return;
+        }
+
+        if (!cart.payment_types || fid != cart.payment_types.id) {
+          cart.payment_types = {
+            id: fid,
+            name: family.productName,
+            products: {},
+          };
+        }
+        cart.payment_types.products[product.productId] = {
+          id: product.productId,
+          name: product.productName,
+          price: product.price,
+          type: product.productType,
+          term: product.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1,
+        };
+      }
+
+
+
+      $rootScope.cart = fdService.cartChanged(cart);
+
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $rootScope.cart = fdService.cartChanged($rootScope.cart);
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      fdService.clearOrderId();
+
+      //Scroll to the cart in case of small screen
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+    };
+
+    /**
+     * Redirect to the checkout page
+     * @method goToCheckout
+     * @param {Boolean} if true do nothing
+     */
+    $scope.goToCheckout = function(disabled) {
+      if (disabled || !$rootScope.cart.purchaseEnabled) {
+        return;
+      }
+      $location.path('/checkout/shipping');
+    };
+
+    /**
+     * Calling in case of changing cart.
+     * @method cartChanged
+     */
+    $scope.cartChanged = function() {
+      $rootScope.cart = fdService.cartChanged($rootScope.cart);
+    };
+
+    /**
+     * Scroll to anchor
+     * @method gotoAnchor
+     * @param {String} anchor
+     */
+    $scope.gotoAnchor = function(anc) {
+      $timeout(function() {
+        $location.hash(anc);
+        $anchorScroll();
+      });
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+
+  }
+]);;/**
  * Product Controller
  */
 app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', '$timeout', '$anchorScroll', '$window', 'fdService', 'CONST',
-    function ($scope, $rootScope, $filter, $location, $routeParams, $timeout, $anchorScroll, $window, fdService, CONST) {
+  function($scope, $rootScope, $filter, $location, $routeParams, $timeout, $anchorScroll, $window, fdService, CONST) {
 
 
-  /**
-   * Image Change Timeout Promise
-   */
-  var imgPromise;
+    /**
+     * Image Change Timeout Promise
+     */
+    var imgPromise;
 
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
 
-    $scope.timestamp = new Date().getTime();
-    $rootScope.cart.taxPercent = 9; //set sales tax = 9%
+      $scope.timestamp = new Date().getTime();
+      $rootScope.cart.taxPercent = 9; //set sales tax = 9%
 
-    $scope.page = $routeParams.page;
+      $scope.page = $routeParams.page;
 
-    $rootScope.cart = $rootScope.cart;
+      $rootScope.cart = $rootScope.cart;
 
-    $rootScope.body_id = 'product-detail';
+      $rootScope.body_id = 'product-detail';
 
-    $scope.bundle_info = {};
-    $scope.includes = [];
-    $scope.features = [];
-    $scope.faqs = [];
-    $scope.specs = {};
-    $scope.recommendedBundles = [];
-    $scope.min_lease_amt = 0;
+      $scope.bundle_info = {};
+      $scope.includes = [];
+      $scope.features = [];
+      $scope.faqs = [];
+      $scope.specs = {};
+      $scope.recommendedBundles = [];
+      $scope.min_lease_amt = 0;
 
-    $scope.images = [];
-    $scope.cimage = $rootScope.placeholderImageUrl;
+      $scope.images = [];
+      $scope.cimage = $rootScope.placeholderImageUrl;
 
-    if (!$routeParams.pid){
-      $location.path('/');
-      return;
-    }
+      if (!$routeParams.pid) {
+        $location.path('/');
+        return;
+      }
 
-    $scope.pid = $routeParams.pid;
+      $scope.pid = $routeParams.pid;
 
-    // Get product features
-    fdService.getFeatures($scope.pid)
-      .success(function(data, status, headers, config) {
-        $scope.features = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.features = [];
-        console.log('error')
-      });
+      // Get product features
+      fdService.getFeatures($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.features = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.features = [];
+          console.log('error');
+        });
 
-    // Get product specifications
-    fdService.getSpecs($scope.pid)
-      .success(function(data, status, headers, config) {
-        $scope.specs = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.specs = {};
-        console.log('error')
-      });
+      // Get product specifications
+      fdService.getSpecs($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.specs = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.specs = {};
+          console.log('error');
+        });
 
-    // Get product details
-    fdService.getProduct($scope.pid)
-      .success(function(data, status, headers, config) {
-        $scope.bundle_info = data;
-        $scope.images = $scope.bundle_info.imageUrls ? $scope.bundle_info.imageUrls : [];
+      // Get product details
+      fdService.getProduct($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.bundle_info = data;
+          $scope.images = $scope.bundle_info.imageUrls ? $scope.bundle_info.imageUrls : [];
 
-        $rootScope.title = $scope.bundle_info.productName;
-        $rootScope.recommendedProductName = $scope.bundle_info.productName;
-        $scope.min_lease_amt = 0;
-        if (data.pricingModel && data.pricingModel.length) {
-          for (var i = 0; i < data.pricingModel.length; i++) {
-            if (CONST.PURCHASE_CODE != data.pricingModel[i].purchaseType && data.pricingModel[i].defaultAmt && (!$scope.min_lease_amt || data.pricingModel[i].defaultAmt < $scope.min_lease_amt)) {
-              $scope.min_lease_amt = data.pricingModel[i].defaultAmt;
+          $rootScope.title = $scope.bundle_info.productName;
+          $rootScope.recommendedProductName = $scope.bundle_info.productName;
+          $scope.min_lease_amt = 0;
+          if (data.pricingModel && data.pricingModel.length) {
+            for (var i = 0; i < data.pricingModel.length; i++) {
+              if (CONST.PURCHASE_CODE != data.pricingModel[i].purchaseType && data.pricingModel[i].defaultAmt && (!$scope.min_lease_amt || data.pricingModel[i].defaultAmt < $scope.min_lease_amt)) {
+                $scope.min_lease_amt = data.pricingModel[i].defaultAmt;
+              }
             }
           }
-        }
-        $scope.thumbImages = [];
-        $scope.largeImages = [];
-        for(var i in $scope.images){
-          if($scope.images[i].indexOf('/thumb/') !== -1){
-            $scope.thumbImages.push($scope.images[i]);
+          $scope.thumbImages = [];
+          $scope.largeImages = [];
+          for (var i in $scope.images) {
+            if ($scope.images[i].indexOf('/thumb/') !== -1) {
+              $scope.thumbImages.push($scope.images[i]);
+            }
+            if ($scope.images[i].indexOf('/large/') !== -1) {
+              $scope.largeImages.push($scope.images[i]);
+            }
           }
-          if($scope.images[i].indexOf('/large/') !== -1){
-            $scope.largeImages.push($scope.images[i]);
-          }
-        }
-        $scope.changeImage($scope.thumbImages[0]);
+          $scope.changeImage($scope.thumbImages[0]);
 
-      })
-      .error(function(data, status, headers, config) {
-        $scope.bundle_info = [];
-        $location.path('invalid-item');
-        $scope.min_lease_amt = 0;
-        console.log('error')
-      });
+        })
+        .error(function(data, status, headers, config) {
+          $scope.bundle_info = [];
+          $location.path('invalid-item');
+          $scope.min_lease_amt = 0;
+          console.log('error');
+        });
 
-    // Get Recommended bundles for this product
-    fdService.getRecommendedBundles($scope.pid)
-      .success(function(data, status, headers, config) {
-        $scope.recommendedBundles = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.recommendedBundles = [];
-        console.log('error')
-      });
+      // Get Recommended bundles for this product
+      fdService.getRecommendedBundles($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.recommendedBundles = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.recommendedBundles = [];
+          console.log('error');
+        });
 
-    // Get Products List
-    fdService.getProductsList($scope.pid)
-      .success(function(data, status, headers, config) {
-        $scope.includes = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.includes = [];
-        console.log('error')
-      });
+      // Get Products List
+      fdService.getProductsList($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.includes = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.includes = [];
+          console.log('error');
+        });
 
-    // Get FAQ list for product
-    fdService.getFaqs($scope.pid)
-      .success(function(data, status, headers, config) {
-        $scope.faqs = data;
-      })
-      .error(function(data, status, headers, config) {
-        $scope.faqs = [];
-        console.log('error')
-      });
-  };
+      // Get FAQ list for product
+      fdService.getFaqs($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.faqs = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.faqs = [];
+          console.log('error');
+        });
+    };
 
-  /**
-   * Redirect to checkout
-   * @param {Boolean} do nothing if true
-   */
-  $scope.goToCheckout = function(disabled){
-    if (disabled || !$rootScope.cart.purchaseEnabled) {
-      return;
-    }
-    $location.path('/checkout/shipping');
-  };
-
-  /**
-   * Add product to the cart
-   * @param {Object} product
-   */
-  $scope.addToCart = function(bundle){
-    if (!bundle) {
-      bundle = JSON.parse(JSON.stringify($scope.bundle_info));
-    } else {
-      $anchorScroll();
-    }
-    
-    var pid = bundle.productId;
-    
-    if (!Object.keys(bundle).length) {
-      return;
-    }
-    if ($rootScope.cart.data[pid]){
-      var qty = parseInt($rootScope.cart.data[pid].qty);
-      if (qty < 10) {
-        qty++;
-        $rootScope.cart.data[pid].qty = qty.toString();
+    /**
+     * Redirect to checkout
+     * @method goToCheckout
+     * @param {Boolean} do nothing if true
+     */
+    $scope.goToCheckout = function(disabled) {
+      if (disabled || !$rootScope.cart.purchaseEnabled) {
+        return;
       }
-    } else {
-      $rootScope.cart.data[pid] = {
+      $location.path('/checkout/shipping');
+    };
+
+    /**
+     * Add product to the cart
+     * @method addToCart
+     * @param {Object} product
+     */
+    $scope.addToCart = function(bundle) {
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
+      } else {
+        $anchorScroll();
+      }
+
+      var pid = bundle.productId;
+
+      if (!Object.keys(bundle).length) {
+        return;
+      }
+      if ($rootScope.cart.data[pid]) {
+        var qty = parseInt($rootScope.cart.data[pid].qty);
+        if (qty < 10) {
+          qty++;
+          $rootScope.cart.data[pid].qty = qty.toString();
+        }
+      } else {
+        $rootScope.cart.data[pid] = {
           id: pid,
           name: bundle.productName,
           price: bundle.price,
@@ -1944,120 +3250,125 @@ app.controller('ProductCtrl', ['$scope', '$rootScope', '$filter', '$location', '
           term: CONST.PURCHASE_CODE,
           pmodel: null,
           qty: "1"
-      };
-    }
+        };
+      }
 
-    // Validate if cart is ready to checkout
-    fdService.validateCart($rootScope.cart)
-      .success(function(data, status, headers, config) {
-        $rootScope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-    
-    $scope.cartChanged();
-    fdService.clearOrderId();
+      // Validate if cart is ready to checkout
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
-    //Scroll to the cart in case of small screen
-    if (window.matchMedia("(max-width: 740px)").matches) {
-      $timeout(function() {
-        $location.hash('order-summary-container');
+      $scope.cartChanged();
+      fdService.clearOrderId();
+
+      //Scroll to the cart in case of small screen
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+
+      // Update pricing
+      fdService.updatePricing();
+    };
+
+    /**
+     * Lease product
+     * @method leaseProduct
+     * @param {Object} product
+     */
+    $scope.leaseProduct = function(bundle) {
+
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
+      } else {
         $anchorScroll();
-      });
-    }
+      }
 
-    // Update pricing
-    fdService.updatePricing();
-  };
+      fdService.leaseProduct(bundle, $rootScope.cart);
+      $scope.cartChanged();
 
-  /**
-   * Lease product
-   * @param {Object} product
-   */
-  $scope.leaseProduct = function(bundle){
-    
-    if (!bundle) {
-      bundle = JSON.parse(JSON.stringify($scope.bundle_info));
-    } else {
-      $anchorScroll();
-    }
-    
-    fdService.leaseProduct(bundle, $rootScope.cart);
-    $scope.cartChanged();
+      //Scroll to the cart in case of small screen
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
 
-    //Scroll to the cart in case of small screen
-    if (window.matchMedia("(max-width: 740px)").matches) {
-      $timeout(function() {
-        $location.hash('order-summary-container');
-        $anchorScroll();
-      });
-    }
+      // Update pricing
+      fdService.updatePricing();
 
-    // Update pricing
-    fdService.updatePricing();
+      // Validate if cart is ready to checkout
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+    };
 
-    // Validate if cart is ready to checkout
-    fdService.validateCart($rootScope.cart)
-      .success(function(data, status, headers, config) {
-        $rootScope.cart.validation = data;
-        $scope.cartChanged();
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error');
-      });
-  };
+    /**
+     * Calling in case of changing cart.
+     * @method cartChanged
+     */
+    $scope.cartChanged = function() {
+      $rootScope.cart = fdService.cartChanged($rootScope.cart);
+    };
 
-  /**
-   * Calling in case of changing cart.
-   */
-  $scope.cartChanged = function(){
-    $rootScope.cart = fdService.cartChanged($rootScope.cart);
-  };
-
-  /**
-   * Change active image
-   * @param {String} img
-   */
-  $scope.changeImage = function(img) {
+    /**
+     * Change active image
+     * @method changeImage
+     * @param {String} img
+     */
+    $scope.changeImage = function(img) {
       if (imgPromise) {
         $timeout.cancel(imgPromise);
       }
       imgPromise = $timeout(function() {
-        var cimage = img.replace('/thumb/','/large/');
-        for(var i in $scope.largeImages){
-            if(cimage == $scope.largeImages[i]){
-                $scope.cimage = cimage;
-                return;
-            }
-            else{
-                $scope.cimage = $rootScope.placeholderImageUrl;
-            }
+        var cimage = img.replace('/thumb/', '/large/');
+        for (var i in $scope.largeImages) {
+          if (cimage == $scope.largeImages[i]) {
+            $scope.cimage = cimage;
+            return;
+          } else {
+            $scope.cimage = $rootScope.placeholderImageUrl;
+          }
         }
       }, 100);
-  };
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-}]);;/**
+    };
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
  * Products Controller
  */
 app.controller('ProductsCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', '$timeout', '$anchorScroll', '$window', 'fdService', 'CONST',
-    function ($scope, $rootScope, $filter, $location, $routeParams, $timeout, $anchorScroll, $window, fdService, CONST) {
-
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
-
+  function($scope, $rootScope, $filter, $location, $routeParams, $timeout, $anchorScroll, $window, fdService, CONST) {
     $rootScope.body_id = 'products';
-    $scope.categoryDisabled = true;
+
+    $scope.categoryDisabled = false;
+
     $scope.prodToShow = [];
+
     $scope.keyword = '';
+
     $scope.categoryId = null;
     $scope.categories = [];
 
+    $scope.bundle_info = {};
+    $scope.includes = [];
+    $scope.features = [];
+    $scope.faqs = [];
+    $scope.specs = {};
     $scope.recommendedBundles = [];
 
     $scope.images = [];
@@ -2066,57 +3377,181 @@ app.controller('ProductsCtrl', ['$scope', '$rootScope', '$filter', '$location', 
     $scope.allProducts = [];
     $scope.products = [];
 
-    // Get Categories
-    fdService.getCategories()
-      .success(function(data, status, headers, config) {
-        $scope.categories = data;
-        if ($routeParams.type){
-          if ('c' == $routeParams.type) {
-            $scope.categoryDisabled = true;
-            var c = fdService.getCategoryFromSession();
-            if (c) {
-              $scope.category = c;
-              $scope.businessCategory = [c];
-              $timeout(function() {
-                angular.element('#categoryfilter').trigger('change');
-                $scope.loadMore();
-              }, 1);
-            } else {
-              $scope.category = null;
-            }
-          } else if ('t' == $routeParams.type && $routeParams.typename) {
-            $scope.productType = $routeParams.typename;
+    $scope.monthlyFee = false;
+    $scope.transactionFee = false;
 
-            $timeout(function() {
-              $scope.loadMore();
-            }, 1);
-          } else if('recommended' == $routeParams.type){
-            $scope.productContentType = $routeParams.type;
-            $scope.isRecommendedCallDone = false;
-            var pid = $routeParams.typename;
-            fdService.getRecommendedBundles(pid)
-              .success(function(data, status, headers, config) {
-                $scope.recommendedBundles = data;
-                $scope.isRecommendedCallDone = true;
-              })
-              .error(function(data, status, headers, config) {
-                $scope.recommendedBundles = [];
-                $scope.isRecommendedCallDone = true;
-                console.log('error')
-              });
+    /**
+     * Change active category
+     * @method changeCategory
+     */
+    $scope.changeCategory = function() {
+      if (!$scope.$$phase) {
+        $scope.$apply();
+      }
+
+      if ($scope.category) {
+        $scope.businessCategory = [$scope.category];
+        fdService.storeCategoryInSession($scope.category);
+      }
+
+      $scope.generateAcData($scope.allProducts);
+      $scope.loadMore();
+    };
+
+    /**
+     * search products
+     * @method search
+     */
+    $scope.search = function() {
+      if (!$scope.$$phase) {
+        $scope.$apply();
+      }
+      $scope.loadMore();
+    };
+
+    /**
+     * Sort products by tag filter
+     * @method sortbytag
+     * @param {Object} product
+     * @return {number}
+     */
+    $scope.sortbytag = function(p) {
+      if (p['tags'] && p['tags'].indexOf('TOP 10') != -1) {
+        return 0;
+      }
+      return 1;
+    };
+
+    /**
+     * Filter featured products
+     * @method filterHero
+     * @param {Object} product
+     * @return {boolean}
+     */
+    $scope.filterHero = function(p) {
+      if (p['tags']) {
+        if (p['tags'].indexOf('HOME') != -1) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    /**
+     * Filter products
+     * @method filterProd
+     * @param {Object} product
+     * @return {boolean}
+     */
+    $scope.filterProd = function(p) {
+
+      var ret = true;
+      if ($scope.productType) {
+        if (p['productType'] == $scope.productType) {
+          ret = true;
+        } else {
+          ret = false;
+        }
+      }
+      if ($scope.businessCategory && $scope.businessCategory.length) {
+        ret = false;
+        if (p['categoryIds']) {
+          for (var i = 0; i < $scope.businessCategory.length; i++) {
+            if (p['categoryIds'].indexOf(parseInt($scope.businessCategory[i].id)) != -1) {
+              ret = true;
+              break;
+            }
           }
         }
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error')
+      }
+      if (!$scope.keyword || !$scope.keyword.length || p.productName.toLowerCase().indexOf($scope.keyword.toLowerCase()) != -1) {
+        ret = ret && true;
+      } else {
+        if (p['tags'] && p['tags'].indexOf($scope.keyword) != -1) {
+          ret = ret && true;
+        } else {
+          ret = false;
+        }
+      }
+      return ret;
+    };
+
+    /**
+     * Generate autocomplete data
+     * @method generateAcData
+     * @param data
+     * @return {Array}
+     */
+    $scope.generateAcData = function(data) {
+
+      var acData = [];
+
+      for (var i in data) {
+        var p = data[i];
+        var incl = true;
+        if ($scope.businessCategory && $scope.businessCategory.length) {
+          incl = false;
+          if (p['categoryIds']) {
+            for (var k = 0; k < $scope.businessCategory.length; k++) {
+              if (p['categoryIds'].indexOf(parseInt($scope.businessCategory[k].id)) != -1) {
+                incl = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!incl) {
+          continue;
+        }
+
+        if (acData.indexOf(p.productName) == -1) {
+          acData.push(p.productName);
+        }
+        for (var k in p.tags) {
+          if (acData.indexOf(p.tags[k]) == -1) {
+            acData.push(p.tags[k]);
+          }
+        }
+      }
+
+      $("#search-products").autocomplete({
+        delay: 0,
+        select: function(event, ui) {
+          $scope.keyword = ui.item.value;
+          $scope.search();
+        },
+        source: acData
       });
 
-    // Get all products
+      return acData;
+    };
+
+    /**
+     * load more products for the infinite loop
+     * @method loadMore
+     */
+    $scope.loadMore = function() {
+      if ($scope.products.length >= $scope.allProducts.length) return;
+
+      var st = $scope.products.length;
+      // for(var i = 0; i < 5 || !$scope.prodToShow.length; i++) {
+      for (var i = 0; i < 5; i++) {
+        var key = st + i;
+        if (key > $scope.allProducts.length - 1) return;
+        $scope.products.push($scope.allProducts[key]);
+      }
+      $timeout(function() {
+        if ($scope.prodToShow.length < 5) {
+          $scope.loadMore();
+        }
+      });
+    };
+
     fdService.getAllProducts()
       .success(function(data, status, headers, config) {
         $scope.allProducts = [];
 
-        for (var i in data){
+        for (var i in data) {
           var p = data[i];
           if (p.productType.indexOf('FEE') != -1) {
             continue;
@@ -2139,186 +3574,3148 @@ app.controller('ProductsCtrl', ['$scope', '$rootScope', '$filter', '$location', 
         $scope.allProducts = [];
         $scope.generateAcData([]);
       });
-  };
 
-  /**
-   * Change active category
-   */
-  $scope.changeCategory = function(){
-    if(!$scope.$$phase) {
-      $scope.$apply();
-    }
-    $scope.generateAcData($scope.allProducts);
-    $scope.loadMore();
-  };
-
-  /**
-   * search products
-   */
-  $scope.search = function(){
-    if(!$scope.$$phase) {
-      $scope.$apply();
-    }
-    $scope.loadMore();
-  };
-
-  /**
-   * Sort products by tag filter
-   * @param {Object} product
-   * @return {number}
-   */
-  $scope.sortbytag = function(p){
-    if (p['tags'] && p['tags'].indexOf('TOP 10') != -1) {
-      return 0;
-    }
-    return 1;
-  }
-
-  /**
-   * Filter featured products
-   * @param {Object} product
-   * @return {boolean}
-   */
-  $scope.filterHero = function(p){
-    if (p['tags']) {
-      if (p['tags'].indexOf('HOME') != -1) {
-        return true;
+    /**
+     * Get Taxes
+     * @method getTaxes
+     * @param {} zip
+     * @param {} city
+     */
+    $scope.getTaxes = function(zip, city) {
+      if (!zip || !city) {
+        return;
       }
-    }
-    return false;
-  };
+      fdService.getTaxes(zip, city)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.taxPercent = data.salesTax;
+          $scope.cartChanged();
+        })
+        .error(function(data, status, headers, config) {
+          $rootScope.cart.taxPercent = -2;
+          $scope.cartChanged();
+          console.log('error');
+        });
+    };
 
-  /**
-   * Filter products
-   * @param {Object} product
-   * @return {boolean}
-   */
-  $scope.filterProd = function(p){
+    /**
+     * Redirect to the checkout page
+     * @method goToCheckout
+     * @param disabled
+     */
+    $scope.goToCheckout = function(disabled) {
+      if (disabled || !$rootScope.cart.purchaseEnabled) {
+        return;
+      }
+      $location.path('/checkout/shipping');
+    };
 
-    var ret = true;
-    if ($scope.productType) {
-      if (p['productType'] == $scope.productType) {
-        ret = true;
+    /**
+     * Add To Cart
+     * @method addToCart
+     * @param {object} product
+     */
+    $scope.addToCart = function(bundle) {
+
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
       } else {
-        ret = false;
+        $anchorScroll();
       }
-    }
-    if ($scope.businessCategory && $scope.businessCategory.length) {
-      ret = false;
-      if (p['categoryIds']) {
-        for (var i = 0; i < $scope.businessCategory.length; i++) {
-          if (p['categoryIds'].indexOf(parseInt($scope.businessCategory[i].id)) != -1) {
-            ret = true;
-            break;
-          }
+      var bid = bundle.productId;
+
+      if (!Object.keys(bundle).length) {
+        return;
+      }
+      var category = fdService.getCategoryFromSession();
+
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+
+      var pr = {
+        id: bid,
+        name: bundle.productName,
+        price: bundle.price,
+        individualPurchaseEnabled: bundle.pinPad,
+        pricingModel: bundle.pricingModel,
+        productType: bundle.productType,
+        term: bundle.defaultPurchaseType,
+        pmodel: null,
+        category: category.name,
+        cardNotPresent: cardNotPresent,
+        qty: 1
+      };
+
+      var index = fdService.getCartProductIndex($rootScope.cart, pr);
+
+      if (-1 !== index) {
+        pr = $rootScope.cart.data[index];
+        pr.qty++;
+        pr.price = bundle.price;
+        pr.defaultPrice = bundle.price;
+        if (pr.qty > 10) {
+          pr.qty = 10;
+        }
+
+        $rootScope.cart.data[index] = pr;
+      } else {
+        $rootScope.cart.data.push(pr);
+      }
+
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid)
+            fdService.updatePricing();
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+      $scope.cartChanged();
+      fdService.clearOrderId();
+
+      //    $scope.showCheckout = true;
+
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+    };
+
+    /**
+     * Cart Changed
+     * @method cartChanged
+     */
+    $scope.cartChanged = function() {
+      $rootScope.cart = fdService.cartChanged($rootScope.cart);
+    };
+
+    var imgPromise;
+
+    /**
+     * Change Image
+     * @method changeImage
+     * @param {} img
+     */
+    $scope.changeImage = function(img) {
+      if (imgPromise) {
+        $timeout.cancel(imgPromise);
+      }
+      imgPromise = $timeout(function() {
+        $scope.cimage = img;
+      }, 100);
+    };
+
+
+    /**
+     * Get image thumbnail for product
+     * @method ProductThumbImg
+     * @param imgArray
+     */
+    $scope.ProductThumbImg = function(imgArray) {
+      if (imgArray.length == 0) {
+        return $rootScope.placeholderImageUrl;
+      }
+      for (var i in imgArray) {
+        if (imgArray[i].indexOf('/thumb/') !== -1) {
+          return imgArray[i];
         }
       }
-    }
-    if (!$scope.keyword || !$scope.keyword.length || p.productName.toLowerCase().indexOf($scope.keyword.toLowerCase()) != -1) {
-      ret = ret && true;
-    } else {
-      if (p['tags'] && p['tags'].indexOf($scope.keyword) != -1) {
-        ret = ret && true;
-      } else {
-        ret = false;
-      }
-    }
-    return ret;
-  };
+    };
 
-  /**
-   * Generate autocomplete data
-   * @param data
-   * @return {Array}
-   */
-  $scope.generateAcData = function(data){
-    
-    var acData = [];
-    
-    for (var i in data){
-      var p = data[i];
-      var incl = true;
-      if ($scope.businessCategory && $scope.businessCategory.length) {
-        incl = false;
-        if (p['categoryIds']) {
-          for (var k = 0; k < $scope.businessCategory.length; k++) {
-            if (p['categoryIds'].indexOf(parseInt($scope.businessCategory[k].id)) != -1) {
-              incl = true
+    /**
+     * Init function
+     * @method _init
+     */
+    var _init = function() {
+
+      if ('t' == $routeParams.type && $routeParams.typename) {
+        $scope.productType = $routeParams.typename;
+
+        if ($scope.productType != 'ACQUIRING') {
+          $scope.categoryDisabled = false;
+          fdService.getCategories().success(function(data, status, headers, config) {
+              var c = fdService.getCategoryFromSession();
+              $scope.categories = data;
+              if (c) {
+                $scope.category = c;
+                $timeout(function() {
+                  $scope.loadMore();
+                }, 1);
+              } else {
+                $scope.category = null;
+              }
+            })
+            .error(function(data, status, headers, config) {
+              $location.path('/400');
+            });
+        } else {
+          $scope.categoryDisabled = true;
+          $timeout(function() {
+            $scope.loadMore();
+          }, 1);
+        }
+
+      } else {
+        fdService.getCategories().success(function(data, status, headers, config) {
+          $scope.categoryDisabled = false;
+          var c = fdService.getCategoryFromSession();
+          $scope.categories = data;
+          if (c) {
+            $scope.category = c;
+            $scope.businessCategory = [c];
+            $timeout(function() {
+              angular.element('#categoryfilter').trigger('change');
+              $scope.loadMore();
+            }, 1);
+          } else {
+            $scope.category = null;
+          }
+        });
+
+        if ('c' == $routeParams.type) {
+
+          var c = fdService.getCategoryFromSession();
+          if (c) {
+            $scope.category = c;
+            $scope.businessCategory = [c];
+            $timeout(function() {
+              angular.element('#categoryfilter').trigger('change');
+              $scope.loadMore();
+            }, 1);
+          } else {
+            $scope.category = null;
+          }
+        } else if ('recommended' == $routeParams.type) {
+          $scope.productContentType = $routeParams.type;
+          $scope.isRecommendedCallDone = false;
+          var pid = $routeParams.typename;
+          fdService.getRecommendedBundles(pid)
+            .success(function(data, status, headers, config) {
+              $scope.recommendedBundles = data;
+              $scope.isRecommendedCallDone = true;
+            })
+            .error(function(data, status, headers, config) {
+              $scope.recommendedBundles = [];
+              $scope.isRecommendedCallDone = true;
+            });
+        }
+
+      }
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+
+  }
+]);;/**
+ * Recommended Products controller
+ */
+app.controller('RecommendedProductsCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', '$anchorScroll', '$window', 'fdService', 'CONST',
+  function($scope, $rootScope, $filter, $location, $routeParams, $anchorScroll, $window, fdService, CONST) {
+    $rootScope.body_id = 'products';
+
+    /**
+     * Product Thumb Image
+     * @method ProductThumbImg
+     * @param {} imgArray
+     */
+    $scope.ProductThumbImg = function(imgArray) {
+      if (imgArray.length == 0) {
+        return $rootScope.placeholderImageUrl;
+      }
+      for (var i in imgArray) {
+        if (imgArray[i].indexOf('/thumb/') !== -1) {
+          return imgArray[i];
+        }
+      }
+    };
+
+    /**
+     * Init function
+     * @method _init
+     */
+    var _init = function() {
+      $scope.recommendedBundles = [];
+      $scope.isRecommendedCallDone = false;
+      $scope.pid = $routeParams.pid;
+      fdService.getRecommendedBundles($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.recommendedBundles = data;
+          $scope.isRecommendedCallDone = true;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.recommendedBundles = [];
+          $scope.isRecommendedCallDone = true;
+        });
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+
+    _init();
+
+  }
+]);;/**
+ * Signup Location Controller
+ */
+app.controller('SignupLocationCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', 'CONST', '$routeParams',
+  function($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST, $routeParams) {
+
+    /**
+     * Init function
+     * @method _init
+     */
+    var _init = function() {
+      $rootScope.body_id = 'full_body';
+
+      $scope.current_number = $routeParams.num;
+
+      /* percentValues hold indices array for ng-options*/
+      $scope.percentValues = (function() {
+        var tempArr = [];
+        for (var i = 0; i <= 20; i++)
+          tempArr.push(i * 5);
+        return tempArr;
+      })();
+
+      var orderId = fdService.getOrderId();
+      var cart = fdService.getOrderedCart(orderId);
+
+      if (!cart) {
+        $location.path('/');
+      }
+
+      //set category details
+      $scope.categoryDetails = {name: cart.data[Object.keys(cart.data)[0]].category};
+
+      $scope.num_locations_selected = cart.num_locations_selected || 1;
+
+      if (!$scope.current_number || $scope.num_locations_selected < $scope.current_number) {
+        $scope.current_number = 1;
+      }
+
+
+      $scope.clickedSubmit = false;
+      $scope.bankErrorCount = 0;
+      $scope.bankError = false;
+      $scope.bankErrorServerFails = false;
+      $scope.bankCheck = false;
+      $scope.bankErrorCount_second = 0;
+      $scope.bankError_second = false;
+      $scope.bankErrorServerFails_second = false;
+      $scope.bankCheck_second = false;
+
+      var ti = fdService.getTransactionInfo();
+
+
+      $scope.form_error = false;
+      $scope.states_list = $rootScope.CONST.STATES;
+      $scope.globalFormData = {};
+
+      for (var i = 1; i <= $scope.num_locations_selected; i++) {
+        $scope.globalFormData[i] = {};
+        $scope.globalFormData[i].bankInformation = {};
+
+        if (!angular.isUndefined(cart.shippingAddress[0])) {
+          $scope.globalFormData[i].DBA_NAME = cart.shippingAddress[0].company;
+
+          $scope.globalFormData[i].statementDeliveryEmail = cart.shippingAddress[0].email;
+          $scope.globalFormData[i].statementDeliveryType = "Email";
+          angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
+            $scope.globalFormData[i].bankInformation[value] = '0';
+          });
+          $scope.globalFormData[i].name = cart.shippingAddress[0].firstname + " " + cart.shippingAddress[0].lastname;
+
+        }
+
+        if (ti.annualVolume) {
+          $scope.globalFormData[i].annualVolume = ti.annualVolume;
+        }
+
+        if (ti.annualcardVolume) {
+          $scope.globalFormData[i].annualcardVolume = ti.annualcardVolume;
+        }
+
+        if (ti.averageTicket) {
+          $scope.globalFormData[i].TYPICAL_SALE_AMOUNT = ti.averageTicket;
+        }
+
+        if (ti.highestTicket) {
+          $scope.globalFormData[i].ANTICIPATED_HIGHEST_TICKET_SALE = ti.highestTicket;
+        }
+        // $scope.globalFormData[i].mcccodes = ti.mccTypes;
+
+        if (undefined !== cart.shippingAddress[i - 1]) {
+          $scope.globalFormData[i].business_address1 = cart.shippingAddress[i - 1].address1;
+          $scope.globalFormData[i].business_address2 = cart.shippingAddress[i - 1].address2;
+          $scope.globalFormData[i].business_address_zip = cart.shippingAddress[i - 1].zip;
+          $scope.globalFormData[i].business_address_city = cart.shippingAddress[i - 1].city;
+          $scope.globalFormData[i].business_address_state = cart.shippingAddress[i - 1].state;
+          $scope.globalFormData[i].DBA_NAME = cart.shippingAddress[i - 1].company_name;
+        }
+
+        $scope.globalFormData[i].products = [];
+        $scope.globalFormData[i].rollupIndicator = '2';
+
+      }
+
+      $scope.getWebsiteFlag();
+      $scope.formData = $scope.globalFormData[$scope.current_number];
+
+      $timeout(function() {
+        angular.element('[name=mcccodes]').trigger('change');
+      }, 50);
+
+
+      // Get MCC Codes
+      $scope.mcc_codes = [];
+      fdService.getMccCodes($scope.categoryDetails.name).success(function(data, status, headers, config) {
+        $scope.mcc_codes = data;
+      });
+
+      $scope.products = [];
+      $scope.globalFormData[1].noOfRegisters = 1;
+
+      // Get products list
+      fdService.getCartOrderProducts(orderId).success(function(data, status, headers, config) {
+
+        $scope.products = data;
+        var k;
+
+        for (var i = 0; i < $scope.products.length; i++) {
+
+          if (i >= $scope.num_locations_selected) {
+            k = 1;
+          } else {
+            k = i + 1;
+          }
+
+          $scope.products[i].location_num = k;
+          $scope.globalFormData[k].products.push($scope.products[i]);
+        }
+
+
+        fdService.getOrderLocations(orderId).success(function(data, status, headers, config) {
+          $scope.orderLocationsInfo = data.locationInformation;
+          for (var i = 0; i < $scope.orderLocationsInfo.length; i++) {
+            var form = $scope.globalFormData[i + 1];
+            var formData = $scope.orderLocationsInfo[i];
+            form.mcccodes = formData.mccDescription;
+            form.mcc = formData.mcc;
+            if (formData.dbaName) {
+              form.DBA_NAME = formData.dbaName;
+            }
+            form.annualcardVolume = formData.annualVolume;
+            form.merchantId = formData.merchantId;
+            form.FACE_TO_FACE = formData.faceToFace;
+            form.PHONE_OR_EMAIL = formData.phoneOrEmail;
+            form.INTERNET_PAY = formData.internet;
+
+            if (formData.averageTicket) {
+              form.TYPICAL_SALE_AMOUNT = formData.averageTicket;
+            }
+
+            if (formData.highestTicket) {
+              form.ANTICIPATED_HIGHEST_TICKET_SALE = formData.highestTicket;
+            }
+
+            if (formData.rollupIndicator != undefined) {
+              form.rollupIndicator = formData.rollupIndicator;
+            }
+
+            if (formData.siteSurvey) {
+
+              var siteSurvey = formData.siteSurvey;
+              form.siteVisitation = siteSurvey.siteVisitation;
+              form.DELIVERY0_7 = siteSurvey.deliveryTimeFrame_0_To_7;
+              form.DELIVERY8_14 = siteSurvey.deliveryTimeFrame_8_To_14;
+              form.DELIVERY15_30 = siteSurvey.deliveryTimeFrame_15_To_30;
+              form.DELIVERY31 = siteSurvey.deliveryTimeFrame_Over_30;
+
+              if ('Visitation Completed' === siteSurvey.siteVisitation) {
+                $scope.surveyUser = siteSurvey.surveyPerformed;
+                form.businessZone = siteSurvey.businessZone;
+                form.businessLocationType = siteSurvey.merchantBusinessLocation;
+                form.seasonalMerchant = siteSurvey.seasonalMerchant;
+                form.buildingFloors = siteSurvey.totalFloors.toString();
+                form.floorsOccupied = siteSurvey.floorOccupied.toString();
+
+                var merchantsNameDisplayed = {};
+                if (siteSurvey.merchantsNameDisplayed) {
+                  var arr = siteSurvey.merchantsNameDisplayed.split(',');
+                  for (var k = 0; k < arr.length; k++) {
+                    merchantsNameDisplayed[arr[k]] = true;
+                  }
+                }
+                form.merchantsNameDisplayed = merchantsNameDisplayed;
+                form.squareFootage = siteSurvey.apartmentSquareFoot;
+                form.ownOrRent = siteSurvey.merchantsOwnBuildSpace;
+                form.noOfRegisters = siteSurvey.totalRegister;
+                form.businessLicenseDisplay = siteSurvey.licenceDisplayed;
+                form.returnPolicy = siteSurvey.returnPolicy;
+                form.returnPolicyCard = siteSurvey.separateRefundPolicy;
+                form.customerDeposit = siteSurvey.customerDeposit;
+                form.cardDeposit = siteSurvey.salesDeposit;
+                form.orderRenewal = siteSurvey.autoRenew;
+
+                if (form.ownOrRent === 'Rent') {
+                  form.buildingSpace = new Date(siteSurvey.rentStartTime);
+                  form.leaseExpiry = new Date(siteSurvey.leaseExpires);
+                  form.landLordName = siteSurvey.landLordName;
+                  form.landLordNumber = siteSurvey.landLordPhoneNumber;
+                }
+              } else {
+                form.returnPolicy = siteSurvey.returnPolicy;
+                form.returnPolicyCard = siteSurvey.separateRefundPolicy;
+              }
+            } else {
+              form.ownOrRent === 'Own';
+            }
+
+            if (formData.address1) {
+              form.business_address1 = formData.address1;
+            }
+            if (formData.address2) {
+              form.business_address2 = formData.address2;
+            }
+            if (formData.zip) {
+              form.business_address_zip = formData.zip;
+            }
+            if (formData.city) {
+              form.business_address_city = formData.city;
+            }
+            if (formData.state) {
+              form.business_address_state = formData.state;
+            }
+
+            if (formData.equipmentLocation) {
+              form.products = [];
+              for (var p = 0; p < formData.equipmentLocation.length; p++) {
+                var equipmentId = formData.equipmentLocation[p].lineItemId;
+                var idx = $scope.products.map(function(p) { return p.id; }).indexOf(equipmentId);
+                if (idx !== -1) {
+                  $scope.products[idx].location_num = i + 1;
+                  form.products.push($scope.products[idx]);
+                  if (formData.equipmentLocation[p].attributes) {
+                    var configProduct = $scope.products[idx];
+                    var attributes = formData.equipmentLocation[p].attributes;
+                    configProduct.attributesReady = {};
+                    for (var d = 0; d < attributes.length; d++) {
+                      configProduct.attributesReady[attributes[d].attributeName] = {
+                        attributeName: attributes[d].attributeName,
+                        attributeValue: attributes[d].attributeValue,
+                        attributeDomain: attributes[d].attributeDomain,
+                      };
+                    }
+                  }
+                }
+              }
+            }
+
+            $timeout(function() {
+              angular.element('[name=SITE_VISITATION]').trigger('change');
+              angular.element('[name="FACE_TO_FACE"]').trigger('change');
+              angular.element('[name="PHONE_OR_EMAIL"]').trigger('change');
+              angular.element('[name="INTERNET_PAY"]').trigger('change');
+              angular.element('[name=DELIVERY0_7]').trigger('change');
+              angular.element('[name="DELIVERY8_14"]').trigger('change');
+              angular.element('[name="DELIVERY15_30"]').trigger('change');
+              angular.element('[name="DELIVERY31"]').trigger('change');
+              angular.element('[name="rollupIndicator"]').trigger('change');
+            }, 0);
+          }
+          for (var x = 0; x < $scope.num_locations_selected; x++) {
+            var formDataMCC = $scope.globalFormData[x + 1];
+            formDataMCC.mcccodes = formDataMCC.mcccodes ? formDataMCC.mcccodes : $scope.globalFormData[1].mcccodes;
+            formDataMCC.mcc = formDataMCC.mcc ? formDataMCC.mcc : $scope.globalFormData[1].mcc;
+            $scope.getMccTypes($scope.globalFormData[x + 1], function() {
+              $timeout(function() {
+                angular.element('[name=mcccodes]').trigger('change');
+                angular.element('[name=mcctypes]').trigger('change');
+              }, 0);
+            });
+          }
+
+        });
+
+      });
+
+      $scope.fullNamePattern = (/^([a-zA-Z]{2,24})\s([a-zA-Z]{2,24})$/);
+      $scope.emailPattern = (/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)?(\.(AERO|INT|GG|GH|GI|GL|GM|GN|GP|GQ|GR|GS|JOBS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|MIL|ID|IE|IL|IM|IN|IO|IQ|IR|IS|IT|MOBI|JE|JM|JO|JP|KE|KG|KH|KI|KM|KN|MUSEUM|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|NAME|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|NET|MG|MH|MK|ML|MM|MN|MO|MP|MQ|MR|ORG|MS|MT|MU|MV|MW|MX|MY|MZ|NA|NC|PRO|NE|NF|NG|NI|NL|NO|NP|NR|NU|NZ|TEL|OM|PA|PE|PF|PG|PH|PK|PL|PM|PN|ASIA|TRAVEL|PR|PS|PT|PW|PY|QA|RE|RO|RS|RU|AC|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|AD|SK|SL|SM|SN|SO|SR|ST|SU|SV|SY|AE|SZ|TC|TD|TF|TG|TH|TJ|TK|TL|TM|AF|TN|TO|TP|TR|TT|TV|TW|TZ|UA|UG|AG|UK|UM|US|UY|UZ|VA|VC|VE|VG|VI|AI|VN|VU|WF|WS|YE|YT|YU|ZA|ZM|AL|AM|AN|BIZ|AO|AQ|AR|AS|AT|AU|AW|AX|AZ|BA|CAT|BB|BD|BE|BF|BG|BH|BI|BJ|BM|BN|COM|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CC|COOP|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|EDU|CR|CU|CV|CX|CY|CZ|DE|DJ|DK|DM|GOV|DO|DZ|EC|EE|EG|ER|ES|ET|EU|FI|INFO|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|aero|int|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|jobs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|mil|id|ie|il|im|in|io|iq|ir|is|it|mobi|je|jm|jo|jp|ke|kg|kh|ki|km|kn|museum|kp|kr|kw|ky|kz|la|lb|lc|li|lk|name|lr|ls|lt|lu|lv|ly|ma|mc|md|me|net|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|org|ms|mt|mu|mv|mw|mx|my|mz|na|nc|pro|ne|nf|ng|ni|nl|no|np|nr|nu|nz|tel|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|asia|travel|pr|ps|pt|pw|py|qa|re|ro|rs|ru|ac|rw|sa|sb|sc|sd|se|sg|sh|si|sj|ad|sk|sl|sm|sn|so|sr|st|su|sv|sy|ae|sz|tc|td|tf|tg|th|tj|tk|tl|tm|af|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|ag|uk|um|us|uy|uz|va|vc|ve|vg|vi|ai|vn|vu|wf|ws|ye|yt|yu|za|zm|al|am|an|biz|ao|aq|ar|as|at|au|aw|ax|az|ba|cat|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|com|bo|br|bs|bt|bv|bw|by|bz|ca|cc|coop|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|edu|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|gov|do|dz|ec|ee|eg|er|es|et|eu|fi|info|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf))$/);
+      $scope.phoneNumberPattern = (/^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/);
+      $scope.ssnPattern = (/^[0-9]{3}-[0-9]{2}-[0-9]{4}$/);
+      $scope.streetAddressPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.apartmentPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.cityPattern = (/^[a-zA-Z\s]*$/);
+      $scope.zipPattern = (/^[0-9]{5}$/);
+      $scope.dbaNamePattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      //$scope.dbaNamePattern = (/^[a-zA-Z0-9',\s]*$/);
+      $scope.einPattern = (/^[0-9]{9}$/);
+      $scope.routingNumberPattern = (/^[0-9]{9}$/);
+      $scope.numberPattern = (/[0-9-()]*[1-9][0-9-()]*/);
+      $scope.urlPattern = (/^((((http(s)?):\/\/)|([www\.]|[WWW\.]))?(?!\.)([a-zA-Z0-9\-]*)\.?([a-zA-Z0-9\-]*)\.(com|org|net|mil|edu|biz|info|us|cc|co|gov|COM|ORG|NET|MIL|EDU|BIZ|INFO|US|CC|CO|GOV)(\.[a-z]{1,3})?)((\/?[^?]*?)\?.*)?$/);
+      $scope.amountPattern = (/^[0-9.,]+$/);
+      $scope.today = new Date();
+      $scope.thisYear = $scope.today.getFullYear();
+      $scope.thisMonth = $scope.today.getMonth() + 1;
+      $scope.titles = [];
+
+
+      $timeout(function() {
+        angular.forEach($scope.signupForm.$error, function(field, key) {
+          angular.forEach(field, function(errorField) {
+            if (errorField.$viewValue) {
+              errorField.$setTouched();
+            }
+          })
+        });
+      }, 0);
+
+      $scope.categoryName = $scope.categoryDetails.name;
+      $scope.updateMap();
+
+    };
+
+    /**
+     * remove product from this location
+     * @method removeProduct
+     * @param p
+     * @param index
+     */
+    $scope.removeProduct = function(p, index) {
+      p.location_num = null;
+      $scope.formData.products.splice(index, 1);
+    };
+
+    /**
+     * initialize equipment popup
+     * @method initEquipment
+     */
+    $scope.initEquipment = function() {
+
+      $scope.prodLoc = [];
+
+      for (var i = 0; i < $scope.products.length; i++) {
+        $scope.prodLoc[i] = $scope.products[i].location_num;
+      }
+    };
+
+    /**
+     * Get Website Flag
+     * @method getWebsiteFlag
+     */
+    $scope.getWebsiteFlag = function() {
+      var orderId = fdService.getOrderId();
+      fdService.getOrderBusinessinformation(orderId).success(function(data, status, headers, config) {
+          if (data.merchantInformation.length > 0 && data.merchantInformation[0].url) {
+            $scope.isWebSiteAvailable = true;
+          } else {
+            $scope.isWebSiteAvailable = false;
+          }
+        })
+        .error(function(data, status, headers, config) {
+          $scope.isWebSiteAvailable = false;
+        });
+    };
+
+    /**
+     * save equipment info
+     * @method saveEquipment
+     */
+    $scope.saveEquipment = function() {
+      var i, k, p, n;
+      for (i = 0; i < $scope.products.length; i++) {
+        if ($scope.products[i].location_num != $scope.prodLoc[i]) {
+
+          p = $scope.products[i].location_num ? $scope.products[i].location_num : $scope.prodLoc[i];
+          n = $scope.prodLoc[i];
+
+          k = $scope.globalFormData[p].products.indexOf($scope.products[i]);
+
+          if (-1 !== k) {
+            $scope.globalFormData[n].products.push($scope.products[i]);
+            $scope.globalFormData[p].products.splice(k, 1);
+          } else {
+            $scope.globalFormData[n].products.push($scope.products[i]);
+          }
+          $scope.products[i].location_num = $scope.prodLoc[i];
+        }
+
+      }
+
+    };
+
+    /**
+     * Check Checkbox
+     * @method checkCheckbox
+     */
+    $scope.checkCheckbox = function() {
+      $scope.merchantDisplayedArray = [];
+      angular.forEach($scope.formData.merchantsNameDisplayed, function(value, key) {
+        if (value == true) {
+          $scope.merchantDisplayedArray.push(key);
+        }
+      });
+      if ($scope.merchantDisplayedArray.length > 0) {
+        $scope.merchantDisplayed = $scope.merchantDisplayedArray.toString();
+      } else {
+        $scope.merchantDisplayed = '';
+      }
+    };
+
+    /**
+     * Calculate Remaining Values
+     * @method calcRemainingValues
+     * @param {} input1
+     * @param {} input2
+     * @param {} input3
+     */
+    var calcRemainingValues = function(input1, input2, input3) {
+      $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());
+      if ($scope.formData[input1]) {
+        if (!$scope.isWebSiteAvailable) {
+          $scope.formData.INTERNET_PAY = '0';
+        }
+        if (!$scope.formData[input2] && !$scope.formData[input3]) {
+          if ($scope.formData[input1] == '100') {
+            $scope.formData[input2] = '0';
+            $scope.formData[input3] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input2 + ']').trigger('change');
+              angular.element('[name=' + input3 + ']').trigger('change');
+            }, 1);
+            return; //return if remaining 2 fields still empty
+          }
+
+        }
+        if ($scope.formData[input2] && $scope.formData[input3]) { //Set form validity
+          $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());
+          return;
+        }
+        if ($scope.formData[input2]) {
+          $scope.formData[input3] = $scope.isWebSiteAvailable ? (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]))).toString() : '0';
+          $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());}
+        if ($scope.formData[input3]) {
+          $scope.formData[input2] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]))).toString();
+          $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", isTotalValid());}
+      } else {
+        $scope.formData[input2] = undefined;
+        $scope.formData[input3] = undefined;
+
+      }
+      $timeout(function() {
+        angular.element('[name=' + input2 + ']').trigger('change');
+        angular.element('[name=' + input3 + ']').trigger('change');
+      }, 1);
+    };
+
+    /**
+     * Description
+     * @method isTotalValid
+     * @return BinaryExpression
+     */
+    var isTotalValid = function() {
+      var a = $scope.formData.FACE_TO_FACE ? parseInt($scope.formData.FACE_TO_FACE) : 0;
+      var b = $scope.formData.PHONE_OR_EMAIL ? parseInt($scope.formData.PHONE_OR_EMAIL) : 0;
+      var c = $scope.formData.INTERNET_PAY ? parseInt($scope.formData.INTERNET_PAY) : 0;
+      return a + b + c === 100;
+    };
+
+
+    /**
+     * Lookup Business Zip
+     * @method lookupBusinessZip
+     */
+    $scope.lookupBusinessZip = function() {
+      if (!$scope.formData.business_address_zip) {
+        return;
+      } else if ($scope.signupForm && $scope.formData.business_address_zip == '00000') {
+        $scope.signupForm.business_address_zip.$setValidity("zipnotValid", false);
+      } else if ($scope.signupForm) {
+        $scope.signupForm.business_address_zip.$setValidity("zipnotValid", true);
+      }
+
+      fdService.lookupByZip($scope.formData.business_address_zip, function(city, state) {
+        if (!city) {
+          $scope.formData.business_address_city = "";
+          $scope.formData.business_address_state = "";
+          $timeout(function() {
+            angular.element('[name=business_address_state]').trigger('change');
+            angular.element('[name=business_address_city]').trigger('keyup');
+          }, 0);
+        }
+        if (!state) {
+          $scope.formData.business_address_city = "";
+          $scope.formData.business_address_state = "";
+          $timeout(function() {
+            angular.element('[name=business_address_state]').trigger('change');
+            angular.element('[name=business_address_city]').trigger('keyup');
+          }, 0);
+        } else {
+          $scope.formData.business_address_city = city;
+          $scope.formData.business_address_state = state;
+          $timeout(function() {
+            angular.element('[name=business_address_city]').trigger('keyup');
+          }, 10);
+          $timeout(function() {
+            angular.element('[name=business_address_state]').trigger('change');
+            // $scope.validateBusiness();
+          }, 20);
+        }
+
+        $scope.updateMap();
+      });
+    };
+
+
+    /**
+     * update Google Map
+     * @method updateMap
+     */
+    $scope.updateMap = function() {
+
+      if ($scope.mapTO) {
+        $timeout.cancel($scope.mapTO);
+      }
+
+      $scope.mapTO = $timeout(function() {
+
+        if (!$scope.geocoder) {
+          $scope.geocoder = new google.maps.Geocoder();
+        }
+
+        if (!$scope.map) {
+          var mapOptions = {
+            zoom: 14,
+          };
+          $scope.map = new google.maps.Map(document.getElementById('google-map-owner'), mapOptions);
+        }
+
+        var address = $scope.formData.business_address1 ? $scope.formData.business_address1 : '';
+        address += ' ' + $scope.formData.business_address_city + ', ' + $scope.formData.business_address_state + ', ' + $scope.formData.business_address_zip;
+        $scope.geocoder.geocode( { 'address': address}, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            $scope.map.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: $scope.map,
+              position: results[0].geometry.location
+            });
+          }
+        });
+      }, 1000);
+    };
+
+    /**
+     * Get Titles for Organozation Owners
+     * @method getTitles
+     * @return
+     */
+    $scope.getTitles = function() {
+      if ($scope.signupForm.ORGANIZATION_TYPE.$valid) {
+        $scope.titles = [];
+        $scope.formData.title1 = '';
+        var dataToSend = {"businessType": $scope.formData.ORGANIZATION_TYPE};
+        fdService.getTitles(dataToSend)
+          .success(function(response, status, headers, config) {
+            if (!angular.isUndefined(response.titles)) {
+              for (var i = 0; i < response.titles.length; i++) {
+                $scope.titles.push(response.titles[i]);
+              }
+            }
+          })
+          .error(function(data, status, headers, config) {
+            console.log('error');
+          });
+      }
+    };
+
+    /**
+     * Check Date
+     * @method checkDate
+     * @param {Object} owner
+     * @param {numeric} index
+     */
+    $scope.checkDate = function(owner, index) {
+      if (!owner.dob_day || !owner.dob_month || !owner.dob_year) {
+        return;
+      }
+
+
+      var dateValid = true;
+      if ((owner.dob_month == 04 || owner.dob_month == 06 || owner.dob_month == 9 || owner.dob_month == 11) && (owner.dob_day >= 31))
+        dateValid = false;
+      if (owner.dob_month == 02) {
+        if (owner.dob_year % 4 != 0) {
+          if (owner.dob_day > 28)
+            dateValid = false;
+        }
+        if (owner.dob_year % 4 == 0) {
+          if (owner.dob_day > 29)
+            dateValid = false;
+        }
+      }
+
+      var calculateAge = new Date(owner.dob_year, owner.dob_month - 1, owner.dob_day);
+      var ageDifMs = Date.now() - calculateAge.getTime();
+      var ageDate = new Date(ageDifMs);
+      var age = Math.abs(ageDate.getUTCFullYear() - 1970);
+      isAgeInsufficient = false;
+      if (age < 18) {
+        isAgeInsufficient = true;
+      } else {
+        isAgeInsufficient = false;
+      }
+
+      if (dateValid && !isAgeInsufficient) {
+        $scope.signupForm['dob_month_' + index].$setValidity('date_format', true);
+      } else {
+        $scope.signupForm['dob_month_' + index].$setValidity('date_format', false);
+      }
+
+      owner.dob = owner.dob_year + '-' + owner.dob_month + '-' + owner.dob_day;
+
+    };
+
+    /**
+     * percent owned field's on blur event
+     * @method percentBlurred
+     * @param owner
+     * @param index
+     */
+    $scope.percentBlurred = function(owner, index) {
+
+      var totalPercent = 0;
+
+      for (var i = 0; i < $scope.formData.owners.length; i++) {
+        totalPercent += parseInt($scope.formData.owners[i].percent_owned);
+      }
+
+      // Set valid
+      $scope.signupForm['percentOwned_0'].$setValidity('percent_more_100', true);
+      if ($scope.signupForm['percentOwned_1']) {
+        $scope.signupForm['percentOwned_1'].$setValidity('percent_more_100', true);
+      }
+      if ($scope.signupForm['percentOwned_2']) {
+        $scope.signupForm['percentOwned_2'].$setValidity('percent_more_100', true);
+      }
+
+      if (totalPercent > 100) {
+        $scope.signupForm['percentOwned_0'].$setValidity('percent_more_100', false);
+        if ($scope.signupForm['percentOwned_1']) {
+          $scope.signupForm['percentOwned_1'].$setValidity('percent_more_100', false);
+        }
+        if ($scope.signupForm['percentOwned_2']) {
+          $scope.signupForm['percentOwned_2'].$setValidity('percent_more_100', false);
+        }
+      } else if (totalPercent < 100) {
+        if ($scope.formData.owners.length >= 3) {
+          return;
+        }
+
+        if ($scope.formData.owners.length == index + 1) {
+          $scope.formData.owners.push({});
+        }
+
+      }
+    };
+
+    /**
+     * Goto Anchor
+     * @method gotoAnchor
+     * @param {string} anchor
+     * @return
+     */
+    $scope.gotoAnchor = function(anc) {
+      $timeout(function() {
+        $anchorScroll.yOffset = 50;
+        $anchorScroll(anc);
+        $anchorScroll.yOffset = 0;
+      });
+    };
+
+    /**
+     * change active location's number
+     * @method changeNumber
+     * @param {number} n
+     */
+    $scope.changeNumber = function(n) {
+      if (!$scope.signupForm.$valid) {
+        $scope.form_error = true;
+        $scope.gotoAnchor('form-error');
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
+            errorField.$setTouched();
+          })
+        });
+        return;
+      } else {
+        $scope.form_error = false;
+      }
+
+      if (!$scope.formData.products.length) {
+        return;
+      }
+
+
+
+      $scope.current_number = n;
+      $scope.formData = $scope.globalFormData[$scope.current_number];
+      $scope.gotoAnchor('signup-content');
+
+      $timeout(function() {
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
+            errorField.$setUntouched();
+          })
+        });
+
+        $('input').trigger('keyup');
+        $('select').trigger('change');
+
+      });
+    };
+
+    /**
+     * show / hide second bank account info
+     * @method toggleBankAccount
+     */
+    $scope.toggleBankAccount = function() {
+      $scope.formData.isSecondBankSelected = !$scope.formData.isSecondBankSelected;
+      if (!$scope.formData.isSecondBankSelected) {
+        $scope.formData.ROUTING_NUMBER_SECOND = '';
+        $scope.formData.ACCOUNT_NUMBER_SECOND = '';
+        $scope.formData.ACCOUNT_NUMBER_SECOND_confirm = '';
+        angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
+          $scope.formData.bankInformation[value] = '0';
+        });
+      }
+    };
+
+    /**
+     * Check Account
+     * @method checkAccount
+     * @return
+     */
+    $scope.checkAccount = function() {
+      if ($scope.formData.isSecondBankSelected) {
+        if ($scope.formData.ROUTING_NUMBER == $scope.formData.ROUTING_NUMBER_SECOND) {
+          if ($scope.formData.ACCOUNT_NUMBER == $scope.formData.ACCOUNT_NUMBER_SECOND) {
+            $scope.signupForm.ACCOUNT_NUMBER_SECOND.$setValidity('accountError', false);
+          } else {
+            $scope.signupForm.ACCOUNT_NUMBER_SECOND.$setValidity('accountError', true);
+          }
+        } else {
+          $scope.signupForm.ACCOUNT_NUMBER_SECOND.$setValidity('accountError', true);
+        }
+      }
+    };
+
+    /**
+     * Check Bank
+     * @method checkBank
+     */
+    $scope.checkBank = function() {
+      if ($scope.signupForm.ROUTING_NUMBER.$valid) {
+        $scope.bankCheck = true;
+        var routingNumber = {
+          "routingNumber": $scope.formData.ROUTING_NUMBER
+        };
+        fdService.getBankName(routingNumber).success(function(response, status, headers, config) {
+          $scope.bankCheck = false;
+          $scope.bankError = false;
+          $scope.bankErrorCount = 0;
+          if (response.status.success == 'true') {
+            $scope.formData.bankName = (response.data == null ? '' : response.data.bankName);
+          } else {
+            $scope.formData.bankName = "";
+          }
+        }).error(function(data, status, headers, config) {
+          $scope.formData.bankName = "";
+          if (status == 400) {
+            $scope.bankCheck = true;
+            $scope.bankError = true;
+            $scope.bankErrorServerFails = false;
+          } else {
+            $scope.bankErrorCount++;
+            $scope.bankError = false;
+            if ($scope.bankErrorCount >= 3) {
+              $scope.bankCheck = false;
+              $scope.bankErrorServerFails = false;
+            } else {
+              $scope.bankCheck = true;
+              $scope.bankErrorServerFails = true;
+            }
+          }
+        });
+      }
+    };
+
+    /**
+     * Check Second Bank
+     * @method CheckSecondBank
+     * @return
+     */
+    $scope.CheckSecondBank = function() {
+      if ($scope.signupForm.ROUTING_NUMBER_SECOND.$valid) {
+        $scope.bankCheck_second = true;
+        var routingNumber = {
+          "routingNumber": $scope.formData.ROUTING_NUMBER_SECOND
+        };
+        fdService.getBankName(routingNumber).success(function(response, status, headers, config) {
+          $scope.bankCheck_second = false;
+          $scope.bankError_second = false;
+          $scope.bankErrorCount_second = 0;
+          if (response.status.success == 'true') {
+            $scope.formData.bankName_second = (response.data == null ? '' : response.data.bankName);
+          } else {
+            $scope.formData.bankName_second = "";
+          }
+        }).error(function(data, status, headers, config) {
+          $scope.formData.bankName_second = "";
+          if (status == 400) {
+            $scope.bankCheck_second = true;
+            $scope.bankError_second = true;
+            $scope.bankErrorServerFails_second = false;
+          } else {
+            $scope.bankErrorCount_second++;
+            $scope.bankError_second = false;
+            if ($scope.bankErrorCount_second >= 3) {
+              $scope.bankCheck_second = false;
+              $scope.bankErrorServerFails_second = false;
+            } else {
+              $scope.bankCheck_second = true;
+              $scope.bankErrorServerFails_second = true;
+            }
+          }
+        });
+      }
+    };
+
+
+    /**
+     * Face To Face Change
+     * @method faceToFaceChange
+     * @param {} tag
+     * @return
+     */
+    $scope.faceToFaceChange = function(tag) {
+      $scope.signupForm.PHONE_OR_EMAIL.$setValidity("total", false);
+      if (tag == 0) {
+        if ($scope.formData.FACE_TO_FACE)
+          calcRemainingValues('FACE_TO_FACE', 'PHONE_OR_EMAIL', 'INTERNET_PAY');
+      } else if (tag == 1) {
+        if ($scope.formData.PHONE_OR_EMAIL)
+          calcRemainingValues('PHONE_OR_EMAIL', 'FACE_TO_FACE', 'INTERNET_PAY');
+      }
+      //Added tag=2 else condition for INTERNET_PAY logic handling
+      else if (tag == 2) {
+        if ($scope.formData.INTERNET_PAY)
+          calcRemainingValues('INTERNET_PAY', 'FACE_TO_FACE', 'PHONE_OR_EMAIL');
+      }
+    };
+
+    /**
+     * Description
+     * @method deliveryTotal
+     * @return BinaryExpression
+     */
+    var deliveryTotal = function() {
+      var a = $scope.formData.DELIVERY0_7 ? parseInt($scope.formData.DELIVERY0_7) : 0;
+      var b = $scope.formData.DELIVERY8_14 ? parseInt($scope.formData.DELIVERY8_14) : 0;
+      var c = $scope.formData.DELIVERY15_30 ? parseInt($scope.formData.DELIVERY15_30) : 0;
+      var d = $scope.formData.DELIVERY31 ? parseInt($scope.formData.DELIVERY31) : 0;
+      return a + b + c + d === 100
+    }
+
+    /**
+     * Calculate Delivery Values
+     * @method calcDeliveryValues
+     * @param {} input1
+     * @param {} input2
+     * @param {} input3
+     * @param {} input4
+     */
+    var calcDeliveryValues = function(input1, input2, input3, input4) {
+      $scope.signupForm.DELIVERY31.$setValidity("total", deliveryTotal());
+      //$scope.signupForm.DELIVERY31.$setValidity("total", true);
+      if ($scope.formData[input1]) {
+
+        if (!$scope.formData[input2] && !$scope.formData[input3] && !$scope.formData[input4]) {
+          if ($scope.formData[input1] == '100') {
+            $scope.formData[input2] = '0';
+            $scope.formData[input3] = '0';
+            $scope.formData[input4] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input2 + ']').trigger('change');
+              angular.element('[name=' + input3 + ']').trigger('change');
+              angular.element('[name=' + input4 + ']').trigger('change');
+            }, 1);
+            return; //return if remaining 3 fields still empty
+          }
+
+        }
+        //return if remaining 3 fields still empty
+        if ($scope.formData[input2] && $scope.formData[input3] && $scope.formData[input4]) { //Set form validity if total not equal to 100
+          $scope.signupForm.DELIVERY31.$setValidity("total", deliveryTotal());
+          return;
+        }
+        if ($scope.formData[input2]) {
+          if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) === 100)) {
+            $scope.formData[input3] = '0';
+            $scope.formData[input4] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input3 + ']').trigger('change');
+              angular.element('[name=' + input4 + ']').trigger('change');
+            }, 1);
+          }
+          if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) > 100)) {
+            $scope.signupForm.DELIVERY31.$setValidity("total", false);
+            return;
+          }
+          if ($scope.formData[input3]) {
+            if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input3]) > 100)) {
+              $scope.signupForm.DELIVERY31.$setValidity("total", false);
+              return;
+            }
+            $scope.formData[input4] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input3]))).toString();
+          }
+          if ($scope.formData[input4]) {
+            if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input4]) > 100)) {
+              $scope.signupForm.DELIVERY31.$setValidity("total", false);
+              return;
+            }
+            $scope.formData[input3] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input4]))).toString();
+          }
+        }
+        if ($scope.formData[input3]) {
+          if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) === 100)) {
+            $scope.formData[input2] = '0';
+            $scope.formData[input4] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input2 + ']').trigger('change');
+              angular.element('[name=' + input4 + ']').trigger('change');
+            }, 1);
+          }
+          if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) > 100)) {
+            $scope.signupForm.DELIVERY31.$setValidity("total", false);
+            return;
+          }
+          if ($scope.formData[input2]) {
+            if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input3]) > 100)) {
+              $scope.signupForm.DELIVERY31.$setValidity("total", false);
+              return;
+            }
+            $scope.formData[input4] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input3]))).toString();
+          }
+          if ($scope.formData[input4]) {
+            if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) + parseInt($scope.formData[input4]) > 100)) {
+              $scope.signupForm.DELIVERY31.$setValidity("total", false);
+              return;
+            }
+            $scope.formData[input2] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) + parseInt($scope.formData[input4]))).toString();
+          }
+        }
+        if ($scope.formData[input4]) {
+          if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input4]) === 100)) {
+            $scope.formData[input2] = '0';
+            $scope.formData[input3] = '0';
+            $timeout(function() {
+              angular.element('[name=' + input2 + ']').trigger('change');
+              angular.element('[name=' + input3 + ']').trigger('change');
+            }, 1);
+          }
+          if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input4]) > 100)) {
+            $scope.signupForm.DELIVERY31.$setValidity("total", false);
+            return;
+          }
+          if ($scope.formData[input2]) {
+            if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input4]) > 100)) {
+              $scope.signupForm.DELIVERY31.$setValidity("total", false);
+              return;
+            }
+            $scope.formData[input3] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input2]) + parseInt($scope.formData[input4]))).toString();
+          }
+          if ($scope.formData[input3]) {
+            if ((parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) + parseInt($scope.formData[input4]) > 100)) {
+              $scope.signupForm.DELIVERY31.$setValidity("total", deliveryTotal());
+              return;
+            }
+            $scope.formData[input2] = (100 - (parseInt($scope.formData[input1]) + parseInt($scope.formData[input3]) + parseInt($scope.formData[input4]))).toString();
+          }
+        }
+      } else {
+        $scope.formData[input2] = undefined;
+        $scope.formData[input3] = undefined;
+        $scope.formData[input4] = undefined;
+      }
+      $scope.signupForm.DELIVERY31.$setValidity("total", deliveryTotal());
+      $timeout(function() {
+        angular.element('[name=' + input2 + ']').trigger('change');
+        angular.element('[name=' + input3 + ']').trigger('change');
+        angular.element('[name=' + input4 + ']').trigger('change');
+      }, 1);
+    }
+
+    /**
+     * Change Delivery Time Frame
+     * @method changeDeliveryTimeFrame
+     * @param {} tag
+     * @return
+     */
+    $scope.changeDeliveryTimeFrame = function(tag) {
+      if (!($scope.categoryDetails.name == 'ECOMMERCE' || $scope.categoryDetails.name == 'MOTO' || $scope.formData.FACE_TO_FACE < 100)) {
+        if (($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY15_30) || ($scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY15_30 && $scope.formData.DELIVERY31) || ($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY15_30 && $scope.formData.DELIVERY31) || ($scope.formData.DELIVERY0_7 && $scope.formData.DELIVERY8_14 && $scope.formData.DELIVERY31)) {
+          $scope.signupForm.DELIVERY31.$setValidity("total", false);
+        }
+      }
+      if (tag == 0) {
+        if ($scope.formData.DELIVERY0_7)
+          calcDeliveryValues('DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY15_30', 'DELIVERY31');
+      } else if (tag == 1) {
+        if ($scope.formData.DELIVERY8_14)
+          calcDeliveryValues('DELIVERY8_14', 'DELIVERY0_7', 'DELIVERY15_30', 'DELIVERY31');
+      } else if (tag == 2) {
+        if ($scope.formData.DELIVERY15_30)
+          calcDeliveryValues('DELIVERY15_30', 'DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY31');
+      } else if (tag == 3) {
+        if ($scope.formData.DELIVERY31)
+          calcDeliveryValues('DELIVERY31', 'DELIVERY0_7', 'DELIVERY8_14', 'DELIVERY15_30');
+      }
+    };
+
+    /**
+     * Init Configure Product popup
+     * @method configureProduct
+     * @param p
+     */
+    $scope.configureProduct = function(p) {
+
+      $scope.activeProduct = p;
+
+      p.attributeDataDefault = null;
+      var orderId = fdService.getOrderId();
+
+      fdService.getProductAttributes(orderId, p.id).success(function(data, status, headers, config) {
+
+        p.attributeDataDefault = data.attributesMap;
+        p.lineItemId = data.lineItemId;
+        p.configurableLineItemId = data.configurableLineItemId;
+
+        var i, k;
+        for (i in p.attributeDataDefault) {
+
+          p.attributeDataDefault[i].value = '';
+
+          for (k = 0; k < p.attributeDataDefault[i].attributeValues.length; k++) {
+            if (p.attributeDataDefault[i].attributeValues[k].default) {
+              p.attributeDataDefault[i].value = p.attributeDataDefault[i].attributeValues[k].attributeValue;
+            }
+          }
+
+          if (p.attributesReady) {
+            p.attributeDataDefault[i].value = p.attributesReady[i].attributeValue;
+          }
+        }
+      });
+    };
+
+    /**
+     * save configured product
+     * @method saveConfigureProduct
+     * @param {Object} p product
+     */
+    $scope.saveConfigureProduct = function(p) {
+
+      p.attributesReady = {};
+      for (i in p.attributeDataDefault) {
+        p.attributesReady[i] = {
+          attributeName: i,
+          attributeValue: p.attributeDataDefault[i].value,
+          attributeDomain: p.attributeDataDefault[i].attributeDomain,
+        };
+      }
+
+    };
+
+    /**
+     * Description
+     * @method getMccTypes
+     * @param {Object} formData
+     * @param {} callback
+     * @return
+     */
+    $scope.getMccTypes = function(formData, callback) {
+      formData.mccTypes = [];
+
+      var ti = fdService.getTransactionInfo();
+
+      fdService.getMccTypes($scope.categoryDetails.name, formData.mcccodes).success(function(data, status, headers, config) {
+        formData.mccTypes = data;
+        if (callback) {
+          callback.apply(this, []);
+        }
+      });
+    };
+
+    /**
+     * submit locations form
+     * @method submitLocations
+     */
+    $scope.submitLocations = function() {
+
+      if ($scope.clickedSubmit) {
+        return;
+      }
+
+      if (!$scope.signupForm.$valid) {
+        $scope.form_error = true;
+        $scope.gotoAnchor('form-error');
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
+            errorField.$setTouched();
+          })
+        });
+        return;
+      }
+
+      if (!$scope.formData.products.length) {
+        return;
+      }
+
+      $scope.form_error = false;
+      $scope.clickedSubmit = true;
+
+      var data_to_send = {
+        locationInformation: []
+      };
+
+      var siteSurvey = {}, equipmentLocation, bankInformation;
+
+      for (var i in $scope.globalFormData) {
+
+        siteSurvey = {};
+        siteSurvey.siteVisitation = $scope.globalFormData[i].siteVisitation;
+        siteSurvey.deliveryTimeFrame_0_To_7 = $scope.globalFormData[i].DELIVERY0_7;
+        siteSurvey.deliveryTimeFrame_8_To_14 = $scope.globalFormData[i].DELIVERY8_14;
+        siteSurvey.deliveryTimeFrame_15_To_30 = $scope.globalFormData[i].DELIVERY15_30;
+        siteSurvey.deliveryTimeFrame_Over_30 = $scope.globalFormData[i].DELIVERY31;
+
+        if ($scope.globalFormData[i].siteVisitation === 'Visitation Completed') {
+          siteSurvey.surveyPerformed = $scope.surveyUser;
+          siteSurvey.businessZone = $scope.globalFormData[i].businessZone;
+          siteSurvey.merchantBusinessLocation = $scope.globalFormData[i].businessLocationType;
+          siteSurvey.seasonalMerchant = $scope.globalFormData[i].seasonalMerchant;
+          siteSurvey.totalFloors = $scope.globalFormData[i].buildingFloors;
+          siteSurvey.floorOccupied = $scope.globalFormData[i].floorsOccupied;
+          siteSurvey.merchantsNameDisplayed = $scope.merchantDisplayed;
+          siteSurvey.apartmentSquareFoot = $scope.globalFormData[i].squareFootage;
+          siteSurvey.merchantsOwnBuildSpace = $scope.globalFormData[i].ownOrRent;
+          siteSurvey.totalRegister = $scope.globalFormData[i].noOfRegisters;
+          siteSurvey.licenceDisplayed = $scope.globalFormData[i].businessLicenseDisplay;
+          siteSurvey.returnPolicy = $scope.globalFormData[i].returnPolicy;
+          siteSurvey.separateRefundPolicy = $scope.globalFormData[i].returnPolicyCard;
+          siteSurvey.customerDeposit = $scope.globalFormData[i].customerDeposit;
+          siteSurvey.salesDeposit = $scope.globalFormData[i].cardDeposit;
+          siteSurvey.autoRenew = $scope.globalFormData[i].orderRenewal;
+
+          if ($scope.globalFormData[i].ownOrRent === 'Rent') {
+            siteSurvey.rentStartTime = $filter('date')($scope.globalFormData[i].buildingSpace, "MM/dd/yyyy");
+            siteSurvey.leaseExpires = $filter('date')($scope.globalFormData[i].leaseExpiry, "MM/dd/yyyy");
+            siteSurvey.landLordName = $scope.globalFormData[i].landLordName;
+            siteSurvey.landLordPhoneNumber = $scope.globalFormData[i].landLordNumber;
+          }
+        } else {
+          siteSurvey.returnPolicy = $scope.globalFormData[i].returnPolicy;
+          siteSurvey.separateRefundPolicy = $scope.globalFormData[i].returnPolicyCard;
+        }
+
+        equipmentLocation = [];
+
+        var attributes;
+
+        for (var k = 0; k < $scope.globalFormData[i].products.length; k++) {
+          attributes = [];
+          for (j in $scope.globalFormData[i].products[k].attributesReady) {
+            attributes.push($scope.globalFormData[i].products[k].attributesReady[j]);
+          }
+
+          equipmentLocation.push({
+            lineItemId: $scope.globalFormData[i].products[k].id,
+            configurableLineItemId: $scope.globalFormData[i].products[k].configurableLineItemId,
+            attributes: attributes,
+          });
+        }
+
+        bankInformation = [];
+
+        var bankInfo = {
+          "instName": $scope.globalFormData[i].bankName,
+          'abaNumber': $scope.globalFormData[i].ROUTING_NUMBER,
+          'accountNumber': $scope.globalFormData[i].ACCOUNT_NUMBER,
+          'ordinal': 2
+        };
+
+        angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
+          bankInfo[value] = $scope.globalFormData[i].bankInformation[value] == 0 ? 1 : 0;
+        });
+
+        bankInformation.push(bankInfo);
+
+        if ($scope.globalFormData[i].isSecondBankSelected) {
+
+          bankInfo = {
+            "instName": $scope.globalFormData[i].bankName_second,
+            'abaNumber': $scope.globalFormData[i].ROUTING_NUMBER_SECOND,
+            'accountNumber': $scope.globalFormData[i].ACCOUNT_NUMBER_SECOND,
+            'ordinal': 2
+          };
+
+          angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
+            bankInfo[value] = $scope.globalFormData[i].bankInformation[value] == 1 ? 1 : 0;
+          });
+          bankInformation.push(bankInfo);
+        }
+
+        var ti = fdService.getTransactionInfo();
+
+        data_to_send.locationInformation.push({
+          dbaName: $scope.globalFormData[i].DBA_NAME,
+          merchantId: $scope.globalFormData[i].merchantId ? $scope.globalFormData[i].merchantId : '',
+          siteSurvey: siteSurvey,
+          averageTicket: $scope.globalFormData[i].TYPICAL_SALE_AMOUNT,
+          mccDescription: $scope.globalFormData[i].mcccodes,
+          mcc: $scope.globalFormData[i].mcc,
+          annualVolume: $scope.globalFormData[i].annualcardVolume,
+          highestTicket: $scope.globalFormData[i].ANTICIPATED_HIGHEST_TICKET_SALE,
+          isPrimaryLocation: i == 1,
+          equipmentLocation: equipmentLocation,
+          //bankInformation: bankInformation,
+          faceToFace: $scope.globalFormData[i].FACE_TO_FACE,
+          phoneOrEmail: $scope.globalFormData[i].PHONE_OR_EMAIL,
+          internet: $scope.globalFormData[i].INTERNET_PAY,
+          rollupIndicator: $scope.globalFormData[i].rollupIndicator,
+          category: ti.category,
+          address1: $scope.globalFormData[i].business_address1,
+          address2: $scope.globalFormData[i].business_address2,
+          city: $scope.globalFormData[i].business_address_city,
+          state: $scope.globalFormData[i].business_address_state,
+          zip: $scope.globalFormData[i].business_address_zip,
+        });
+
+        if ($scope.globalFormData[i].isPrimaryLocation || $scope.globalFormData[i].useSameBank != 'yes') {
+          data_to_send.locationInformation[i - 1]['bankInformation'] = bankInformation;
+        }
+
+      }
+
+      var orderId = fdService.getOrderId();
+
+      fdService.postOrderLocations(data_to_send, orderId)
+        .success(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+          $location.path('/signup/setup');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+        });
+    };
+
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+    $(window).on('popstate', function() {
+      angular.element('.modal-backdrop').removeClass('modal-backdrop');
+      angular.element('body').css('overflow', 'auto');
+    });
+  }
+]);;/**
+ * Signup Owner Controller
+ */
+app.controller('SignupOwnerCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', 'CONST',
+  function($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST) {
+
+    /**
+     * Init function
+     * @method _init
+     */
+    var _init = function() {
+      $rootScope.body_id = 'full_body';
+      $scope.showPassword = false;
+      var orderId = fdService.getOrderId();
+      var cart = fdService.getOrderedCart(orderId);
+      if (!cart) {
+        $location.path('/');
+      }
+      //set category details
+      $scope.categoryDetails = {name: cart.data[Object.keys(cart.data)[0]].category};
+
+
+      /* percentValues hold indices array for ng-options*/
+      $scope.percentValues = (function() {
+        var tempArr = [];
+        for (var i = 0; i <= 20; i++)
+          tempArr.push(i * 5);
+        return tempArr;
+      })();
+
+      $scope.orgTypes = {
+        I: "Sole Proprietorship",
+        P: "Partnerships",
+        C: "Public Corporation",
+        L: "Limited Liability Company (LLC)",
+        PRC: "Private Corporation",
+        T: "Tax Exempt",
+        G: "Government"
+      };
+
+      $scope.tinError = false;
+      $scope.tinCount = 1;
+
+
+      $scope.form_error = false;
+      $scope.states_list = $rootScope.CONST.STATES;
+      $scope.formData = {};
+      $scope.formData.owners = [{}];
+
+      $scope.hasEcommerce = false;
+      for (var i = 0; i < cart.data.length; i++) {
+        if (cart.data[i].category == 'ECOMMERCE') {
+          $scope.hasEcommerce = true;
+        }
+      }
+
+      if (!angular.isUndefined(cart.shippingAddress[0])) {
+
+        if (!angular.isUndefined(cart.shippingAddress[0].address1)) {
+          $scope.formData.business_address1 = (cart.shippingAddress[0].address1).substring(0, 24);
+        }
+
+        $scope.formData.business_address2 = cart.shippingAddress[0].address2;
+        $scope.formData.business_address_zip = cart.shippingAddress[0].zip;
+        $scope.formData.business_address_city = cart.shippingAddress[0].city;
+        $scope.formData.business_address_state = cart.shippingAddress[0].state;
+
+        if ($scope.formData.business_address_state) {
+          for (i = 0; i < $scope.states_list.length; i++) {
+            if ($scope.states_list[i].name.toLowerCase() == $scope.formData.business_address_state.toLowerCase()) {
+              $scope.formData.business_address_state = $scope.states_list[i].abbr;
               break;
             }
           }
         }
+        if (!$scope.formData.business_address_city || !$scope.formData.business_address_state) {
+          $scope.lookupBusinessZip();
+        }
+        $scope.formData.businessPhone = cart.shippingAddress[0].phone;
+        $scope.formData.owners[0].email = cart.shippingAddress[0].email;
+
+        $scope.formData.statementDeliveryEmail = cart.shippingAddress[0].email;
+        $scope.formData.statementDeliveryType = "Email";
+        angular.forEach(CONST.FSPFUNDTYPES, function(value, key) {
+          $scope.formData[value] = '0';
+        });
+        $scope.formData.owners[0].name = cart.shippingAddress[0].firstname + " " + cart.shippingAddress[0].lastname;
+        $scope.formData.legal_business_name = cart.shippingAddress[0].company_name;
+        angular.element('#LEGAL_BUSINESS_NAME_SAME_AS_DBA').focus().parent().addClass('focused');
+
       }
-      if (!incl) {
-        continue;
+
+      if (fdService.getTransactionInfo().annualVolume) {
+        $scope.formData.annualVolume = fdService.getTransactionInfo().annualVolume;
       }
-      
-      if (acData.indexOf(p.productName) == -1) {
-        acData.push(p.productName);
+      if (fdService.getTransactionInfo().averageTicket) {
+        $scope.formData.TYPICAL_SALE_AMOUNT = fdService.getTransactionInfo().averageTicket;
       }
-      for ( var k in p.tags) {
-        if (acData.indexOf(p.tags[k]) == -1) {
-          acData.push(p.tags[k]);
+      if (fdService.getTransactionInfo().highestTicket) {
+        $scope.formData.ANTICIPATED_HIGHEST_TICKET_SALE = fdService.getTransactionInfo().highestTicket;
+      }
+
+      fdService.getOrderBusinessinformation(orderId).success(function(data, status, headers, config) {
+
+        $scope.orderBusinessInfo = data.merchantInformation[0];
+        var formData = $scope.orderBusinessInfo;
+        if (formData.legalName) {
+          $scope.formData.legal_business_name = formData.legalName;
+        }
+        if (formData.yearsInBusiness) {
+          var date = new Date(formData.yearsInBusiness);
+          $scope.formData.YEAR_BUSINESS_STARTED = date.getFullYear().toString();
+          $scope.formData.MONTH_BUSINESS_STARTED = ("0" + (date.getMonth() + 1)).slice(-2);
+        }
+        if (formData.organizationType) {
+          var orgType;
+          angular.forEach($scope.orgTypes, function(value, key) {
+            if (formData.organizationType == value) {
+              orgType = key;
+            }
+          });
+          $scope.formData.ORGANIZATION_TYPE = orgType;
+        }
+        if (formData.taxFilingName) {
+          $scope.formData.tax_filing_name = formData.taxFilingName;
+          $scope.formData.TAX_FILING_NAME_SAME_AS_BUSINESS_LEGAL_NAME = (formData.taxFilingName == formData.legalName) ? '1' : '0';
+        }
+        if (formData.tinType) {
+          $scope.formData.HOW_BUSINESS_FILES_TAXES = formData.tinType.toString();
+        }
+        if (formData.url) {
+          $scope.formData.BUSINESS_WEBSITE = formData.url;
+          $scope.formData.have_website = 'yes';
+          $scope.formData.have_business_online = 'yes';
+        } else {
+          if ($scope.hasEcommerce) {
+            $scope.formData.have_website = 'yes';
+            $scope.formData.have_business_online = 'yes';
+          } else {
+            $scope.formData.have_business_online = 'no';
+          }
+        }
+        if (formData.foreignEntityOption) {
+          $scope.formData.FOREIGN_OWNERSHIP = formData.foreignEntityOption;
+        }
+        if (formData.stateOfIncorporation) {
+          $scope.formData.INCORPORATION_STATE = formData.stateOfIncorporation;
+        }
+
+        $scope.ownerInformation = data.ownerInformation;
+        for (var i = 0; i < $scope.ownerInformation.length; i++) {
+          var ownerInfo = $scope.ownerInformation[i];
+          $scope.formData.owners[i] = {};
+          $scope.formData.owners[i].name = ownerInfo.firstName + ' ' + ownerInfo.lastName;
+          $scope.formData.owners[i].SocialSecurityNumber = ownerInfo.ssn;
+
+          if (ownerInfo.dateOfBirth) {
+            var date = new Date(ownerInfo.dateOfBirth);
+            $scope.formData.owners[i].dob_day = ("0" + date.getDate()).slice(-2);
+            $scope.formData.owners[i].dob_month = ("0" + (date.getMonth() + 1)).slice(-2);
+            $scope.formData.owners[i].dob_year = date.getFullYear().toString();
+          }
+
+          $scope.formData.owners[i].title1 = ownerInfo.title;
+          $scope.formData.owners[i].percent_owned = ownerInfo.percentOwned;
+          $scope.formData.owners[i].Address1 = ownerInfo.address1;
+          $scope.formData.owners[i].Address2 = ownerInfo.address2;
+          $scope.formData.owners[i].city = ownerInfo.city;
+          $scope.formData.owners[i].state = ownerInfo.state;
+          $scope.formData.owners[i].zip = ownerInfo.zip;
+          if ($scope.formData.owners[i].zip) {
+            $scope.lookupZip();
+          }
+          $scope.formData.owners[i].phone = ownerInfo.phone;
+          $scope.formData.owners[i].email = ownerInfo.email;
+          $scope.formData.owners[i].employeeId = ownerInfo.employeeId;
+          $scope.validateBusiness(i);
+        }
+
+        $timeout(function() {
+          angular.forEach($scope.signupForm.$error, function(field, key) {
+            angular.forEach(field, function(errorField) {
+              if (errorField.$viewValue) {
+                errorField.$setTouched();
+              }
+            })
+          });
+          //$scope.getTitles('init');
+        }, 0);
+        $timeout(function() {
+          angular.element('[name=legal_business_name]').trigger('keyup');
+          angular.element('[name=YEAR_BUSINESS_STARTED]').trigger('change');
+          angular.element('[name=MONTH_BUSINESS_STARTED]').trigger('change');
+          angular.element('[name=ORGANIZATION_TYPE]').trigger('change');
+          angular.element('[name=tax_filing_name]').trigger('change');
+          angular.element('[name=TAX_FILING_NAME_SAME_AS_BUSINESS_LEGAL_NAME]').trigger('change');
+          angular.element('[name=HOW_BUSINESS_FILES_TAXES]').trigger('change');
+          angular.element('[name=BUSINESS_WEBSITE]').trigger('change');
+          angular.element('[name=have_website]').trigger('change');
+          angular.element('[name=have_business_online]').trigger('change');
+          angular.element('[name=FOREIGN_OWNERSHIP]').trigger('change');
+          angular.element('[name=INCORPORATION_STATE]').trigger('change');
+          for (var i = 0; i < $scope.ownerInformation.length; i++) {
+            angular.element('[name=name_' + i + ']').trigger('keyup');
+            angular.element('[name=phone_' + i + ']').trigger('keyup');
+            angular.element('[name=dob_month_' + i + ']').trigger('change');
+            angular.element('[name=dob_day_' + i + ']').trigger('change');
+            angular.element('[name=dob_year_' + i + ']').trigger('change');
+            angular.element('[name=email_' + i + ']').trigger('keyup');
+            angular.element('[name=Address1_' + i + ']').trigger('keyup');
+            angular.element('[name=Address2_' + i + ']').trigger('keyup');
+            angular.element('[name=zip_' + i + ']').trigger('keyup');
+            angular.element('[name=city_' + i + ']').trigger('keyup');
+            angular.element('[name=state_' + i + ']').trigger('keyup');
+            angular.element('[name=percentOwned_' + i + ']').trigger('keyup');
+          }
+        }, 0);
+      });
+
+      $scope.fullNamePattern = (/^([a-zA-Z]{2,24})\s([a-zA-Z]{2,24})$/);
+      $scope.emailPattern = (/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)?(\.(AERO|INT|GG|GH|GI|GL|GM|GN|GP|GQ|GR|GS|JOBS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|MIL|ID|IE|IL|IM|IN|IO|IQ|IR|IS|IT|MOBI|JE|JM|JO|JP|KE|KG|KH|KI|KM|KN|MUSEUM|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|NAME|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|NET|MG|MH|MK|ML|MM|MN|MO|MP|MQ|MR|ORG|MS|MT|MU|MV|MW|MX|MY|MZ|NA|NC|PRO|NE|NF|NG|NI|NL|NO|NP|NR|NU|NZ|TEL|OM|PA|PE|PF|PG|PH|PK|PL|PM|PN|ASIA|TRAVEL|PR|PS|PT|PW|PY|QA|RE|RO|RS|RU|AC|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|AD|SK|SL|SM|SN|SO|SR|ST|SU|SV|SY|AE|SZ|TC|TD|TF|TG|TH|TJ|TK|TL|TM|AF|TN|TO|TP|TR|TT|TV|TW|TZ|UA|UG|AG|UK|UM|US|UY|UZ|VA|VC|VE|VG|VI|AI|VN|VU|WF|WS|YE|YT|YU|ZA|ZM|AL|AM|AN|BIZ|AO|AQ|AR|AS|AT|AU|AW|AX|AZ|BA|CAT|BB|BD|BE|BF|BG|BH|BI|BJ|BM|BN|COM|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CC|COOP|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|EDU|CR|CU|CV|CX|CY|CZ|DE|DJ|DK|DM|GOV|DO|DZ|EC|EE|EG|ER|ES|ET|EU|FI|INFO|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|aero|int|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|jobs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|mil|id|ie|il|im|in|io|iq|ir|is|it|mobi|je|jm|jo|jp|ke|kg|kh|ki|km|kn|museum|kp|kr|kw|ky|kz|la|lb|lc|li|lk|name|lr|ls|lt|lu|lv|ly|ma|mc|md|me|net|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|org|ms|mt|mu|mv|mw|mx|my|mz|na|nc|pro|ne|nf|ng|ni|nl|no|np|nr|nu|nz|tel|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|asia|travel|pr|ps|pt|pw|py|qa|re|ro|rs|ru|ac|rw|sa|sb|sc|sd|se|sg|sh|si|sj|ad|sk|sl|sm|sn|so|sr|st|su|sv|sy|ae|sz|tc|td|tf|tg|th|tj|tk|tl|tm|af|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|ag|uk|um|us|uy|uz|va|vc|ve|vg|vi|ai|vn|vu|wf|ws|ye|yt|yu|za|zm|al|am|an|biz|ao|aq|ar|as|at|au|aw|ax|az|ba|cat|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|com|bo|br|bs|bt|bv|bw|by|bz|ca|cc|coop|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|edu|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|gov|do|dz|ec|ee|eg|er|es|et|eu|fi|info|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf))$/);
+      $scope.phoneNumberPattern = (/^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/);
+      $scope.ssnPattern = (/^[0-9]{3}-[0-9]{2}-[0-9]{4}$/);
+      $scope.streetAddressPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.apartmentPattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      $scope.cityPattern = (/^[a-zA-Z\s]*$/);
+      $scope.zipPattern = (/^[0-9]{5}$/);
+      $scope.dbaNamePattern = (/^[a-zA-Z0-9',\s][^{}|~]*$/);
+      //$scope.dbaNamePattern = (/^[a-zA-Z0-9',\s]*$/);
+      $scope.einPattern = (/^[0-9]{9}$/);
+      $scope.routingNumberPattern = (/^[0-9]{9}$/);
+      $scope.numberPattern = (/^[0-9]*$/);
+      $scope.urlPattern = (/^((((http(s)?):\/\/)|([www\.]|[WWW\.]))?(?!\.)([a-zA-Z0-9\-]*)\.?([a-zA-Z0-9\-]*)\.(com|org|net|mil|edu|biz|info|us|cc|co|gov|COM|ORG|NET|MIL|EDU|BIZ|INFO|US|CC|CO|GOV)(\.[a-z]{1,3})?)((\/?[^?]*?)\?.*)?$/);
+      $scope.today = new Date();
+      $scope.thisYear = $scope.today.getFullYear();
+      $scope.thisMonth = $scope.today.getMonth() + 1;
+      $scope.titles = ["Owner", "Partner", "President", "Vice President", "Member LLC", "Secretary", "Treasurer", "CEO", "CFO", "COO"];
+
+      $scope.categoryName = $scope.categoryDetails.name;
+      $scope.updateMap();
+    };
+
+
+    /**
+     * Validate Business
+     * @method validateBusiness
+     * @param {number} index
+     */
+    $scope.validateBusiness = function(index) {
+
+      if (!($scope.formData.owners[index].email && $scope.formData.owners[index].Address1 && $scope.formData.owners[index].zip)) {
+        return;
+      }
+      var dataToValidate = {};
+      dataToValidate.merInfo = {};
+      dataToValidate.merInfo.contacts = {};
+      dataToValidate.merInfo.contacts.contactInfo = [];
+      dataToValidate.merInfo.contacts.contactInfo.push({
+        "compName": $scope.formData.legal_business_name,
+        "address1": $scope.formData.owners[index].Address1,
+        "address2": $scope.formData.owners[index].Address2,
+        "city": $scope.formData.owners[index].city,
+        "state": $scope.formData.owners[index].state,
+        "country": 'USA',
+        "zipCode": $scope.formData.owners[index].zip,
+        "email": $scope.formData.owners[index].email,
+        "type": "CORPORATE"
+      });
+
+      fdService.validateContact(dataToValidate)
+        .success(function(response, status, headers, config) {
+          if (response.length != 0) {
+            for (var i = 0; i < response.length; i++) {
+              if (response[i].errorCode == 8104) {
+                $scope.signupForm['email_' + index].$setValidity("emailnotValid", false);
+              }
+            }
+          } else {
+            $scope.signupForm['email_' + index].$setValidity("emailnotValid", true);
+          }
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+    };
+
+    /**
+     * Check SSN is valid or not
+     * @method checkSsn
+     * @param {} index
+     */
+    $scope.checkSsn = function(index) {
+      fdService.getInvalidSsn()
+        .success(function(data, status, headers, config) {
+          $scope.excludedSsn = data;
+          for (var i = 0; i < $scope.excludedSsn.length; i++) {
+            if ($scope.formData.owners[index].SocialSecurityNumber == $scope.excludedSsn[i].ssnInvalidNo) {
+              $scope.signupForm['SocialSecurityNumber_' + index].$setValidity("excluded", false);
+              return;
+            } else {
+              $scope.signupForm['SocialSecurityNumber_' + index].$setValidity("excluded", true);
+            }
+          }
+          return;
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+    };
+
+    /**
+     * Check EIN is valid or not
+     * @method checkEin
+     */
+    $scope.checkEin = function() {
+      fdService.getInvalidSsn()
+        .success(function(data, status, headers, config) {
+          $scope.excludedSsn = data;
+          for (var i = 0; i < $scope.excludedSsn.length; i++) {
+            if ($scope.formData.EIN == $scope.excludedSsn[i].ssnInvalidNo) {
+              $scope.signupForm.EIN.$setValidity("excluded", false);
+              return;
+            } else {
+              $scope.signupForm.EIN.$setValidity("excluded", true);
+            }
+          }
+          return;
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+
+    };
+
+
+
+    /**
+     * Check Business Started Month
+     * @method checkBsnMo
+     */
+    $scope.checkBsnMo = function() {
+      if ($scope.formData.YEAR_BUSINESS_STARTED == $scope.thisYear && $scope.formData.MONTH_BUSINESS_STARTED > $scope.thisMonth) {
+        $scope.signupForm.MONTH_BUSINESS_STARTED.$setValidity("excluded", false);
+      } else {
+        $scope.signupForm.MONTH_BUSINESS_STARTED.$setValidity("excluded", true);
+      }
+    };
+
+    /**
+     * Business Web Change
+     * @method businessWebChange
+     * @param tag
+     */
+    $scope.businessWebChange = function(tag) {
+      if (tag == 1) {
+        if ($scope.formData.have_business_online == 'no') {
+          $scope.formData.have_website = '';
+          $scope.formData.BUSINESS_WEBSITE = '';
+        }
+      } else if (tag == 2) {
+        if ($scope.formData.have_website == 'no') {
+          $scope.formData.BUSINESS_WEBSITE = '';
         }
       }
-    }
-    
-    $("#search-products" ).autocomplete({
-      delay: 0,
-      select: function(event, ui){
-        $scope.keyword = ui.item.value;
-        $scope.search();
-      },
-      source: acData
-    });
-    
-    return acData;
-  };
+    };
 
-  /**
-   * load more products for the infinite loop
-   */
-  $scope.loadMore = function(){
-    if ($scope.products.length >= $scope.allProducts.length) return;
-    
-    var st = $scope.products.length;
-    for(var i = 0; i < 5 || !$scope.prodToShow.length; i++) {
-      var key = st + i;
-      if (key > $scope.allProducts.length - 1) return;
-      $scope.products.push($scope.allProducts[key]);
-    }
-    
-  };
+    /**
+     * Lookup Zip
+     * @method lookupZip
+     * @param {object} owner
+     * @param {number} index
+     */
+    $scope.lookupZip = function(owner, index) {
+      if (!owner || !owner.zip) {
+        return;
+      } else if (owner.zip == '00000') {
+        $scope.signupForm['zip_' + index].$setValidity("zipnotValid", false);
+      } else {
+        $scope.signupForm['zip_' + index].$setValidity("zipnotValid", true);
+      }
 
-  /**
-   * Redirect to the checkout page
-   * @param disabled
-   */
-  $scope.goToCheckout = function(disabled){
-    if (disabled || !$rootScope.cart.purchaseEnabled) {
-      return;
-    }
-    $location.path('/checkout/shipping');
-  };
-
-  /**
-   * Get image thumbnail for product
-   * @param imgArray
-   * @return {string} image url
-   */
-  $scope.ProductThumbImg = function(imgArray){
-    for(var i in imgArray){
-        if(imgArray[i].indexOf('/thumb/') !== -1 ){
-            return imgArray[i];
+      fdService.lookupByZip(owner.zip, function(city, state) {
+        if (!city) {
+          owner.city = "";
+          owner.state = "";
+          $timeout(function() {
+            angular.element('[name=state_' + index + ']').trigger('change');
+            angular.element('[name=city_' + index + ']').trigger('keyup');
+          }, 0);
         }
+        if (!state) {
+          owner.city = "";
+          owner.state = "";
+          $timeout(function() {
+            angular.element('[name=state_' + index + ']').trigger('change');
+            angular.element('[name=city_' + index + ']').trigger('keyup');
+            angular.element('[name=city_' + index + ']').trigger('keyup');
+          }, 0);
+        } else {
+          owner.city = city;
+          owner.state = state;
+          $timeout(function() {
+            angular.element('[name=state_' + index + ']').trigger('change');
+            angular.element('[name=city_' + index + ']').trigger('keyup');
+            $scope.validateBusiness(index);
+          });
+        }
+      });
+    };
+
+    /**
+     * Lookup Business Zip
+     * @method lookupBusinessZip
+     * @return
+     */
+    $scope.lookupBusinessZip = function() {
+      if (!$scope.formData.business_address_zip) {
+        return;
+      } else if ($scope.signupForm && $scope.formData.business_address_zip == '00000') {
+        $scope.signupForm.business_address_zip.$setValidity("zipnotValid", false);
+      } else if ($scope.signupForm) {
+        $scope.signupForm.business_address_zip.$setValidity("zipnotValid", true);
+      }
+
+      fdService.lookupByZip($scope.formData.business_address_zip, function(city, state) {
+        if (!city) {
+          $scope.formData.business_address_city = "";
+          $scope.formData.business_address_state = "";
+          $timeout(function() {
+            angular.element('[name=business_address_state]').trigger('change');
+            angular.element('[name=business_address_city]').trigger('keyup');
+          }, 0);
+        }
+        if (!state) {
+          $scope.formData.business_address_city = "";
+          $scope.formData.business_address_state = "";
+          $timeout(function() {
+            angular.element('[name=business_address_state]').trigger('change');
+            angular.element('[name=business_address_city]').trigger('keyup');
+          }, 0);
+        } else {
+          $scope.formData.business_address_city = city;
+          $scope.formData.business_address_state = state;
+          $timeout(function() {
+            angular.element('[name=business_address_city]').trigger('keyup');
+          }, 10);
+          $timeout(function() {
+            angular.element('[name=business_address_state]').trigger('change');
+          }, 20);
+        }
+
+        $scope.updateMap();
+      });
+    };
+
+    /**
+     * update Google Map
+     * @method updateMap
+     */
+    $scope.updateMap = function() {
+
+      if ($scope.mapTO) {
+        $timeout.cancel($scope.mapTO);
+      }
+
+      $scope.mapTO = $timeout(function() {
+
+        if (!$scope.geocoder) {
+          $scope.geocoder = new google.maps.Geocoder();
+        }
+
+        if (!$scope.map) {
+          var mapOptions = {
+            zoom: 14,
+          };
+          $scope.map = new google.maps.Map(document.getElementById('google-map-owner'), mapOptions);
+        }
+
+        var address = $scope.formData.business_address1 + ', ' + $scope.formData.business_address_city + ', ' + $scope.formData.business_address_state + ', ' + $scope.formData.business_address_zip;
+        $scope.geocoder.geocode( { 'address': address}, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            $scope.map.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: $scope.map,
+              position: results[0].geometry.location
+            });
+          }
+        });
+      }, 1000);
+    };
+
+    /**
+     * Description
+     * @method getTitles
+     * @param {String} type
+     * @return
+     */
+    $scope.getTitles = function(type) {
+      if ($scope.signupForm.ORGANIZATION_TYPE.$valid) {
+        $scope.titles = [];
+        $scope.formData.title1 = '';
+
+        if ($scope.formData.ORGANIZATION_TYPE == 'I') {
+          $scope.formData.owners[0].percent_owned = 100;
+          $scope.formData.owners.splice(1);
+          $timeout(function() {
+            angular.element('[name=percentOwned_0]').trigger('keyup');
+          }, 0);
+        }
+
+        var dataToSend = {"businessType": $scope.formData.ORGANIZATION_TYPE};
+        fdService.getTitles(dataToSend)
+          .success(function(response, status, headers, config) {
+            if (!angular.isUndefined(response.titles)) {
+              for (var i = 0; i < response.titles.length; i++) {
+                $scope.titles.push(response.titles[i]);
+              }
+            }
+            $scope.percentBlurred({}, 1);
+            if (type != 'init') {
+              for (var i = 0; i < $scope.formData.owners.length; i++) {
+                $scope.formData.owners[i].title1 = '';
+              }
+            }
+            $timeout(function() {
+              for (var i = 0; i < $scope.ownerInformation.length; i++) {
+                angular.element('[name=title1_' + i + ']').trigger('change');
+              }
+            }, 0);
+          })
+          .error(function(data, status, headers, config) {
+            console.log('error');
+          });
+      }
+    };
+
+    /**
+     * Check Date
+     * @method checkDate
+     * @param {Object} owner
+     * @param {numeric} index
+     * @return
+     */
+    $scope.checkDate = function(owner, index) {
+      if (!owner.dob_day || !owner.dob_month || !owner.dob_year) {
+        return;
+      }
+
+
+      var dateValid = true;
+      if ((owner.dob_month == 04 || owner.dob_month == 06 || owner.dob_month == 9 || owner.dob_month == 11) && (owner.dob_day >= 31))
+        dateValid = false;
+      if (owner.dob_month == 02) {
+        if (owner.dob_year % 4 != 0) {
+          if (owner.dob_day > 28)
+            dateValid = false;
+        }
+        if (owner.dob_year % 4 == 0) {
+          if (owner.dob_day > 29)
+            dateValid = false;
+        }
+      }
+
+      var calculateAge = new Date(owner.dob_year, owner.dob_month - 1, owner.dob_day);
+      var ageDifMs = Date.now() - calculateAge.getTime();
+      var ageDate = new Date(ageDifMs);
+      var age = Math.abs(ageDate.getUTCFullYear() - 1970);
+      isAgeInsufficient = false;
+      if (age < 18) {
+        isAgeInsufficient = true;
+      } else {
+        isAgeInsufficient = false;
+      }
+
+      if (dateValid && !isAgeInsufficient) {
+        $scope.signupForm['dob_month_' + index].$setValidity('date_format', true);
+      } else {
+        $scope.signupForm['dob_month_' + index].$setValidity('date_format', false);
+      }
+
+      owner.dob = owner.dob_year + '-' + owner.dob_month + '-' + owner.dob_day;
+
+    };
+
+    /**
+     * percent owned field's on blur event
+     * @method percentBlurred
+     * @param {object} owner
+     * @param {number} index
+     * @param {boolean} isRemoving
+     */
+    $scope.percentBlurred = function(owner, index, isRemoving) {
+
+      var totalPercent = 0;
+      var isTotal100AtIndex;
+      $scope.isTotal100 = false;
+
+      for (var i = 0; i < $scope.formData.owners.length; i++) {
+        totalPercent += parseInt($scope.formData.owners[i].percent_owned);
+        if (totalPercent == 100) {
+          isTotal100AtIndex = i;
+          $scope.isTotal100 = true;
+        }
+      }
+
+      // Set valid
+      $scope.percentOwnedValidity('percent_more_100', true);
+      $scope.percentOwnedValidity('percent_total_100', true);
+      $scope.percentOwnedValidity('percent_sole_total_100', true);
+
+      if ($scope.formData.ORGANIZATION_TYPE == 'I' && totalPercent != 100) {
+        $scope.percentOwnedValidity('percent_sole_total_100', false);
+      } else if ($scope.formData.ORGANIZATION_TYPE == 'P' && totalPercent != 100) {
+
+        if (isTotal100AtIndex >= 0) {
+          $scope.formData.owners.splice(isTotal100AtIndex + 1, $scope.formData.owners.length - isTotal100AtIndex);
+          return;
+        }
+        if (totalPercent < 100) {
+          if ($scope.formData.owners.length >= 4) {
+            $scope.percentOwnedValidity('percent_total_100', false);
+            return;
+          }
+          if (!isRemoving && $scope.formData.owners.length == index + 1) {
+            $scope.formData.owners.push({});
+            $scope.formData.owners[$scope.formData.owners.length - 1].percent_owned = 100 - totalPercent;
+            $scope.isTotal100 = true;
+          } else {
+            $scope.percentOwnedValidity('percent_total_100', false);
+          }
+        } else if (totalPercent > 100) {
+          $scope.percentOwnedValidity('percent_total_100', false);
+        }
+      } else if (totalPercent > 100) {
+        $scope.percentOwnedValidity('percent_more_100', false);
+      }
+    };
+
+    /**
+     * Percent Owned Validity
+     * @method percentOwnedValidity
+     * @param {String} errorType
+     * @param {boolean} errorValidity
+     * @return
+     */
+    $scope.percentOwnedValidity = function(errorType, errorValidity) {
+      $scope.signupForm['percentOwned_0'].$setValidity(errorType, errorValidity);
+      if ($scope.signupForm['percentOwned_1']) {
+        $scope.signupForm['percentOwned_1'].$setValidity(errorType, errorValidity);
+      }
+      if ($scope.signupForm['percentOwned_2']) {
+        $scope.signupForm['percentOwned_2'].$setValidity(errorType, errorValidity);
+      }
+      if ($scope.signupForm['percentOwned_3']) {
+        $scope.signupForm['percentOwned_3'].$setValidity(errorType, errorValidity);
+      }
     }
-  };
 
-  ///////////////// MAIN ////////////////////////////////
- _init();
+    /**
+     * Description
+     * @method addOwner
+     */
+    $scope.addOwner = function() {
+      if ($scope.formData.owners.length < 4) {
+        $scope.formData.owners.push({});
+      }
+    };
 
-}]);
-;/**
+    /**
+     * remove owner
+     * @method removeOwner
+     * @param {number} index
+     */
+    $scope.removeOwner = function(index) {
+      $scope.formData.owners.splice(index, 1);
+      $scope.percentBlurred({}, index, true);
+    };
+
+    /**
+     * Goto Anchor
+     * @method gotoAnchor
+     * @param {string} anchor
+     */
+    $scope.gotoAnchor = function(anc) {
+      $timeout(function() {
+        $anchorScroll.yOffset = 50;
+        $anchorScroll(anc);
+        $anchorScroll.yOffset = 0;
+      });
+    };
+
+    /**
+     * submit owner info
+     * @method submitOwnerInfo
+     */
+    $scope.submitOwnerInfo = function() {
+      if (!$scope.signupForm.$valid) {
+        $scope.form_error = true;
+        $scope.gotoAnchor('form-error');
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
+            errorField.$setTouched();
+          })
+        });
+        return;
+      }
+
+      $scope.form_error = false;
+      $scope.clickedSubmit = true;
+      $scope.tinError = false;
+
+      var data = {
+        "requestHeader": {
+          "appName": "FDMP",
+          "appId": "FD Marketplace"
+        },
+        "tinInfo": {
+          "taxId": $scope.formData.HOW_BUSINESS_FILES_TAXES == '1' ? $scope.formData.owners[0].SocialSecurityNumber : $scope.formData.EIN,
+          "filingName": $scope.formData.TAX_FILING_NAME_SAME_AS_BUSINESS_LEGAL_NAME == '1' ? $scope.formData.legal_business_name : $scope.formData.tax_filing_name,
+          "requester": "FDMP"
+        }
+      };
+
+      fdService.checkTin(data)
+        .success(function(data, status, headers, config) {
+          if (data.responseCode == '0000' || $scope.tinCount >= 2) {
+            $scope.submitSignupForm(data.requestedGuid);
+          } else {
+            $scope.tinCount++;
+            $scope.tinError = true;
+            $scope.clickedSubmit = false;
+            $anchorScroll();
+          }
+        })
+        .error(function(data, status, headers, config) {
+          if ($scope.tinCount >= 2) {
+            $scope.submitSignupForm("");
+          } else {
+            $scope.tinCount++;
+            $scope.tinError = true;
+            $scope.clickedSubmit = false;
+            $anchorScroll();
+          }
+        });
+
+    };
+
+    /**
+     * submit Signup Form
+     * @method submitSignupForm
+     * @param {} requestedGuid
+     * @return
+     */
+    $scope.submitSignupForm = function(requestedGuid) {
+      var orderId = fdService.getOrderId();
+
+      var dataToSend = {};
+
+      dataToSend.ownerInformation = [];
+
+
+      var secuenceNo = 1;
+      for (var i = 0; i < $scope.formData.owners.length; i++) {
+
+        if (!$scope.formData.owners[i].dob) {
+          $scope.formData.owners[i].dob = $scope.formData.owners[i].dob_year + '-' + $scope.formData.owners[i].dob_month + '-' + $scope.formData.owners[i].dob_day;
+        }
+
+        dataToSend.ownerInformation.push({
+          sequenceNo: secuenceNo,
+          contactType: "OWNER",
+          firstName: $scope.formData.owners[i].name.split(" ")[0],
+          lastName: $scope.formData.owners[i].name.split(" ")[1],
+          ssn: $scope.formData.owners[i].SocialSecurityNumber,
+          dateOfBirth: $scope.formData.owners[i].dob,
+          title: $scope.formData.owners[i].title1,
+          percentOwned: $scope.formData.owners[i].percent_owned,
+          address1: $scope.formData.owners[i].Address1,
+          address2: $scope.formData.owners[i].Address2,
+          city: $scope.formData.owners[i].city,
+          state: $scope.formData.owners[i].state,
+          zip: $scope.formData.owners[i].zip,
+          country: "US",
+          phone: $scope.formData.owners[i].phone,
+          email: $scope.formData.owners[i].email,
+          employeeId: $scope.formData.owners[i].employeeId,
+          driverLicenceNo: $scope.formData.owners[i].DriverLicenseNo,
+          dlStateIssued: $scope.formData.owners[i].DriverLicenseState,
+          dlExpirationMonth: $scope.formData.owners[i].DriverLicenseMonth,
+          dlExpirationYear: $scope.formData.owners[i].DriverLicenseYear
+        });
+        secuenceNo++;
+      }
+      if ($scope.formData.ORGANIZATION_TYPE == 'G' && $scope.formData.FOREIGN_OWNERSHIP == 'N') {
+        $scope.formData.FOREIGN_OWNERSHIP = 'G';
+      }
+      if ($scope.formData.ORGANIZATION_TYPE == 'T' && $scope.formData.FOREIGN_OWNERSHIP == 'N') {
+        $scope.formData.FOREIGN_OWNERSHIP = 'D';
+      }
+
+      dataToSend.merchantInformation = [{
+        sequenceNo: secuenceNo,
+        category: fdService.getCategoryFromSession().name,
+        legalName: $scope.formData.legal_business_name,
+        taxId: $scope.formData.HOW_BUSINESS_FILES_TAXES == '1' ? $scope.formData.owners[0].SocialSecurityNumber : $scope.formData.EIN,
+        yearsInBusiness: $scope.formData.YEAR_BUSINESS_STARTED + '-' + $scope.formData.MONTH_BUSINESS_STARTED + '-01',
+        organizationType: $scope.orgTypes[$scope.formData.ORGANIZATION_TYPE],
+        stateOfIncorporation: $scope.formData.INCORPORATION_STATE,
+        taxFilingName: $scope.formData.TAX_FILING_NAME_SAME_AS_BUSINESS_LEGAL_NAME == '1' ? $scope.formData.legal_business_name : $scope.formData.tax_filing_name,
+        foreignEntityOption: $scope.formData.FOREIGN_OWNERSHIP,
+        tinRequestedGuid: requestedGuid,
+        tinType: $scope.formData.HOW_BUSINESS_FILES_TAXES,
+        url: $scope.formData.BUSINESS_WEBSITE,
+        contactInformation: [{
+          contactType: "CORPORATE",
+          address1: $scope.formData.business_address1,
+          address2: $scope.formData.business_address2,
+          city: $scope.formData.business_address_city,
+          state: $scope.formData.business_address_state,
+          postalCode: $scope.formData.business_address_zip,
+          country: "US",
+          phone: $scope.formData.businessPhone,
+        }]
+      }];
+
+      fdService.postBusinessinformation(dataToSend, orderId)
+        .success(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+          $location.path('/signup/location');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+        });
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
+ * Signup Setup Controller
+ */
+app.controller('SignupSetupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$timeout', '$anchorScroll', 'CONST',
+  function($scope, $rootScope, $filter, $location, fdService, $timeout, $anchorScroll, CONST) {
+
+    /**
+     * Init function
+     * @method _init
+     */
+    var _init = function() {
+      $rootScope.body_id = 'full_body';
+
+      $scope.clickedSubmit = false;
+
+      $scope.emailPattern = (/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)?(\.(AERO|INT|GG|GH|GI|GL|GM|GN|GP|GQ|GR|GS|JOBS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|MIL|ID|IE|IL|IM|IN|IO|IQ|IR|IS|IT|MOBI|JE|JM|JO|JP|KE|KG|KH|KI|KM|KN|MUSEUM|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|NAME|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|NET|MG|MH|MK|ML|MM|MN|MO|MP|MQ|MR|ORG|MS|MT|MU|MV|MW|MX|MY|MZ|NA|NC|PRO|NE|NF|NG|NI|NL|NO|NP|NR|NU|NZ|TEL|OM|PA|PE|PF|PG|PH|PK|PL|PM|PN|ASIA|TRAVEL|PR|PS|PT|PW|PY|QA|RE|RO|RS|RU|AC|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|AD|SK|SL|SM|SN|SO|SR|ST|SU|SV|SY|AE|SZ|TC|TD|TF|TG|TH|TJ|TK|TL|TM|AF|TN|TO|TP|TR|TT|TV|TW|TZ|UA|UG|AG|UK|UM|US|UY|UZ|VA|VC|VE|VG|VI|AI|VN|VU|WF|WS|YE|YT|YU|ZA|ZM|AL|AM|AN|BIZ|AO|AQ|AR|AS|AT|AU|AW|AX|AZ|BA|CAT|BB|BD|BE|BF|BG|BH|BI|BJ|BM|BN|COM|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CC|COOP|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|EDU|CR|CU|CV|CX|CY|CZ|DE|DJ|DK|DM|GOV|DO|DZ|EC|EE|EG|ER|ES|ET|EU|FI|INFO|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|aero|int|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|jobs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|mil|id|ie|il|im|in|io|iq|ir|is|it|mobi|je|jm|jo|jp|ke|kg|kh|ki|km|kn|museum|kp|kr|kw|ky|kz|la|lb|lc|li|lk|name|lr|ls|lt|lu|lv|ly|ma|mc|md|me|net|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|org|ms|mt|mu|mv|mw|mx|my|mz|na|nc|pro|ne|nf|ng|ni|nl|no|np|nr|nu|nz|tel|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|asia|travel|pr|ps|pt|pw|py|qa|re|ro|rs|ru|ac|rw|sa|sb|sc|sd|se|sg|sh|si|sj|ad|sk|sl|sm|sn|so|sr|st|su|sv|sy|ae|sz|tc|td|tf|tg|th|tj|tk|tl|tm|af|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|ag|uk|um|us|uy|uz|va|vc|ve|vg|vi|ai|vn|vu|wf|ws|ye|yt|yu|za|zm|al|am|an|biz|ao|aq|ar|as|at|au|aw|ax|az|ba|cat|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|com|bo|br|bs|bt|bv|bw|by|bz|ca|cc|coop|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|edu|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|gov|do|dz|ec|ee|eg|er|es|et|eu|fi|info|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf))$/);
+      $scope.phoneNumberPattern = (/^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/);
+
+      $timeout(function() {
+        angular.forEach($scope.signupForm.$error, function(field, key) {
+          angular.forEach(field, function(errorField) {
+            if (errorField.$viewValue) {
+              errorField.$setTouched();
+            }
+          })
+        });
+      }, 0);
+
+
+      /*var dateFormat = "mm/dd/yy",
+
+          from = $("#trainingContactDateFrom").datepicker({
+            showAnim: "slideDown",
+            defaultDate: "+2w",
+            minDate: +14
+          }),
+
+          to = $("#trainingContactDateTo").datepicker({
+            showAnim: "slideDown",
+            defaultDate: "+2w 1d",
+            minDate: "+2w 1d"
+          });*/
+      var orderId = fdService.getOrderId();
+      var cart = fdService.getOrderedCart(orderId);
+      if (!cart) {
+        $location.path('/');
+      }
+
+      $scope.formData = {};
+      $scope.states_list = $rootScope.CONST.STATES;
+      if (cart.shippingAddress[0]) {
+
+        if (!angular.isUndefined(cart.shippingAddress[0].address1)) {
+          $scope.formData.trainingAddress1 = (cart.shippingAddress[0].address1).substring(0, 24);
+        }
+
+        $scope.formData.trainingAddress2 = cart.shippingAddress[0].address2;
+        $scope.formData.trainingZip = cart.shippingAddress[0].zip;
+        $scope.formData.trainingCity = cart.shippingAddress[0].city;
+        $scope.formData.trainingState = cart.shippingAddress[0].state;
+
+        if ($scope.formData.trainingState) {
+          for (i = 0; i < $scope.states_list.length; i++) {
+            if ($scope.states_list[i].name.toLowerCase() == $scope.formData.trainingState.toLowerCase()) {
+              $scope.formData.trainingState = $scope.states_list[i].abbr;
+              break;
+            }
+          }
+        }
+        if (!$scope.formData.trainingCity || !$scope.formData.trainingState) {
+          $scope.lookupZip();
+        }
+        $scope.formData.trainingContactPhone = cart.shippingAddress[0].phone;
+        $scope.formData.trainingContactName = cart.shippingAddress[0].first_name + " " + cart.shippingAddress[0].last_name;
+        $scope.formData.statementDeliveryType = "Email";
+        $scope.formData.statementType = "G";
+        $scope.formData.statementDeliveryEmail = cart.shippingAddress[0].email;
+        $scope.formData.electronic1099Email = "Yes";
+        $scope.formData.chargebackAddress = "1";
+        $scope.formData.chargebackDelivery = "Mail";
+        $scope.formData.trainingProvider = "MAG";
+        $scope.formData.preferredTrainingTime = '12:00PM-01:00PM';
+        $scope.formData.thirdPartyProcessor = '00';
+        $scope.formData.electronic1099 = "Yes";
+
+      }
+
+      $scope.orderId = fdService.getOrderId();
+      fdService.getAccountPreferences($scope.orderId).success(function(data, status, headers, config) {
+        if (Object.keys(data).length > 0) {
+          $scope.formData.statementDeliveryType = data.statementDeliveryType;
+          $scope.formData.statementType = data.statementType;
+          $scope.formData.statementDeliveryEmail = data.statementEmailAddress;
+          $scope.formData.electronic1099 = data.form1099Electronically;
+          $scope.formData.electronic1099Email = data.form1099ToEmail;
+          $scope.formData.emailAddressFor1099k = data.emailAddressFor1099k;
+          $scope.formData.chargebackAddress = data.chargeBack;
+          $scope.formData.chargebackDelivery = data.chargeBackDeliveryType;
+          $scope.formData.trainingContactPhone = data.contactPhone;
+          $scope.formData.faxNumber = data.fax;
+          $scope.formData.trainingProvider = data.trainingProvider;
+          $scope.formData.preferredTrainingTime = data.preferredTrainingFrom + '-' + data.preferredTrainingTo;
+          $scope.formData.thirdPartyProcessor = data.thirdPartyProcessor;
+          $scope.formData.thirdPartyProcessorName = data.thirdPartyProcessorName;
+          $scope.formData.thirdPartyProcessorSoftware = data.thirdPartyProcessorSoftware;
+        }
+        $timeout(function() {
+          angular.element('[name="trainingProvider"]').trigger('change');
+          angular.element('[name="preferredTrainingTime"]').trigger('change');
+        }, 0);
+      });
+    };
+
+
+    /**
+     * Lookup Zip
+     * @method lookupZip
+     */
+    $scope.lookupZip = function() {
+      if (!$scope.formData.trainingZip) {
+        return;
+      } else if ($scope.signupForm && $scope.formData.trainingZip == '00000') {
+        $scope.signupForm.trainingZip.$setValidity("zipnotValid", false);
+      } else if ($scope.signupForm) {
+        $scope.signupForm.trainingZip.$setValidity("zipnotValid", true);
+      }
+
+      fdService.lookupByZip($scope.formData.trainingZip, function(city, state) {
+        if (!city) {
+          $scope.formData.trainingCity = "";
+          $scope.formData.trainingState = "";
+          $timeout(function() {
+            angular.element('[name=trainingState]').trigger('change');
+            angular.element('[name=trainingCity]').trigger('keyup');
+          }, 0);
+        }
+        if (!state) {
+          $scope.formData.trainingCity = "";
+          $scope.formData.trainingState = "";
+          $timeout(function() {
+            angular.element('[name=trainingState]').trigger('change');
+            angular.element('[name=trainingCity]').trigger('keyup');
+          }, 0);
+        } else {
+          $scope.formData.trainingCity = city;
+          $scope.formData.trainingState = state;
+          $timeout(function() {
+            angular.element('[name=trainingCity]').trigger('keyup');
+          }, 10);
+          $timeout(function() {
+            angular.element('[name=trainingState]').trigger('change');
+          }, 20);
+        }
+
+      });
+    };
+
+
+
+    /**
+     * Validate Business
+     * @method validateBusiness
+     * @return
+     */
+    $scope.validateBusiness = function() {
+      fdService.validateBusiness($scope.signupForm.statementDeliveryEmail, $scope.formData.statementDeliveryEmail);
+    };
+
+    /**
+     * Goto Anchor
+     * @method gotoAnchor
+     * @param {string} anchor
+     * @return
+     */
+    $scope.gotoAnchor = function(anc) {
+      $timeout(function() {
+        $anchorScroll.yOffset = 50;
+        $anchorScroll(anc);
+        $anchorScroll.yOffset = 0;
+      });
+    };
+
+    /**
+     * Description
+     * @method getFormattedDate
+     * @param {string} date
+     * @return {string} mm/dd/yyyy
+     */
+    $scope.getFormattedDate = function(data) {
+      var date = new Date(data);
+      var day = ("0" + date.getUTCDate()).slice(-2);
+      var month = ("0" + (date.getMonth() + 1)).slice(-2);
+      var year = date.getFullYear().toString();
+      return month + '/' + day + '/' + year;
+    };
+
+    /**
+     * submit setup form
+     * @method submitForm
+     */
+    $scope.submitForm = function() {
+
+      if ($scope.clickedSubmit) {
+        return;
+      }
+
+      if (!$scope.signupForm.$valid) {
+        $scope.form_error = true;
+        $scope.gotoAnchor('form-error');
+        angular.forEach($scope.signupForm.$error, function(field) {
+          angular.forEach(field, function(errorField) {
+            errorField.$setTouched();
+          })
+        });
+        return;
+      }
+
+      $scope.form_error = false;
+      $scope.clickedSubmit = true;
+
+      var advancedPreferences = {
+        statementDeliveryType: $scope.formData.statementDeliveryType,
+        statementType: $scope.formData.statementType,
+        statementEmailAddress: $scope.formData.statementDeliveryEmail,
+        form1099Electronically: $scope.formData.electronic1099,
+        form1099ToEmail: $scope.formData.electronic1099Email,
+        emailAddressFor1099k: $scope.formData.emailAddressFor1099k,
+        chargeBack: $scope.formData.chargebackAddress,
+        chargeBackDeliveryType: $scope.formData.chargebackDelivery,
+        contactName: $scope.formData.trainingContactName,
+        contactPhone: $scope.formData.trainingContactPhone,
+        fax: $scope.formData.faxNumber,
+        trainingProvider: $scope.formData.trainingProvider,
+        preferredTrainingFrom: $scope.formData.preferredTrainingTime.split('-')[0],
+        preferredTrainingTo: $scope.formData.preferredTrainingTime.split('-')[1],
+        thirdPartyProcessor: $scope.formData.thirdPartyProcessor,
+      };
+
+      if ($scope.formData.thirdPartyProcessorName) {
+        advancedPreferences.thirdPartyProcessorName = $scope.formData.thirdPartyProcessorName;
+      }
+      if ($scope.formData.thirdPartyProcessorSoftware) {
+        advancedPreferences.thirdPartyProcessorSoftware = $scope.formData.thirdPartyProcessorSoftware;
+      }
+
+      var data_to_send = {
+        advancedPreferences: advancedPreferences
+      };
+      var orderId = fdService.getOrderId();
+
+      fdService.postAccountPreferences(data_to_send, orderId)
+        .success(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+          $location.path('/signup/terms');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.clickedSubmit = false;
+        });
+    };
+    /**
+     * Validate 1099k Email Address
+     * @method validate1099kEmail
+     * @return
+     */
+    $scope.validate1099kEmail = function() {
+      fdService.validateBusiness($scope.signupForm.emailAddressFor1099k, $scope.formData.emailAddressFor1099k);
+    };
+
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
+ * Terms and Conditions Controller
+ */
+app.controller('SignupTermsCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService', '$document', '$timeout', '$anchorScroll', 'CONST', '$routeParams',
+  function($scope, $rootScope, $filter, $location, fdService, $document, $timeout, $anchorScroll, CONST, $routeParams) {
+    /**
+     * Init function
+     * @method _init
+     * @return
+     */
+    var _init = function() {
+
+      if (navigator.geolocation && !fdService.getGeoData()) {
+        navigator.geolocation.getCurrentPosition(function(p) {
+          fdService.storeGeoData(p);
+        });
+      }
+      $scope.orderId = fdService.getOrderId() || $routeParams.orderID;
+      $scope.ownerID = $routeParams.ownerID;
+      if (!$scope.orderId || 'thankyou' == $rootScope.refUrl) {
+        $location.path('/');
+        return;
+      }
+      fdService.getOrderAgreementInformation($scope.orderId, $scope.ownerID).success(function(data, status, headers, config) {
+          $scope.logo = data.Logo;
+          $scope.businessinformation = data.Business_Information;
+          $scope.businessinformationArr = $scope.getElements(data.Business_Information);
+          $scope.ownerinformation = data.Owner_Information;
+          $scope.components = data.Components;
+          $scope.locations = data.Locations;
+          $scope.entitlements = data.Entitlements;
+          $scope.feeSchedule = data.Fee_Schedule;
+          $scope.confirmation = data.Confirmation;
+          $scope.signatures = data.Signatures;
+          $scope.agreementStatus = data.Status;
+          $scope.signs = {};
+          $scope.showSignatures = true;
+          $scope.signatureRefs = {};
+          for (var i = 0; i < data.Signatures.length; i++) {
+            var type = data.Signatures[i].type;
+            data.Signatures[i].idx = i + 1;
+            if ($scope.signs[type])
+              $scope.signs[type].push(data.Signatures[i]);
+            else {
+              $scope.signs[type] = [data.Signatures[i]];
+            }
+            $scope['signature' + (i + 1) + 'Empty'] = true;
+            if (!data.Signatures[i].readOnly && !data.Signatures[i].signature)
+              $scope.showSignatures = false;
+          }
+          $scope.totalSigns = $scope.signatures.length;
+          $scope.componentsData = {};
+          $scope.leaseData = {};
+          $scope.fixedSectionsLength = 5;
+          $scope.dynamicSectionsLength = 0;
+          for (var j = 0; j < $scope.components.length; j++) {
+            if ($scope.components[j].valueType == 'AGREEMENT') {
+              var section = $scope.components[j].label;
+              $scope.componentsData[section] = $scope.components[j];
+              $scope.componentsData[section].signs = $scope.signs[section];
+              $scope.dynamicSectionsLength++;
+              if ($scope.signs[section]) {
+                var isOptionalSignSection = $scope.signs[section].map(function(s) {
+                  return s.optional;
+                }).indexOf(false);
+                if (isOptionalSignSection != -1) {
+                  if (!$scope.signatureRefs[section])
+                    $scope.signatureRefs[section] = {};
+                  $scope.signatureRefs[section].sectionNum = $scope.fixedSectionsLength + $scope.dynamicSectionsLength;
+                  if ($scope.ownerID) {
+                                var ind = $scope.signs[section].map(function(s) { return s.ownerId; }).indexOf($scope.ownerID);
+                    $scope.signatureRefs[section].idx = $scope.signs[section][ind].idx;
+                  } else {
+                    $scope.signatureRefs[section].idx = $scope.signs[section][0].idx;
+                  }
+                }
+              }
+            }
+          }
+
+          //CONFIRMATION section signature for Signature Required Section(s)
+          $scope.signatureRefs['CONFIRMATION'] = {};
+          $scope.signatureRefs['CONFIRMATION'].sectionNum = $scope.fixedSectionsLength + $scope.dynamicSectionsLength + 1;
+          if ($scope.ownerID) {
+                    var ind = $scope.signs['CONFIRMATION'].map(function(s) { return s.ownerId; }).indexOf($scope.ownerID);
+            $scope.signatureRefs['CONFIRMATION'].idx = $scope.signs['CONFIRMATION'][ind].idx;
+          } else {
+            $scope.signatureRefs['CONFIRMATION'].idx = $scope.signs['CONFIRMATION'][0].idx;
+          }
+
+          $scope.leaseSectionsLength = 0;
+          for (var j = 0; j < $scope.components.length; j++) {
+            if ($scope.components[j].valueType == 'MISC_AGREEMENT') {
+              var section = $scope.components[j].label;
+              $scope.leaseData[section] = $scope.components[j];
+              $scope.leaseData[section].signs = $scope.signs[section];
+              $scope.leaseSectionsLength++;
+              if (section == 'LEASE') {
+                $scope.leaseData[section].lease = data.Lease;
+              } else if (section == 'CLOVER_SERVICES' || section == 'CLOVER_GO_SERVICES') {
+                $scope.leaseData[section].cloverLease = data.CloverAgreement;
+              }
+              $scope.leaseData[section].sectionNum = $scope.fixedSectionsLength + $scope.dynamicSectionsLength + $scope.leaseSectionsLength + 1;
+              if ($scope.signs[section]) {
+                            var isOptionalSignSection = $scope.signs[section].map(function(s) { return s.optional; }).indexOf(false);
+                if (isOptionalSignSection != -1) {
+                  if (!$scope.signatureRefs[section])
+                    $scope.signatureRefs[section] = {};
+                  $scope.signatureRefs[section].sectionNum = $scope.leaseData[section].sectionNum;
+                  if ($scope.ownerID) {
+                                    var ind = $scope.signs[section].map(function(s) { return s.ownerId; }).indexOf($scope.ownerID);
+                    $scope.signatureRefs[section].idx = $scope.signs[section][ind].idx;
+                  } else {
+                    $scope.signatureRefs[section].idx = $scope.signs[section][0].idx;
+                  }
+                }
+              }
+            }
+          }
+
+          if ($scope.ownerID) {
+            $rootScope.thankyouPageFlag = $scope.getPendingSignaturesCount(data);
+          }
+
+          if (!$scope.showSignatures) {
+            $rootScope.$emit('Agreement_Unsigned');
+          }
+        })
+        .error(function(data, status, headers, config) {
+          $location.path('/400');
+        });
+    };
+
+
+    /**
+     * Get Pending Signatures Count
+     * @method getPendingSignaturesCount
+     * @param {} data
+     * @return remainingSigns
+     */
+    $scope.getPendingSignaturesCount = function(data) {
+      $scope.signsStatus = {};
+      var ownersTotalCount = 0;
+      var ownersSignCount = 0;
+      for (var i = 0; i < data.Signatures.length; i++) {
+        var ownerId = data.Signatures[i].ownerId;
+        if ($scope.signsStatus[ownerId])
+          $scope.signsStatus[ownerId].push(data.Signatures[i].signature ? true : false);
+        else {
+          $scope.signsStatus[ownerId] = [data.Signatures[i].signature ? true : false];
+          ownersTotalCount++;
+        }
+      }
+      for (var ownersSign in $scope.signsStatus) {
+        var ind = $scope.signsStatus[ownersSign].indexOf(false);
+        if (ind == -1) {
+          ownersSignCount++;
+        }
+      }
+      var remainingSigns = ownersTotalCount - ownersSignCount;
+      return remainingSigns == 1 ? false : true;
+    };
+
+    /**
+     * Description
+     * @method isSigned
+     * @param {} id
+     * @return LogicalExpression
+     */
+    $scope.isSigned = function(id) {
+        return !$scope['signature' + id + 'Empty'] && $scope.signature_texts[id];
+      };
+      /**
+       * Reset Canvas
+       * @method resetCanvas
+       * @param {Number} i
+       * @return
+       */
+    $scope.resetCanvas = function(i) {
+      var sketch = angular.element('#signature' + i);
+      var myCanvas = sketch[0];
+      sketch.sketch().actions = [];
+      var ctx = myCanvas.getContext('2d');
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      $scope['signature' + i + 'Empty'] = true;
+      $scope['signature' + i + 'Date'] = null;
+    };
+
+    /**
+     * Description
+     * @method getElements
+     * @param {} object
+     * @return CallExpression
+     */
+    $scope.getElements = function(object) {
+      return Object.keys(object).map(function(key) {
+        return key;
+      })
+    };
+
+    /**
+     * Goto Anchor
+     * @method gotoAnchor
+     * @param {} anchor
+     */
+    $scope.gotoAnchor = function(anc) {
+      $timeout(function() {
+        $anchorScroll(anc);
+      });
+    };
+
+    /**
+     * redirect to the url
+     * @method goToUrl
+     * @param url
+     */
+    $scope.goToUrl = function(url) {
+      $location.path(url);
+      angular.element('.modal-backdrop').removeClass('modal-backdrop');
+      angular.element('body').css('overflow', 'auto');
+    };
+
+    /**
+     * Description
+     * @method showSignBox
+     * @return LogicalExpression
+     */
+    $scope.showSignBox = function() {
+      return $rootScope.logged_in && $rootScope.isTouch;
+    };
+
+    /**
+     * Description
+     * @method getSignDate
+     * @param {} idx
+     * @return MemberExpression
+     */
+    $scope.getSignDate = function(idx) {
+      return $scope['signature' + idx + 'Date'];
+    };
+
+    $scope.toProm = {};
+    $scope.signCanvases = {};
+    $scope.signature_texts = {
+      1: '',
+      2: '',
+      3: '',
+      4: '',
+      5: '',
+      6: '',
+      7: '',
+      8: '',
+      9: '',
+      10: '',
+    };
+
+    /**
+     * is Form Not Valid
+     * @method isFormNotValid
+     * @return {Boolean}
+     */
+    $scope.isFormNotValid = function() {
+      for (var i = 0; i < $scope.totalSigns; i++) {
+        if (!$scope.signatures[i].readOnly && $scope['signature' + (i + 1) + 'Empty'] && !$scope.signatures[i].optional)
+          return true;
+      }
+      return false;
+    };
+
+    /**
+     * check if terms form is valid
+     * @method _isTermsFormNotValid
+     * @return {Boolean}
+     */
+    $rootScope._isTermsFormNotValid = function() {
+      return $scope.isFormNotValid();
+    };
+
+    /**
+     * Can Mouse Up
+     * @method canMouseUp
+     * @param {} i
+     * @return
+     */
+    $scope.canMouseUp = function(i) {
+      var blank = isCanvasBlank(document.getElementById('signature' + i));
+      if (!blank) {
+        $scope['signature' + i + 'Empty'] = false;
+        $scope['signature' + i + 'Date'] = new Date();
+      }
+    };
+
+    /**
+     * on text signature changed
+     * @method signTextChanged
+     * @param {number} i
+     */
+    $scope.signTextChanged = function(i) {
+      $scope.isSignInProg = true;
+      if ($scope.toProm[i]) {
+        $timeout.cancel($scope.toProm[i]);
+      }
+      $scope.toProm[i] = $timeout(function() {
+        html2canvas(document.getElementById('type-signature-' + i), {
+
+          /**
+           * On Clone
+           * @method onclone
+           * @param {document} document
+           * @return promise
+           */
+          onclone: function(document) {
+            return $timeout(function() {
+              var elements = document.getElementsByClassName('mpa-legal-copy');
+              for (var i = 0; i < elements.length; i++)
+                elements[i].style.display = "none";
+            });
+          },
+          /**
+           * Description
+           * @method onrendered
+           * @param {} canvas
+           * @return
+           */
+          onrendered: function(canvas) {
+            $scope.signCanvases[i] = canvas;
+            $timeout(function(){$scope.isSignInProg = false;},0);
+          }
+        });
+      }, 500);
+
+      if ($scope.signature_texts[i]) {
+        $scope['signature' + i + 'Empty'] = false;
+        $scope['signature' + i + 'Date'] = new Date();
+      } else {
+        $scope['signature' + i + 'Empty'] = true;
+        $scope['signature' + i + 'Date'] = null;
+      }
+    };
+
+    /**
+     * Check for Canvas is Blank or not
+     * @method isCanvasBlank
+     * @param {} canvas
+     * @return BinaryExpression
+     */
+    function isCanvasBlank(canvas) {
+      var blank = document.createElement('canvas');
+      blank.width = canvas.width;
+      blank.height = canvas.height;
+      return canvas.toDataURL() == blank.toDataURL();
+    }
+
+    /**
+     * Reset Canvas
+     * @method resetCanvas
+     * @param {Number} i
+     * @return
+     */
+    $scope.resetCanvas = function(i) {
+      var sketch = angular.element('#signature' + i);
+      var myCanvas = sketch[0];
+      sketch.sketch().actions = [];
+      var ctx = myCanvas.getContext('2d');
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      $scope['signature' + i + 'Empty'] = true;
+      $scope['signature' + i + 'Date'] = null;
+    };
+
+    /**
+     * Get merchant signatures
+     * @method getMerchantSignatures
+     * @param {} orderStatus
+     */
+    $scope.getMerchantSignatures = function(orderStatus) {
+      if (orderStatus && orderStatus == 'Application Signed') {
+        $scope.showSignatures = true;
+        fdService.getMerchantSignatures($scope.orderId)
+          .success(function(data) {
+            $scope.assignMerchantSignatures = data;
+          })
+          .error(function(data, status, headers, config) {});
+      } else {
+        $scope.assignMerchantSignatures = "";
+      }
+
+    };
+
+    /**
+     * submit Terms and Conditions
+     * @method submitTC
+     * @return
+     */
+    $scope.submitTC = function() {
+      if ($scope.isFormNotValid()) return;
+      $scope.clickedTCSubmit = true;
+
+      var orderId = fdService.getOrderId() || $routeParams.orderID;
+      if (!orderId) {
+        $scope.clickedTCSubmit = false;
+        return;
+      }
+
+      var sdata = {
+        orderId: orderId,
+      };
+      sdata.signatures = [];
+
+      for (var i = 0; i < $scope.totalSigns; i++) {
+        if (!$scope.signatures[i].readOnly) {
+          var canvas;
+          if (!$scope.showSignBox()) {
+            canvas = $scope.signCanvases[i + 1] ? $scope.signCanvases[i + 1] : null;
+          } else {
+            canvas = $document[0].getElementById('signature' + (i + 1));
+          }
+          var signature = canvas ? canvas.toDataURL().replace(/^data:image\/(png);base64,/, "") : 'NA';
+          var name = $scope.signatures[i].type + '_' + $scope.signatures[i].position;
+          sdata.signatures.push({
+            name: name,
+            ownerId: $scope.signatures[i].ownerId,
+            signature: signature
+          });
+        }
+      }
+
+      //Audit trail information to backend
+      var orderId = fdService.getOrderId();
+      var cart = fdService.getOrderedCart(orderId);
+      if (cart.shippingAddress.length > 0) {
+        var cd = cart.shippingAddress[0];
+        var merchantName = cd.firstname + ' ' + cd.lastname;
+        var email = cd.email;
+        var p = fdService.getGeoData();
+        var langAndLat = p ? p.coords.latitude + ',' + p.coords.longitude : '';
+        var acceptedAgreementDate = $scope.acceptedAgreementDate;
+        sdata['contractAuditTrailRequestModel'] = {
+          'merchantName': merchantName,
+          'merchantEmail': email,
+          'geoLocation': langAndLat,
+          'signDate': new Date().toJSON(),
+          'acceptedAgreementDate': new Date().toJSON()
+        }
+      }
+
+      fdService.submitSignature(sdata)
+        .success(function(data, status, headers, config) {
+          fdService.clearOrderId();
+          fdService.clearCart();
+          fdService.clearOrderedCart();
+          fdService.clearCategoryFromSession();
+          fdService.clearTransactionInfo();
+          fdService.clearAcquiringPricing();
+          fdService.clearEquipmentPricing();
+          $rootScope.cart = fdService.getCart();
+          $location.path('/thankyou');
+        })
+        .error(function(data, status, headers, config) {
+          $scope.clickedTCSubmit = false;
+          $location.path('/400');
+        });
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+
+
+    _init();
+
+
+
+
+  }
+]);;/**
  * SignUp Controller
  */
 app.controller('SignupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdService','$timeout', '$anchorScroll', 'CONST',
@@ -2892,6 +7289,377 @@ app.controller('SignupCtrl', ['$scope', '$rootScope', '$filter', '$location', 'f
 
 
 ;/**
+ * Solution Controller
+ */
+app.controller('SolutionCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', '$timeout', '$anchorScroll', '$window', 'fdService', 'CONST',
+  function($scope, $rootScope, $filter, $location, $routeParams, $timeout, $anchorScroll, $window, fdService, CONST) {
+
+    /**
+     * image timeout promise
+     */
+    var imgPromise;
+
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+
+      $scope.category = fdService.getCategoryFromSession();
+
+      if (!$scope.category) {
+        $location.path('/');
+        return;
+      }
+
+      $rootScope.wrapperClass = 'product-detail';
+      $rootScope.wrapperId = 'product';
+      $rootScope.body_id = 'product-detail';
+
+      $scope.bundle_info = {};
+      $scope.includes = [];
+      $scope.features = [];
+      $scope.faqs = [];
+      $scope.specs = {};
+      $scope.recommendedBundles = [];
+      $scope.min_lease_amt = 0;
+
+      $scope.images = [];
+      $scope.cimage = $rootScope.placeholderImageUrl;
+
+      $scope.monthlyFee = false;
+      $scope.transactionFee = false;
+
+      $scope.timestamp = new Date().getTime();
+
+      $scope.page = $routeParams.page;
+
+      $rootScope.cart = $rootScope.cart;
+      if (!$routeParams.pid) {
+        $location.path('/');
+        return;
+      }
+
+      $scope.pid = $routeParams.pid;
+
+      fdService.getFeatures($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.features = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.features = [];
+        });
+      fdService.getSpecs($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.specs = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.specs = {};
+        });
+
+      fdService.getProduct($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.bundle_info = data;
+          $scope.images = $scope.bundle_info.imageUrls ? $scope.bundle_info.imageUrls : [];
+
+          $rootScope.title = $scope.bundle_info.productName;
+          $rootScope.recommendedProductName = $scope.bundle_info.productName;
+          $scope.min_lease_amt = 0;
+          if (data.pricingModel && data.pricingModel.length) {
+            for (var i = 0; i < data.pricingModel.length; i++) {
+              if (CONST.PURCHASE_CODE != data.pricingModel[i].purchaseType && data.pricingModel[i].defaultAmt && (!$scope.min_lease_amt || data.pricingModel[i].defaultAmt < $scope.min_lease_amt)) {
+                $scope.min_lease_amt = data.pricingModel[i].defaultAmt;
+              }
+            }
+          }
+          $scope.thumbImages = [];
+          $scope.largeImages = [];
+          for (var i in $scope.images) {
+            if ($scope.images[i].indexOf('/thumb/') !== -1) {
+              $scope.thumbImages.push($scope.images[i]);
+            }
+            if ($scope.images[i].indexOf('/large/') !== -1) {
+              $scope.largeImages.push($scope.images[i]);
+            }
+          }
+          $scope.changeImage($scope.thumbImages[0], 0);
+
+        })
+        .error(function(data, status, headers, config) {
+          $scope.bundle_info = [];
+          $location.path('invalid-item');
+          $scope.min_lease_amt = 0;
+        });
+
+      fdService.getRecommendedBundles($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.recommendedBundles = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.recommendedBundles = [];
+        });
+
+      fdService.getProductsList($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.includes = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.includes = [];
+        });
+
+      fdService.getFaqs($scope.pid)
+        .success(function(data, status, headers, config) {
+          $scope.faqs = data;
+        })
+        .error(function(data, status, headers, config) {
+          $scope.faqs = [];
+        });
+
+
+      if (!$rootScope.cart.shippingAddress[0].zip) {
+        fdService.getDataByIp()
+            .success(function(data, status, headers, config) {
+                $scope.getTaxes(data.zipCode, data.city ? data.city : -1);
+            })
+            .error(function(data, status, headers, config) {
+
+            });
+
+      }
+
+      $rootScope.$on('Category_Change', function() {
+        $scope.category = fdService.getCategoryFromSession();
+      });
+
+    };
+
+
+    /**
+     * Get taxes by city and state
+     * @method getTaxes
+     * @param zip
+     * @param city
+     */
+    $scope.getTaxes = function(zip, city) {
+      if (!zip || !city) {
+        return;
+      }
+      fdService.getTaxes(zip, city)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.taxPercent = data.salesTax;
+          $scope.cartChanged();
+        })
+        .error(function(data, status, headers, config) {
+          $rootScope.cart.taxPercent = -2;
+          $scope.cartChanged();
+        });
+    };
+
+
+    /**
+     * Redirect to the checkout page
+     * @method goToCheckout
+     * @param disabled
+     */
+    $scope.goToCheckout = function(disabled) {
+      if (disabled || !$rootScope.cart.purchaseEnabled) {
+        return;
+      }
+      $location.path('/checkout/shipping');
+    };
+
+    /**
+     * Add product to the cart
+     * @method addToCart
+     * @param {Object} bundle product object
+     */
+    $scope.addToCart = function(bundle) {
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
+      } else {
+        $anchorScroll();
+      }
+
+      var pid = bundle.productId;
+
+      var category = fdService.getCategoryFromSession();
+
+      if (!Object.keys(bundle).length) {
+        return;
+      }
+
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+      if (bundle.offeringTypes && bundle.offeringTypes.indexOf('Transactions') > -1) {
+
+        if (-1 !== $rootScope.cart.transaction_products.map(function(e) { return e.id; }).indexOf(bundle.productId)) {
+          return;
+        }
+
+        var pr = {
+          id: bundle.productId,
+          name: bundle.productName,
+          price: bundle.price,
+          type: bundle.productType,
+          term: bundle.defaultPurchaseType,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          parentProduct: {
+            id: null,
+            name: null,
+            rate: 0,
+            fee: 0,
+          },
+          qty: 1,
+        };
+
+        $rootScope.cart.transaction_products.push(pr);
+
+      } else {
+
+        var pr = {
+          id: pid,
+          name: bundle.productName,
+          price: bundle.price,
+          defaultPrice: bundle.price,
+          individualPurchaseEnabled: bundle.pinPad,
+          pricingModel: bundle.pricingModel,
+          productType: bundle.productType,
+          term: bundle.defaultPurchaseType,
+          pmodel: null,
+          category: category.name,
+          cardNotPresent: cardNotPresent,
+          qty: 1
+        };
+
+        var index = fdService.getCartProductIndex($rootScope.cart, pr);
+
+        if (-1 !== index) {
+          pr = $rootScope.cart.data[index];
+          pr.qty++;
+          pr.price = bundle.price;
+          pr.defaultPrice = bundle.price;
+          if (pr.qty > 10) {
+            pr.qty = 10;
+          }
+
+          $rootScope.cart.data[index] = pr;
+        } else {
+          $rootScope.cart.data.push(pr);
+        }
+      }
+
+      fdService.resetCartOverridePricing($rootScope.cart);
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid) {
+            fdService.updatePricing(function() {
+              $rootScope.cart = fdService.getCart();
+            });
+          }
+        })
+        .error(function(data, status, headers, config) {
+
+        });
+
+      $scope.cartChanged();
+      fdService.clearOrderId();
+
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+
+
+    };
+
+    /**
+     * Lease product
+     * @method leaseProduct
+     * @param {Object} bundle product object
+     */
+    $scope.leaseProduct = function(bundle) {
+
+      if (!bundle) {
+        bundle = JSON.parse(JSON.stringify($scope.bundle_info));
+      } else {
+        $anchorScroll();
+      }
+
+      fdService.resetCartOverridePricing($rootScope.cart);
+      fdService.leaseProduct(bundle, $rootScope.cart);
+      $scope.cartChanged();
+
+
+      if (window.matchMedia("(max-width: 740px)").matches) {
+        $timeout(function() {
+          $location.hash('order-summary-container');
+          $anchorScroll();
+        });
+      }
+      fdService.validateCart($rootScope.cart)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $scope.cartChanged();
+          if (data.iscartvalid) {
+            fdService.updatePricing(function() {
+              $rootScope.cart = fdService.getCart();
+            });
+          }
+        })
+        .error(function(data, status, headers, config) {
+
+        });
+
+
+    };
+
+    /**
+     * Cart Changed
+     * @method cartChanged
+     */
+    $scope.cartChanged = function() {
+      $rootScope.cart = fdService.cartChanged($rootScope.cart);
+    };
+
+    /**
+     * Change current active image
+     * @method changeImage
+     * @param img
+     * @param {number} timeout
+     */
+    $scope.changeImage = function(img, to) {
+      if (undefined == to) {
+        to = 100;
+      }
+      if (imgPromise) {
+        $timeout.cancel(imgPromise);
+      }
+      imgPromise = $timeout(function() {
+        var cimage = img.replace('/thumb/', '/large/');
+        for (var i in $scope.largeImages) {
+          if (cimage == $scope.largeImages[i]) {
+            $scope.cimage = cimage;
+            return;
+          } else {
+            $scope.cimage = $rootScope.placeholderImageUrl;
+          }
+
+        }
+
+      }, to);
+    };
+    ///////////////// MAIN ////////////////////////////////
+
+
+    _init();
+
+  }
+]);;/**
  * Terms & Conditions Controller
  */
 app.controller('TCCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams','$document', 'fdService', '$window', '$timeout',
@@ -3665,145 +8433,349 @@ app.controller('TCCtrl', ['$scope', '$rootScope', '$filter', '$location', '$rout
 ;/**
  * Thank You Controller
  */
-app.controller('ThankyouCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', 'fdService',
-  function ($scope, $rootScope, $filter, $location, $routeParams, fdService) {
+app.controller('ThankyouCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', 'fdService', '$window',
+  function($scope, $rootScope, $filter, $location, $routeParams, fdService, $window) {
 
-  /**
-   * Init function
-   * @private
-   */
-  var init = function(){
-    $rootScope.body_id = 'ty';
-    $rootScope.bodyClass = 'ty';
-  };
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
+      $rootScope.body_id = 'ty';
+      $rootScope.bodyClass = 'ty';
+      $scope.thankyouPageFlag = $rootScope.thankyouPageFlag;
+    };
 
-  /**
-   * Redirect to the main page
-   */
-  $scope.learnMore = function(){
-    $location.path('/');
-  };
-  ///////////////// MAIN ////////////////////////////////
-  init();
-}]);;/**
+    /**
+     * Redirect to the main page
+     * @method learnMore
+     */
+    $scope.learnMore = function() {
+      $window.location.href = 'https://www.firstdata.com/en_us/home.html';
+    };
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+  }
+]);;/**
  * Transaction Info Controller
  */
 app.controller('TransactionInfoCtrl', ['$scope', '$rootScope', '$filter', '$location', '$routeParams', 'fdService', '$timeout',
-    function ($scope, $rootScope, $filter, $location, $routeParams, fdService, $timeout) {
+  function($scope, $rootScope, $filter, $location, $routeParams, fdService, $timeout) {
 
-  /**
-   * Init function
-   * @private
-   */
-  var _init = function(){
+    /**
+     * Init function
+     * @private
+     */
+    var _init = function() {
 
-    $rootScope.body_id = 'shipping';
-    $scope.transactionFormData = {};
+      $rootScope.body_id = 'shipping';
+      $scope.transactionFormData = {};
 
-    $scope.category = fdService.getCategoryFromSession();
-    var ti = fdService.getTransactionInfo();
+      $scope.category = fdService.getCategoryFromSession();
+      var ti = fdService.getTransactionInfo();
+      $scope.mccTypeIn = ti.mcc;
+      $scope.isMCCValid = true;
 
-    var cart = fdService.getCart();
+      var orderId = fdService.getOrderId();
 
-    fdService.clearAcquiringPricing();
-    fdService.clearGlobalPricing();
-    fdService.clearEquipmentPricing();
-
-    cart.onetimeFees = {};
-    cart.mFees = {};
-    cart.onetimeAmount = 0;
-    cart.mfeeAmount = 0;
-
-    cart = fdService.setPricingToCart(cart, fdService.getGlobalPricingStorage());
-    cart = fdService.setPricingToCart(cart, fdService.getEquipmentPricingStorage());
-    cart.transaction_fee = null;
-
-    cart = fdService.setPricingToCart(cart, fdService.getAcquiringPricingStorage());
-    $rootScope.cart = fdService.cartChanged(cart);
-
-
-    // Autopopulate transaction info from the session
-    $scope.initPricingProposal(function(){
-      if (ti.mccTypes) {
-        $scope.getMccTypes(ti.mccTypes, function(){
-          $scope.transactionFormData = ti;
-          showMccAdditionalDetails($scope.transactionFormData.mcc);
-          $timeout(function() {
-            angular.element('[name=mcccodes]').trigger('change');
-            angular.element('[name=mcctypes]').trigger('change');
-            angular.element('[name=sales]').trigger('keyup');
-            angular.element('[name=ticket]').trigger('keyup');
-            angular.element('[name=highestTicket]').trigger('keyup');
-            angular.element('[name=amexVolume]').trigger('keyup');
-          }, 0);
-        });
-      }
-    });
-  };
-
-  /**
-   * Show MCC additional details
-   * @private
-   * @param miscVal
-   */
-  var showMccAdditionalDetails = function(miscVal) {
-    if (miscVal % 100 == 99)
-      $scope.misc99 = true;
-    else
-      $scope.misc99 = false;
-  };
-
-  /**
-   * Initialize pricing proposal
-   * @param callback function
-   */
-  $scope.initPricingProposal = function(callback){
-
-    $scope.transactionFormData = {};
-
-    fdService.getMccCodes($scope.category.name)
-    .success(function(data, status, headers, config) {
-      $scope.mccCodes = data;
-      if (callback) {
-        callback.apply(this, []);
+      if (orderId) {
+        var cart = fdService.getOrderedCart(orderId);
+        cart = fdService.cartChanged(cart);
+        fdService.storeTmpOrderId(orderId);
+        fdService.clearOrderId();
+      } else {
+        var cart = fdService.getCart();
       }
 
-    })
-    .error(function(data, status, headers, config) {
-      console.log('error')
-    });
-  };
+      //reset cart.data product pricing
+      //fdService.resetCartOverridePricing(cart);
 
-  /**
-   * Get MCC Code by category and type
-   * @param value
-   * @param callback
-   */
-  $scope.getMccTypes = function(value, callback){
-    $scope.mccTypes = [];
-    fdService.getMccTypes($scope.category.name, value)
-      .success(function(data, status, headers, config) {
-        $scope.mccTypes = data;
-        if (callback) {
-          callback.apply(this, []);
+      fdService.clearAcquiringPricing();
+      //fdService.clearGlobalPricing();
+      //fdService.clearEquipmentPricing();
+
+      cart.onetimeFees = {};
+      cart.mFees = {};
+      cart.onetimeAmount = 0;
+      cart.mfeeAmount = 0;
+      cart = fdService.setPricingToCart(cart, fdService.getGlobalPricingStorage());
+      cart = fdService.setPricingToCart(cart, fdService.getEquipmentPricingStorage());
+      // cart.transaction_fee = null;
+      if (cart.payment_types != null) {
+        cart.payment_types.groups = [];
+      }
+
+      for (var i in cart.transaction_products) {
+        cart.transaction_products[i].parentProduct = null;
+      }
+
+      cart = fdService.setPricingToCart(cart, fdService.getAcquiringPricingStorage());
+      $rootScope.cart = fdService.cartChanged(cart);
+
+
+      // Autopopulate transaction info from the session
+      $scope.initPricingProposal(function() {
+        if (ti.mccTypes) {
+          $scope.getMccTypes(ti.mccTypes, function() {
+            $scope.transactionFormData = ti;
+            showMccAdditionalDetails($scope.transactionFormData.mcc);
+            $timeout(function() {
+              angular.element('[name=mcccodes]').trigger('change');
+              angular.element('[name=mcctypes]').trigger('change');
+              angular.element('[name=mcctypein]').trigger('change');
+              angular.element('[name=sales]').trigger('keyup');
+              angular.element('[name=ticket]').trigger('keyup');
+              angular.element('[name=highestTicket]').trigger('keyup');
+              angular.element('[name=amexVolume]').trigger('keyup');
+              angular.element('[name=amexMemberId]').trigger('keyup');
+            }, 0);
+          });
         }
-      })
-      .error(function(data, status, headers, config) {
-        console.log('error')
+
       });
-  };
 
-  /**
-   * Check Misc 99
-   */
-  $scope.checkMisc99 = function() {
-    showMccAdditionalDetails($scope.transactionFormData.mcc);
+      //isAmexPresent: A flag which holds American Express card selected or not, check if product is swiped, non swiped and telecheck
+      $scope.isAmexPresent = false;
+      $scope.isSwipedNonSwiped = false;
+      $scope.isTeleCheck = false;
+      if (cart.payment_types) {
+        for (var i in cart.payment_types.products) {
+          if (cart.payment_types.products[i].name == 'American Express')
+            $scope.isAmexPresent = true;
+          if (cart.payment_types.products[i].name == 'Swiped/Non Swiped')
+            $scope.isSwipedNonSwiped = true;
+          if (cart.payment_types.products[i].type == 'TELECHECK')
+            $scope.isTeleCheck = true;
+        }
+      }
+      if (cart.data) {
+        for (var i in cart.data) {
+          if (cart.data[i].productType == 'TELECHECK')
+            $scope.isTeleCheck = true;
+        }
+      }
+      if (cart.transaction_products) {
+        for (var i in cart.transaction_products) {
+          if (cart.transaction_products[i].type == 'TELECHECK')
+            $scope.isTeleCheck = true;
+        }
+      }
+
+    };
+
+    /**
+     * Initialize pricing proposal
+     * @method initPricingProposal
+     * @param callback function
+     */
+    $scope.initPricingProposal = function(callback) {
+
+      $scope.transactionFormData = {};
+      var categoryName = $rootScope.cart.data[Object.keys($rootScope.cart.data)[0]].category;
+
+      fdService.getMccCodes(categoryName)
+        .success(function(data, status, headers, config) {
+          $scope.mccCodes = data;
+          if (callback) {
+            callback.apply(this, []);
+          }
+
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+    };
+
+    /**
+     * Get MCC Code by category and type
+     * @method getMccTypes
+     * @param value
+     * @param callback
+     */
+    $scope.getMccTypes = function(value, callback) {
+      $scope.mccTypes = [];
+      if (value === undefined)
+        return;
+
+      var categoryName = $rootScope.cart.data[Object.keys($rootScope.cart.data)[0]].category;
+      fdService.getMccTypes(categoryName, value)
+        .success(function(data, status, headers, config) {
+          $scope.mccTypes = data;
+          if (callback) {
+            callback.apply(this, []);
+          }
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
+    };
+
+    /**
+     * Check Misc 99
+     * @method checkMisc99
+     */
+    $scope.checkMisc99 = function() {
+      showMccAdditionalDetails($scope.transactionFormData.mcc);
+      $scope.validateCart();
+      if ($scope.transactionFormData.mcc >= 4) {
+        $scope.mccTypeIn = $scope.transactionFormData.mcc;
+        $timeout(function() {
+          angular.element('[name=mcctypein]').trigger('change');
+          $scope.transactionInfoForm.mcctypein.$setTouched();
+          $scope.isMCCValid = true;
+        }, 0);
+      }
+    };
+
+    /**
+     * Get MCC Details
+     * @method getMCCDetails
+     */
+    $scope.getMCCDetails = function() {
+      var categoryName = $rootScope.cart.data[Object.keys($rootScope.cart.data)[0]].category;
+      var mccCode = $scope.mccTypeIn;
+      if (mccCode === undefined || mccCode.length < 4) {
+        $scope.invalidateMCCDetails();
+        return;
+      }
+      fdService.getMCCDetails(categoryName, mccCode)
+        .success(function(data, status, headers, config) {
+          $scope.isMCCValid = true;
+          $scope.transactionFormData.mcc = data.mcc;
+          $scope.transactionFormData.mccTypes = data.industryDescription;
+          $scope.getMccTypes($scope.transactionFormData.mccTypes, function() {
+            $timeout(function() {
+              angular.element('[name=mcccodes]').trigger('change');
+              angular.element('[name=mcctypes]').trigger('change');
+              showMccAdditionalDetails($scope.transactionFormData.mcc);
+              $scope.validateCart();
+            }, 0);
+          });
+        })
+        .error(function(data, status, headers, config) {
+          $scope.invalidateMCCDetails();
+        });
+    };
+
+    /**
+     * Invalidate MCC Details
+     * @method invalidateMCCDetails
+     */
+    $scope.invalidateMCCDetails = function() {
+      $scope.isMCCValid = false;
+      $scope.transactionFormData.mccTypes = '';
+      $scope.transactionInfoForm.mcccodes.$setTouched();
+      $timeout(function() {
+        angular.element('[name=mcccodes]').trigger('change');
+        if ($scope.transactionInfoForm.mcctypes) {
+          angular.element('[name=mcctypes]').trigger('change');
+          $scope.transactionInfoForm.mcctypes.$setTouched();
+        }
+      }, 0);
+    };
+
+    /**
+     * Show Mcc Additional Details
+     * @method showMccAdditionalDetails
+     * @param {} miscVal
+     * @return
+     */
+    function showMccAdditionalDetails(miscVal) {
+      if (miscVal % 100 == 99)
+        $scope.misc99 = true;
+      else
+        $scope.misc99 = false;
+    }
+
+
+    /**
+     * Get Transaction Form
+     * @method getTransactionForm
+     * @return MemberExpression
+     */
+    $rootScope.getTransactionForm = function() {
+      return $scope.transactionInfoForm;
+    };
+    /**
+     * Get Transaction Form Data
+     * @method getTransactionFormData
+     * @return MemberExpression
+     */
+    $rootScope.getTransactionFormData = function() {
+      return $scope.transactionFormData;
+    };
+    /**
+     * Update Lead Status
+     * @method updateLeadStatus
+     */
+    $rootScope.updateLeadStatus = function() {
+      $rootScope.isLeadSelected = false;
+      if (fdService.getCDFromSession()) {
+        $rootScope.isLeadSelected = true;
+      } else {
+        $timeout(function() {
+          $rootScope.openPane();
+        }, 200);
+      }
+    };
+
+    /**
+     * Validate Cart
+     * @method validateCart
+     */
+    $scope.validateCart = function() {
+      fdService.validateCart($rootScope.cart, $scope.transactionFormData)
+        .success(function(data, status, headers, config) {
+          $rootScope.cart.validation = data;
+          $rootScope.cart = fdService.cartChanged($rootScope.cart);
+        });
+    };
+
+    /**
+     * validate cart on average ticket changed
+     * @method avgTicketChanged
+     */
+    $scope.avgTicketChanged = function() {
+
+      $rootScope.cart.validation.iscartvalid = false;
+      if ($scope.toATS) {
+        $timeout.cancel($scope.toATS);
+      }
+
+      $scope.toATS = $timeout(function() {
+        $scope.validateCart();
+      }, 1000);
+    };
+
+    /**
+     * validate the annual sales volume
+     * @method checkAnnualSalesVolume
+     */
+    $scope.checkAnnualSalesVolume = function() {
+
+      var totalVol;
+      if ($scope.transactionFormData.annualcardVolume && $scope.transactionFormData.telecheckVolume) {
+        totalVol = parseFloat($scope.transactionFormData.annualcardVolume) + parseFloat($scope.transactionFormData.telecheckVolume);
+        if ($scope.transactionFormData.amexVolume) {
+          totalVol = totalVol + parseFloat($scope.transactionFormData.amexVolume);
+        }
+      } else {
+        return;
+      }
+
+      if ($scope.transactionFormData.annualVolume > totalVol) {
+        $scope.transactionInfoForm.sales.$setValidity('maxError', true);
+      } else {
+        $scope.transactionInfoForm.sales.$setValidity('maxError', false);
+      }
+
+    };
+
+    ///////////////// MAIN ////////////////////////////////
+    _init();
+
   }
-
-  ///////////////// MAIN ////////////////////////////////
-  _init();
-  
-}]);;/**
+]);;/**
  * validate if 2 fields are equal
  */
 app.directive("compareTo", function() {
@@ -3817,6 +8789,27 @@ app.directive("compareTo", function() {
                 var l = (typeof modelValue == 'undefined' ? '' : modelValue);
                 var r = (typeof scope.otherModelValue == 'undefined' ? '' : scope.otherModelValue);
                 return l.toLowerCase() == r.toLowerCase();
+            };
+            scope.$watch("otherModelValue", function() {
+                ngModel.$validate();
+            });
+        }
+    };
+});
+/**
+ * Compare Numbers
+ */
+app.directive("compareNumTo", function() {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareNumTo"
+        },
+        link: function(scope, element, attributes, ngModel) {
+            ngModel.$validators.compareNumTo = function(modelValue) {
+                var l = (typeof modelValue == 'undefined' ? '' : modelValue);
+                var r = (typeof scope.otherModelValue == 'undefined' ? '' : scope.otherModelValue);
+                return l === r;
             };
             scope.$watch("otherModelValue", function() {
                 ngModel.$validate();
@@ -3842,6 +8835,38 @@ app.directive("toggleMenu", function() {
 app.directive("sketch", function() {
     return function(scope, element, attrs) {
         element.sketch();
+    };
+});
+
+/**
+ * Add Video Modal Directive
+ */
+app.directive("addVideoModal", function() {
+    return function(scope, element, attrs) {
+        element.on('click', function() {
+            $(attrs.addVideoModal).modal('show');
+            $(attrs.addVideoModal).on('hidden.bs.modal', function() {
+                $(attrs.addVideoModal + ' iframe').attr("src", $(attrs.addVideoModal + ' iframe').attr("src"));
+                var video = $(attrs.addVideoModal + ' video')[0];
+                if (video && !video.paused) {
+                    video.pause();
+                }
+            });
+        });
+    };
+});
+
+/**
+ * Open Video Directive
+ */
+app.directive("openVideo", function() {
+    return function(scope, element, attrs) {
+        element.YouTubePopup({
+            autoplay: true,
+            draggable: false,
+            title: 'Clover Overview',
+            useYoutTubeTitle: false
+        });
     };
 });
 
@@ -3931,6 +8956,11 @@ app.directive('ssnField', function($filter) {
                 var formatted;
                 formatted = ssnReverse(value);
                 element.val(ssnFilter(formatted));
+                setTimeout(function() {
+                    var strLength = ssnFilter(formatted).length;
+                    element[0].focus();
+                    element[0].setSelectionRange(strLength, strLength);
+                }, 10);
                 return formatted;
             };
             modelCtrl.$formatters.push(formatter);
@@ -3974,7 +9004,40 @@ app.directive('formatPhone', function($filter) {
                 var formatted;
                 formatted = phoneReverse(value);
                 element.val(phoneFilter(formatted));
+                setTimeout(function() {
+                    var strLength = phoneFilter(formatted).length;
+                    element[0].focus();
+                    element[0].setSelectionRange(strLength, strLength);
+                }, 10);
                 return formatted;
+            };
+            modelCtrl.$formatters.push(formatter);
+            return modelCtrl.$parsers.unshift(parser);
+        }
+    };
+});
+
+/**
+ * Format Number
+ */
+app.directive('formatNum', function($filter) {
+    var numFilter = $filter('number');
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, modelCtrl) {
+            var formatter, parser;
+            formatter = function(value) {
+                return numFilter(value);
+            };
+            parser = function(value) {
+                var formatted;
+                var val = value.split('.');
+                var decimals = val[1] != undefined ? '.'+val[1] : '';
+                formatted = val[0].replace(/\D/g, "")+decimals;
+                if(decimals != '.')
+                    element.val(numFilter(formatted));
+                return parseFloat(formatted);
             };
             modelCtrl.$formatters.push(formatter);
             return modelCtrl.$parsers.unshift(parser);
@@ -3996,13 +9059,20 @@ app.directive('ngMin', function() {
             scope.$watch(attr.ngMin, function() {
                 ctrl.$setViewValue(ctrl.$viewValue);
             });
+            ctrl.$validators.ngMin = function(value) {
+                var minVal = parseFloat(attr.ngMin) || 0;
+                return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= minVal;
+            };
+            attr.$observe('min', function(val) {
+                ctrl.$validate();
+            });
             var minValidator = function(value) {
-                var min = scope.$eval(attr.ngMin) || 0;
-                if (!isEmpty(value) && value <= min) {
-                    ctrl.$setValidity('ngMin', false);
-                    return undefined;
-                } else {
+                var min = parseFloat(attr.ngMin) || 0;//scope.$eval(attr.ngMin) || 0;
+                if (!isEmpty(value) && value >= min) {
                     ctrl.$setValidity('ngMin', true);
+                    return value;
+                } else {
+                    ctrl.$setValidity('ngMin', false);
                     return value;
                 }
             };
@@ -4026,13 +9096,20 @@ app.directive('ngMax', function() {
             scope.$watch(attr.ngMax, function() {
                 ctrl.$setViewValue(ctrl.$viewValue);
             });
+            ctrl.$validators.ngMax = function(value) {
+                var maxVal = parseFloat(attr.ngMax) || Infinity;
+                return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= maxVal;
+            };
+            attr.$observe('max', function(val) {
+                ctrl.$validate();
+            });
             var maxValidator = function(value) {
-                var max = scope.$eval(attr.ngMax) || Infinity;
-                if (!isEmpty(value) && value >= max) {
-                    ctrl.$setValidity('ngMax', false);
-                    return undefined;
-                } else {
+                var max = parseFloat(attr.ngMax) || Infinity;//scope.$eval(attr.ngMax) || Infinity;
+                if (!isEmpty(value) && value <= max) {
                     ctrl.$setValidity('ngMax', true);
+                    return value;
+                } else {
+                    ctrl.$setValidity('ngMax', false);
                     return value;
                 }
             };
@@ -4061,7 +9138,8 @@ app.directive('decimalPlaces', function($parse, $filter) {
                 }
             });
             ele.bind('focusout', function(e) {
-                ngModel.$setViewValue($filter('decimalConvert')(scope.modelValue));
+                if(scope.modelValue)
+                    ngModel.$setViewValue($filter('decimalConvert')(scope.modelValue));
                 ngModel.$render();
             });
         }
@@ -4091,8 +9169,6 @@ app.directive('goTo', ['$location', '$timeout', function($location, $timeout) {
                 $timeout(function() {
                     $location.path(attrs.goTo);
                 });
-                //              scope.$apply(function() {
-                //              });
             });
         }
     }
@@ -4351,7 +9427,7 @@ app.filter('monthName', [function() {
  */
 app.filter('isEmpty', [function() {
   return function (obj) {
-     return !Object.keys(obj).length;
+     return !obj || !Object.keys(obj).length;
   }
 }]);
 
@@ -4407,7 +9483,7 @@ app.filter('tel', function () {
 
       number = number.slice(0, 3) + '-' + number.slice(3);
 
-      return (country + " " + city + " " + number).trim();
+      return (country + "("+ city + ") " + number).trim();
   };
 });
 
@@ -4416,7 +9492,7 @@ app.filter('tel', function () {
  */
 app.filter('lengthOfObject', function() {
   return function(obj) {
-    if ('object' !== typeof obj) {
+    if ('object' !== typeof obj || obj === null) {
       return null;
     }
     return Object.keys(obj).length;
@@ -4635,8 +9711,41 @@ app.filter('orderByObj', function() {
     }
     return newItems;
   };
-});;app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST', '$timeout',
-  function ($http, $filter, $window, $cacheFactory, CONST, $timeout) {
+});
+
+/**
+ * Trusted HTML content
+ */
+app.filter('to_trusted', ['$sce', function($sce){
+  return function(text) {
+    return $sce.trustAsHtml(text);
+  };
+}]);
+
+/**
+ * Order By ParentOrder
+ */
+app.filter('orderByParentOrder', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    for(var i=0; i<filtered.length;i++){
+        filtered[i].parentOrder = filtered[i][0].parentOrder;
+    }
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
+  };
+});
+;/**
+ * FD App Services
+ */
+app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST', '$timeout', '$rootScope',
+  function($http, $filter, $window, $cacheFactory, CONST, $timeout, $rootScope) {
 
 
     // Prefix for urls. Empty for now
@@ -4650,6 +9759,9 @@ app.filter('orderByObj', function() {
 
     // Order Id name in session storage
     var order_id = 'order_id';
+
+    // Temp Order Id name in session storage
+    var tmp_order_id = 'tmp_order_id';
 
     // Category Id name session storage
     var category_id = 'category_id';
@@ -4675,16 +9787,19 @@ app.filter('orderByObj', function() {
     // Geo Data name in session storage
     var geo_data = 'geo_data';
 
+    // Shipping options in session storage
+    var shipping_options = 'shipping_options';
 
     /**
      * recursively change to upper object data
+     * @method changeToUpper
      * @param data
-     * @return {Object}
+     * @return {Object} data
      */
     function changeToUpper(data) {
       for (var key in data) {
         if (!data.hasOwnProperty(key)) continue;
-        if(typeof data[key] == "string") {
+        if (typeof data[key] == "string") {
           data[key] = data[key].toUpperCase();
         } else if (typeof data[key] != "object" || typeof data[key] != "array") {
           data[key] = changeToUpper(data[key]);
@@ -4693,70 +9808,133 @@ app.filter('orderByObj', function() {
       return data;
     }
 
-
     /**
      * Get Categories list
-     * @return {HttpPromise}
+     * @method getCategories
+     * @return {HTTPPromise}
      */
-    this.getCategories = function(){
+    this.getCategories = function() {
       return $http.get(urlPrefix + '/marketplace/v1/categories');
     };
 
     /**
-     * Get category codes
-     * @return {HttpPromise}
+     * Get Product Line Items
+     * @method getProductLineItems
+     * @param {} id
+     * @return {HTTPPromise}
      */
-    this.getMccCodes = function(category){
-      return $http.get(urlPrefix + '/marketplace/v1/categories/'+ category +'/industries/');
+    this.getProductLineItems = function(id) {
+      return $http.get(urlPrefix + '/marketplace/v1/application/' + id + '/lineItems/');
+    };
+
+    /**
+     * Get category codes
+     * @method getMccCodes
+     * @param {} category
+     * @return {HTTPPromise}
+     */
+    this.getMccCodes = function(category) {
+      return $http.get(urlPrefix + '/marketplace/v1/categories/' + category + '/industries/');
     };
 
     /**
      * Get MCC codes by type
-     * @return {HttpPromise}
+     * @method getMccTypes
+     * @param {} category
+     * @param {} type
+     * @return {HTTPPromise}
      */
-    this.getMccTypes = function(category, type){
-      return $http.get(urlPrefix + '/marketplace/v1/categories/'+ category +'/industries/'+ type +'/merchantcategorycodes/' );
+    this.getMccTypes = function(category, type) {
+      return $http.get(urlPrefix + '/marketplace/v1/categories/' + category + '/industries/' + type + '/merchantcategorycodes/');
     };
 
-    //changed
-    this.getProduct = function(pid){
+    /**
+     * Get Product
+     * @method getProduct
+     * @param {} pid
+     * @return {HTTPPromise}
+     */
+    this.getProduct = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/details/');
     };
 
     /**
      * Get Recommended products
-     * @return {HttpPromise}
+     * @method getRecommendedBundles
+     * @param {number} id
+     * @return {HTTPPromise}
      */
-    this.getRecommendedBundles = function(id){
+    this.getRecommendedBundles = function(id) {
       return $http.get(urlPrefix + '/marketplace/v1/products/'+ id + '/recommended/');
     };
 
     /**
-     * Get all products
-     * @return {HttpPromise}
+     * Check Tin
+     * @method checkTin
+     * @param {} data
+     * @return {HTTPPromise}
      */
-    this.getAllProducts = function(){
+    this.checkTin = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/tin/validate', data);
+    };
+
+    /**
+     * Get Bank Name
+     * @method getBankName
+     * @param {} data
+     * @return {HTTPPromise}
+     */
+    this.getBankName = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/banks/validate', data, {timeout : 3000});
+    };
+
+    /**
+     * Description
+     * @method getTitles
+     * @param {} data
+     * @return {HTTPPromise}
+     */
+    this.getTitles = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/signup/titles', data);
+    };
+
+    /**
+     * Description
+     * @method validateContact
+     * @param {} data
+     * @return {HTTPPromise}
+     */
+    this.validateContact = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/validate/contact', data);
+    };
+
+    /**
+     * Get all products
+     * @method getAllProducts
+     * @return {HTTPPromise}
+     */
+    this.getAllProducts = function() {
       var self = this;
       var ret = {
-        success: function(){
+        success: function() {
           return this;
         },
-        error: function(callback){
+        error: function(callback) {
           return this;
         },
       };
       var data = this.getProductListFromSession();
 
       if (data) {
-        ret.success = function(callback){
+        ret.success = function(callback) {
           callback.apply(this, [data, 200]);
           return this;
         };
 
       } else {
-        var res = $http({method: 'GET', cache: true, url: urlPrefix + '/marketplace/v1/products'});
+        var res = $http({method: 'GET', cache: true, url: urlPrefix + '/marketplace/v1/products/'});
         ret.error = res.error;
-        ret.success = function(callback){
+        ret.success = function(callback) {
           res.success(function(data, status, headers, config) {
             self.storeProductListSession(data);
             callback.apply(this, [data, status, headers, config]);
@@ -4769,64 +9947,98 @@ app.filter('orderByObj', function() {
 
     /**
      * Get Product Features
-     * @return {HttpPromise}
+     * @method getFeatures
+     * @param {} id
+     * @return {HTTPPromise}
      */
-    this.getFeatures = function(id){
+    this.getFeatures = function(id) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + id + '/features/');
     };
 
     /**
      * Get Product specifications
-     * @return {HttpPromise}
+     * @method getSpecs
+     * @param {} id
+     * @return {HTTPPromise}
      */
-    this.getSpecs = function(id){
+    this.getSpecs = function(id) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + id + '/specs/');
     };
 
     /**
      * Get Included Products
-     * @return {HttpPromise}
+     * @method getProductsList
+     * @param {} pid
+     * @return {HTTPPromise}
      */
-    this.getProductsList = function(pid){
+    this.getProductsList = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/includes/');
     };
 
     /**
      * Get Product FAQ list
-     * @return {HttpPromise}
+     * @method getFaqs
+     * @param {} pid
+     * @return {HTTPPromise}
      */
-    this.getFaqs = function(pid){
+    this.getFaqs = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/faq/');
     };
 
     /**
      * Get Product Options
-     * @return {HttpPromise}
+     * @method getProductOptions
+     * @param {} pid
+     * @return {HTTPPromise}
      */
-    this.getProductOptions = function(pid){
+    this.getProductOptions = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/options/');
     };
 
     /**
-     * Service to validate a cart
-     * @return {HttpPromise}
+     * Get Data By Ip
+     * @method getDataByIp
+     * @return {HTTPPromise}
      */
-    this.validateCart = function(cart, ti){
+    this.getDataByIp = function() {
+      return $http.get(urlPrefix + '/marketplace/v1/zipcode/');
+    };
 
+    /**
+     * Get Taxes
+     * @method getTaxes
+     * @param {} zip
+     * @param {} city
+     * @return {HTTPPromise}
+     */
+    this.getTaxes = function(zip, city) {
+      return $http.get(urlPrefix + '/marketplace/v1/salestax/' + zip + '/' + city);
+    };
+
+    /**
+     * Service to validate a cart
+     * @method validateCart
+     * @param {} cart
+     * @param {} ti
+     * @return {HTTPPromise}
+     */
+    this.validateCart = function(cart, ti) {
       ti = ti || this.getTransactionInfo();
+      var category = this.getCategoryFromSession();
 
-
+      var categoryName = category ? category.name : ti.category;
       var data = {
-        merchant : "",
-        cartdetails : [],
+        merchant: "",
+        cartdetails: [],
         transactionInfo: {
           mccTypes: ti.mccTypes || '',
           mcc: ti.mcc || null,
           annualVolume: ti.annualVolume || null,
           averageTicket: ti.averageTicket || null,
           amexVolume: ti.amexVolume || null,
+          amexMemberId: ti.amexMemberId || null,
           highestTicket: ti.highestTicket || null,
-          category: ti.category || null
+          category: categoryName || null
         }
       };
 
@@ -4834,7 +10046,8 @@ app.filter('orderByObj', function() {
         for (var i in cart.data) {
           data.cartdetails.push(
             {
-              "productId": cart.data[i].id,
+            "productId": cart.data[i].id,
+            "category": cart.data[i].category,
             }
           );
         }
@@ -4844,113 +10057,184 @@ app.filter('orderByObj', function() {
         for (var i in cart.payment_types.products) {
           data.cartdetails.push(
             {
-              "productId": cart.payment_types.products[i].id,
+            "productId": cart.payment_types.products[i].id,
+            "category": cart.payment_types.products[i].category,
             }
           );
         }
 
       }
-      return $http.post(urlPrefix + 'marketplace/v1/cart/validate', data);
+
+      if (cart.transaction_products && cart.transaction_products.length) {
+        for (var i in cart.transaction_products) {
+          data.cartdetails.push(
+              {
+            "productId": cart.transaction_products[i].id,
+            "category": cart.transaction_products[i].category,
+              }
+          );
+        }
+
+      }
+
+      return $http.post(urlPrefix + '/marketplace/v2/cart/validate', data);
     };
 
     /**
      * Get signed order information
-     * @return {HttpPromise}
+     * @method getMerchantInfo
+     * @param {} orderId
+     * @return {HTTPPromise}
      */
-    this.getMerchantInfo = function(orderId){
+    this.getMerchantInfo = function(orderId) {
       return $http.get(urlPrefix + '/marketplace/v1/contracts/' + orderId + '/agreement/');
     };
 
     /**
      * Get signed order signatures
-     * @return {HttpPromise}
+     * @method getMerchantSignatures
+     * @param {} orderId
+     * @return {HTTPPromise}
      */
-    this.getMerchantSignatures = function(orderId){
+    this.getMerchantSignatures = function(orderId) {
       return $http.get(urlPrefix + '/marketplace/v1/contracts/' + orderId + '/signatures/');
     };
 
     /**
      * Get equipment pricing list
-     * @return {HttpPromise}
+     * @method getEquipmentPricing
+     * @param {} cart
+     * @param {} ti
+     * @return {HTTPPromise}
      */
-    this.getEquipmentPricing = function(cart, ti){
+    this.getEquipmentPricing = function(cart, ti) {
 
       ti = ti || this.getTransactionInfo();
-
       data = {
         "transactionInfo": ti,
-        "products": []
+        "cardNotPresent": cart.cardNotPresent,
+        "cartDetails": []
       };
-      for (var i in cart.data) {
-        data.products.push(
-          {
-            "id": cart.data[i].id,
+
+      if (cart.data && cart.data.length) {
+        for (var i in cart.data) {
+          data.cartDetails.push({
+            "productId": cart.data[i].id,
             "name": cart.data[i].name,
             "price": cart.data[i].price,
-            "type": cart.data[i].name,
+            "type": cart.data[i].productType,
             "term": cart.data[i].term,
-            "qty": cart.data[i].qty,
-          }
-        );
+            "category": cart.data[i].category,
+            "qty": cart.data[i].qty
+          });
+        }
       }
-      return $http.post(urlPrefix + '/marketplace/v1/pricing/equipment', data);
+
+      return $http.post(urlPrefix + '/marketplace/v2/pricing/equipment', data);
     };
 
     /**
      * Get global pricing list
-     * @return {HttpPromise}
+     * @method getGlobalPricing
+     * @return {HTTPPromise}
      */
-    this.getGlobalPricing = function(){
-      return $http.post(urlPrefix + '/marketplace/v1/pricing/global', {});
+    this.getGlobalPricing = function() {
+      data = {};
+      return $http.post(urlPrefix + '/marketplace/v1/pricing/global', data);
     };
 
     /**
      * Get acquiring pricing list
-     * @return {HttpPromise}
+     * @method getAcquiringPricing
+     * @param {} cart
+     * @param {} ti
+     * @return {HTTPPromise}
      */
-    this.getAcquiringPricing = function(cart, ti){
-
+    this.getAcquiringPricing = function(cart, ti) {
       ti = ti || this.getTransactionInfo();
 
       data = {
         "transactionInfo": ti,
-        "products": []
+        "cardNotPresent": cart.cardNotPresent,
+        "cartDetails": []
       };
+
+      if (cart.data && cart.data.length) {
+        for (var i in cart.data) {
+              data.cartDetails.push(
+                  {
+            "productId": cart.data[i].id,
+            "category": cart.data[i].category,
+            // "cardNotPresent": false,
+            "productType": cart.data[i].productType
+                  }
+              );
+        }
+      }
+
       if (cart.payment_types && Object.keys(cart.payment_types.products).length) {
         for (var i in cart.payment_types.products) {
-          data.products.push(
+          data.cartDetails.push(
             {
-              "id": cart.payment_types.products[i].id,
-              "name": cart.payment_types.products[i].name,
-              "price": cart.payment_types.products[i].price,
-              "type": 'Acquiring', // Hardcoded
-              "term": cart.payment_types.products[i].term,
-              "qty": cart.payment_types.products[i].qty,
+            "productId": cart.payment_types.products[i].id,
+            "category": cart.payment_types.products[i].category,
+            // "cardNotPresent": false,
+            "productType": cart.payment_types.products[i].type
             }
           );
         }
 
       }
 
-      return $http.post(urlPrefix + '/marketplace/v1/pricing/acquiring', data);
+      if (cart.transaction_products && cart.transaction_products.length) {
+        for (var i in cart.transaction_products) {
+          data.cartDetails.push(
+              {
+            "productId": cart.transaction_products[i].id,
+            "category": cart.transaction_products[i].category,
+            // "cardNotPresent": false,
+            "productType": cart.transaction_products[i].type
+              }
+          );
+        }
+
+      }
+
+      return $http.post(urlPrefix + '/marketplace/v2/pricing/acquiring', data);
     };
 
     /**
-     * Checkout order
-     * @return {HttpPromise}
+     * Review Order
+     * @method reviewOrder
+     * @param orderId
+     * @param cd
+     * @param cart
+     * @param user
+     * @param ti
+     * @param ap
+     * @param ep
+     * @param gp
+     * @return {HTTPPromise}
      */
-    this.placeOrder = function(orderId, cart, ti, ap, ep, gp){
+    this.reviewOrder = function(orderId, cd, cart, user, ti, ap, ep, gp) {
 
-      cart = cart || this.getCart();
+      cart = cart || orderId ? this.getOrderedCart(orderId) : this.getCart();
       ti = ti || this.getTransactionInfo();
       ap = ap || this.getAcquiringPricingStorage();
       ep = ep || this.getEquipmentPricingStorage();
       gp = gp || this.getGlobalPricingStorage();
 
       var pricingDetails = [];
-      pricingDetails = pricingDetails.concat(ap);
+      var discountRates = ap.discountRates !== undefined ? ap.discountRates : [];
+      ep = ep !== undefined ? ep : [];
+      gp = gp !== undefined ? gp : [];
+
+      pricingDetails = pricingDetails.concat(discountRates);
       pricingDetails = pricingDetails.concat(ep);
       pricingDetails = pricingDetails.concat(gp);
+
+      var cardPresentDiscountRates = ap.cardPresentDiscountRates !== undefined ? ap.cardPresentDiscountRates : [];
+      var cardNotPresentDiscountRates = ap.cardNotPresentDiscountRates !== undefined ? ap.cardNotPresentDiscountRates : [];
 
       var cartDetails = {
         data: [],
@@ -4960,20 +10244,39 @@ app.filter('orderByObj', function() {
         taxPercent: cart.taxPercent,
         total: cart.total,
         status: 0,
+        monthly: [],
         shipping_option_id: cart.shipping_option_id,
+        numberofLocations: cart.num_locations_selected,
         purchaseEnabled: true,
         total_qty: cart.total_qty,
       };
-
 
       for (var i in cart.data) {
         cartDetails.data.push({
           id: cart.data[i].id,
           name: cart.data[i].name,
           price: cart.data[i].price,
+          monthly: [],
           term: cart.data[i].term,
+          category: cart.data[i].category,
           qty: cart.data[i].qty,
           productType: cart.data[i].productType,
+        });
+      }
+
+      //send Shipping details
+      //var shippingMethods = this.getSessionShippingMethods();
+      var shipProduct = CONST.SHIPPING_METHODS[cart.shipping_option_id];
+      if (shipProduct !== undefined && (cart.amount > 0 || cart.lease_amount > 0)) {
+        cartDetails.data.push({
+          id: shipProduct.productId,
+          name: shipProduct.productName,
+          price: shipProduct.price,
+          monthly: [],
+          term: 'P',
+          qty: 1,
+          category: cart.data[0].category,
+          productType: shipProduct.productType
         });
       }
 
@@ -4982,66 +10285,264 @@ app.filter('orderByObj', function() {
           id: cart.payment_types.products[i].id,
           name: cart.payment_types.products[i].name,
           price: cart.payment_types.products[i].price,
+          monthly: [],
           term: cart.payment_types.products[i].term,
+          category: cart.payment_types.products[i].category,
           qty: cart.payment_types.products[i].qty,
           productType: cart.payment_types.products[i].type,
         });
       }
 
+      for (var i in cart.transaction_products) {
+        cartDetails.data.push({
+          id: cart.transaction_products[i].id,
+          name: cart.transaction_products[i].name,
+          price: cart.transaction_products[i].price,
+          monthly: [],
+          term: cart.transaction_products[i].term,
+          category: cart.transaction_products[i].category,
+          qty: cart.transaction_products[i].qty,
+          productType: cart.transaction_products[i].type,
+        });
+      }
+
+      var transactionInfo = {
+        mccTypes: ti.mccTypes,
+        mcc: ti.mcc,
+        annualVolume: ti.annualVolume,
+        creditCardVolume: ti.annualcardVolume,
+        telecheckVolume: ti.telecheckVolume,
+        averageTicket: ti.averageTicket,
+        highestTicket: ti.highestTicket,
+        category: ti.category,
+        amexMemberId: ti.amexMemberId,
+        amexVolume: ti.amexVolume,
+      };
+
       var data = {
-        first_name: cart.shippingAddress.firstname,
-        last_name: cart.shippingAddress.lastname,
-        email: cart.shippingAddress.email,
-        company: cart.shippingAddress.company_name,
+        company: cart.shippingAddress[0].company_name,
+        first_name: cart.shippingAddress[0].firstname,
+        last_name: cart.shippingAddress[0].lastname,
+        email: cart.shippingAddress[0].email,
+        phone: cart.shippingAddress[0].phone,
+        address1: cart.shippingAddress[0].address1,
+        city: cart.shippingAddress[0].city,
+        state: cart.shippingAddress[0].state,
+        zip: cart.shippingAddress[0].zip,
+        recordType: 'Lead',
+        pricingDetails: pricingDetails,
+        cardPresentDiscountRates: cardPresentDiscountRates,
+        cardNotPresentDiscountRates: cardNotPresentDiscountRates,
         pricingOptions: {
-          transactionInfo: ti,
+          transactionInfo: transactionInfo,
         },
         shippingAddress: cart.shippingAddress,
-        pricingDetails: pricingDetails,
+        cardNotPresent: cart.cardNotPresent,
         cartDetails: cartDetails
       };
 
-      return $http.post(urlPrefix + '/marketplace/v1/application/checkout', data);
+      var oid = orderId || this.getTmpOrderId();
+      if (oid) {
+        return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + oid + '/updateorder', data);
+      } else {
+        return $http.post(urlPrefix + '/marketplace/v1/merchantorders', data);
+      }
     };
 
     /**
      * Submit signature
-     * @return {HttpPromise}
+     * @method submitSignature
+     * @param {} data
+     * @return {HTTPPromise}
      */
-    this.submitSignature = function(data){
-      return $http.post(urlPrefix + '/marketplace/v1/application/submit/', data);
+    this.submitSignature = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v2/application/submit', data);
     };
 
     /**
-     * Sipnup order
-     * @return {HttpPromise}
+     * Submit Merchant Application
+     * @method submitMerchantApplication
+     * @param {} data
+     * @return {HTTPPromise}
      */
-    this.submitMerchantApplication = function(data){
+    this.submitMerchantApplication = function(data) {
       data = changeToUpper(data);
       return $http.post(urlPrefix + '/marketplace/v1/application/update', data);
     };
 
     /**
+     * submit / place empty order
+     * @method submitOrderEmpty
+     * @return {HTTPPromise}
+     */
+    this.submitOrderEmpty = function() {
+      var orderId = this.getOrderId();
+      var data = {orderId: orderId};
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/updateorder', data);
+    }
+
+    /**
+     * submit / place order
+     * @method submitOrder
+     * @param cartDetails
+     * @return {HTTPPromise}
+     */
+    this.submitOrder = function(cartDetails) {
+
+      var orderId = this.getOrderId();
+      var cart = orderId ? this.getOrderedCart(orderId) : this.getCart();
+      var ti = this.getTransactionInfo();
+      var ap = this.getAcquiringPricingStorage();
+      var ep = this.getEquipmentPricingStorage();
+      var gp = this.getGlobalPricingStorage();
+
+      var pricingDetails = [];
+      var discountRates = ap.discountRates !== undefined ? ap.discountRates : [];
+      ep = ep !== undefined ? ep : [];
+      gp = gp !== undefined ? gp : [];
+
+      pricingDetails = pricingDetails.concat(discountRates);
+      pricingDetails = pricingDetails.concat(ep);
+      pricingDetails = pricingDetails.concat(gp);
+
+      var cardPresentDiscountRates = ap.cardPresentDiscountRates !== undefined ? ap.cardPresentDiscountRates : [];
+      var cardNotPresentDiscountRates = ap.cardNotPresentDiscountRates !== undefined ? ap.cardNotPresentDiscountRates : [];
+
+      if (!cartDetails) {
+        var cartDetails = {
+          data: [],
+          amount: cart.amount,
+          shipping_amount: cart.shipping_amount,
+          tax: cart.tax,
+          taxPercent: cart.taxPercent,
+          total: cart.total,
+          status: 0,
+          monthly: [],
+          shipping_option_id: cart.shipping_option_id,
+          numberofLocations: cart.num_locations_selected,
+          purchaseEnabled: true,
+          total_qty: cart.total_qty,
+        };
+
+        for (var i in cart.data) {
+          cartDetails.data.push({
+            id: cart.data[i].id,
+            name: cart.data[i].name,
+            price: cart.data[i].price,
+            monthly: [],
+            term: cart.data[i].term,
+            qty: cart.data[i].qty,
+            category: cart.data[i].category,
+            productType: cart.data[i].productType,
+          });
+        }
+
+        //send Shipping details
+        //var shippingMethods = this.getSessionShippingMethods();
+        var shipProduct = CONST.SHIPPING_METHODS[cart.shipping_option_id];
+        if (shipProduct !== undefined && (cart.amount > 0 || cart.lease_amount > 0)) {
+          cartDetails.data.push({
+            id: shipProduct.productId,
+            name: shipProduct.productName,
+            price: shipProduct.price,
+            monthly: [],
+            term: 'P',
+            qty: 1,
+            category: ti.category,
+            productType: shipProduct.productType
+          });
+        }
+
+        for (var i in cart.payment_types.products) {
+          cartDetails.data.push({
+            id: cart.payment_types.products[i].id,
+            name: cart.payment_types.products[i].name,
+            price: cart.payment_types.products[i].price,
+            monthly: [],
+            term: cart.payment_types.products[i].term,
+            qty: cart.payment_types.products[i].qty,
+            category: cart.payment_types.products[i].category,
+            productType: cart.payment_types.products[i].type,
+          });
+        }
+
+        for (var i in cart.transaction_products) {
+          cartDetails.data.push({
+            id: cart.transaction_products[i].id,
+            name: cart.transaction_products[i].name,
+            price: cart.transaction_products[i].price,
+            monthly: [],
+            term: cart.transaction_products[i].term,
+            category: cart.transaction_products[i].category,
+            qty: cart.transaction_products[i].qty,
+            productType: cart.transaction_products[i].type,
+          });
+        }
+      }
+
+      var transactionInfo = {
+        mccTypes: ti.mccTypes,
+        mcc: ti.mcc,
+        annualVolume: ti.annualVolume,
+        creditCardVolume: ti.annualcardVolume,
+        telecheckVolume: ti.telecheckVolume,
+        averageTicket: ti.averageTicket,
+        highestTicket: ti.highestTicket,
+        category: ti.category,
+        amexMemberId: ti.amexMemberId,
+        amexVolume: ti.amexVolume,
+      };
+
+      var data = {
+        orderId: orderId,
+        company: cart.shippingAddress[0].company_name,
+        first_name: cart.shippingAddress[0].firstname,
+        last_name: cart.shippingAddress[0].lastname,
+        email: cart.shippingAddress[0].email,
+        phone: cart.shippingAddress[0].phone,
+        address1: cart.shippingAddress[0].address1,
+        city: cart.shippingAddress[0].city,
+        state: cart.shippingAddress[0].state,
+        zip: cart.shippingAddress[0].zip,
+        recordType: 'Lead',
+        pricingDetails: pricingDetails,
+        cardPresentDiscountRates: cardPresentDiscountRates,
+        cardNotPresentDiscountRates: cardNotPresentDiscountRates,
+        pricingOptions: {
+          transactionInfo: transactionInfo,
+        },
+        shippingAddress: cart.shippingAddress,
+        cardNotPresent: cart.cardNotPresent,
+        cartDetails: cartDetails
+      };
+
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/updateorder', data);
+    };
+
+    /**
      * Store Order Id into session
+     * @method storeOrderId
      * @param data
      */
-    this.storeOrderId = function(data){
+    this.storeOrderId = function(data) {
       if (undefined == data) return;
       $window.sessionStorage.setItem(order_id, JSON.stringify(data));
     };
 
     /**
      * Clear Order Id From session
+     * @method clearOrderId
      */
-    this.clearOrderId = function(){
+    this.clearOrderId = function() {
       $window.sessionStorage.removeItem(order_id);
     };
 
     /**
      * Get Order Id from session
+     * @method getOrderId
      * @return {number} Order Id or false
      */
-    this.getOrderId = function(){
+    this.getOrderId = function() {
       var data = $window.sessionStorage.getItem(order_id);
       if (data) {
         return JSON.parse(data);
@@ -5050,25 +10551,59 @@ app.filter('orderByObj', function() {
     };
 
     /**
+     * Description
+     * @method storeTmpOrderId
+     * @param {} data
+     */
+    this.storeTmpOrderId = function(data) {
+      if (undefined == data) return;
+      $window.sessionStorage.setItem(tmp_order_id, JSON.stringify(data));
+    };
+
+    /**
+     * Description
+     * @method clearTmpOrderId
+     */
+    this.clearTmpOrderId = function() {
+      $window.sessionStorage.removeItem(tmp_order_id);
+    };
+
+    /**
+     * Description
+     * @method getTmpOrderId
+     * @return OrderId or false
+     */
+    this.getTmpOrderId = function() {
+      var data = $window.sessionStorage.getItem(tmp_order_id);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return false;
+    };
+
+    /**
      * Store category information into session
+     * @method storeCategoryInSession
      * @param data
      */
-    this.storeCategoryInSession = function(data){
+    this.storeCategoryInSession = function(data) {
       $window.sessionStorage.setItem(category_id, JSON.stringify(data));
     };
 
     /**
      * Clear category from session
+     * @method clearCategoryFromSession
      */
-    this.clearCategoryFromSession = function(){
+    this.clearCategoryFromSession = function() {
       $window.sessionStorage.removeItem(category_id);
     };
 
     /**
      * Get category from session
+     * @method getCategoryFromSession
      * @return {Object} Category or false
      */
-    this.getCategoryFromSession = function(){
+    this.getCategoryFromSession = function() {
       var data = $window.sessionStorage.getItem(category_id);
       if (data) {
         return JSON.parse(data);
@@ -5078,64 +10613,77 @@ app.filter('orderByObj', function() {
 
     /**
      * Store products list in session
+     * @method storeProductListSession
      * @param {Array} data
      */
-    this.storeProductListSession = function(data){
-      cache.put(products_list, data);
+    this.storeProductListSession = function(data) {
+      $window.sessionStorage.setItem(products_list, JSON.stringify(data));
     };
 
     /**
      * Clear products list from session
+     * @method clearProductListSession
      */
-    this.clearProductListSession = function(){
-      cache.put(products_list, null);
+    this.clearProductListSession = function() {
+      $window.sessionStorage.removeItem(products_list);
     };
 
     /**
      * get product list from session
+     * @method getProductListFromSession
      * @return {Array} product list or false
      */
-    this.getProductListFromSession = function(){
-      return cache.get(products_list);
+    this.getProductListFromSession = function() {
+      var data = $window.sessionStorage.getItem(products_list);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return false;
     };
 
     /**
      * Store Geo Data in cache
+     * @method storeGeoData
      * @param data
      */
-    this.storeGeoData = function(data){
+    this.storeGeoData = function(data) {
       cache.put(geo_data, data);
     };
 
     /**
      * Clear Geo Data from cache
+     * @method clearGeoData
      */
-    this.clearGeoData = function(){
+    this.clearGeoData = function() {
       cache.put(geo_data, null);
     };
 
     /**
      * Get Geo Data from cache
-     * @return {Object}
+     * @method getGeoData
+     * @return GeoData
      */
-    this.getGeoData = function(){
+    this.getGeoData = function() {
       return cache.get(geo_data);
     };
 
     /**
      * Store Cart in session
+     * @method storeCart
      * @param cart
      */
-    this.storeCart = function(cart){
+    this.storeCart = function(cart) {
       window.sessionStorage.setItem(storage_cart, JSON.stringify(cart));
+      $rootScope.$emit('cart-changed', cart);
     };
 
     /**
      * Store ordered cart in session
+     * @method storeOrderedCart
      * @param order_id
      * @param cart
      */
-    this.storeOrderedCart = function(order_id, cart){
+    this.storeOrderedCart = function(order_id, cart) {
       var s = {};
       s[order_id] = cart
       window.sessionStorage.setItem(ordered_cart, JSON.stringify(s));
@@ -5143,34 +10691,38 @@ app.filter('orderByObj', function() {
 
     /**
      * Clear Cart from session
+     * @method clearCart
      */
-    this.clearCart = function(){
+    this.clearCart = function() {
       window.sessionStorage.removeItem(storage_cart);
     };
 
     /**
      * Clear ordered cart from session
+     * @method clearOrderedCart
      */
-    this.clearOrderedCart = function(){
+    this.clearOrderedCart = function() {
       window.sessionStorage.removeItem(ordered_cart);
     };
 
     /**
      * Get Cart From session or if empty create cart object
-     * @return {Object}
+     * @method getCart
+     * @return {Object} Cart
      */
-    this.getCart = function(){
+    this.getCart = function() {
       var cart = window.sessionStorage.getItem(storage_cart);
-      if (cart){
+      if (cart) {
         return JSON.parse(cart);
       }
       return {
-        data: {},
+        data: [],
         payment_types: null,
         amount: 0,
         lease_amount: 0,
         shipping_amount: 0,
         tax: 0,
+        leaseTax: 0,
         taxPercent: -1,
         total: 0,
         status: 0,
@@ -5180,54 +10732,58 @@ app.filter('orderByObj', function() {
         mFees: {},
         onetimeFees: {},
         shipping_option_id: 1,
-        shippingAddress: {},
+        shippingAddress: [{}],
         validation: {},
         total_lease_qty: 0,
         total_product_fee_amount: 0,
         product_fees: {},
-        transaction_fee: null,
+        transaction_products: [],
+        // transaction_fee: null,
         total_qty: 0
       };
     };
 
     /**
      * Get ordered cart from session
+     * @method getOrderedCart
      * @param order_id
-     * @return {*}
+     * @return Literal
      */
-    this.getOrderedCart = function(order_id){
+    this.getOrderedCart = function(order_id) {
       var carts = window.sessionStorage.getItem(ordered_cart);
       var cs, c;
-      if (carts){
+      if (carts) {
         cs = JSON.parse(carts);
       }
       if (carts) {
         return cs[order_id];
       }
       return null;
-
     };
 
     /**
      * Store transaction info in session
+     * @method storeTransactionInfo
      * @param data
      */
-    this.storeTransactionInfo = function(data){
+    this.storeTransactionInfo = function(data) {
       $window.sessionStorage.setItem(transaction_info, JSON.stringify(data));
     };
 
     /**
      * Clear transaction info from session
+     * @method clearTransactionInfo
      */
-    this.clearTransactionInfo = function(){
+    this.clearTransactionInfo = function() {
       $window.sessionStorage.removeItem(transaction_info);
     };
 
     /**
      * Get transaction info from session
+     * @method getTransactionInfo
      * @return {boolean}
      */
-    this.getTransactionInfo = function(){
+    this.getTransactionInfo = function() {
       var data = $window.sessionStorage.getItem(transaction_info);
       if (data) {
         return JSON.parse(data);
@@ -5237,24 +10793,27 @@ app.filter('orderByObj', function() {
 
     /**
      * Store equipment pricing in session
+     * @method storeEquipmentPricing
      * @param data
      */
-    this.storeEquipmentPricing = function(data){
+    this.storeEquipmentPricing = function(data) {
       $window.sessionStorage.setItem(equipment_pricing, JSON.stringify(data));
     };
 
     /**
      * Clear equipment pricing from session
+     * @method clearEquipmentPricing
      */
-    this.clearEquipmentPricing = function(){
+    this.clearEquipmentPricing = function() {
       $window.sessionStorage.removeItem(equipment_pricing);
     };
 
     /**
      * Get equipment pricing from session
+     * @method getEquipmentPricingStorage
      * @return {Array}
      */
-    this.getEquipmentPricingStorage = function(){
+    this.getEquipmentPricingStorage = function() {
       var data = $window.sessionStorage.getItem(equipment_pricing);
       if (data) {
         return JSON.parse(data);
@@ -5264,24 +10823,27 @@ app.filter('orderByObj', function() {
 
     /**
      * Store acquiring pricing in session
+     * @method storeAcquiringPricing
      * @param data
      */
-    this.storeAcquiringPricing = function(data){
+    this.storeAcquiringPricing = function(data) {
       $window.sessionStorage.setItem(acquiring_pricing, JSON.stringify(data));
     };
 
     /**
      * Clear acquiring pricing from session
+     * @method clearAcquiringPricing
      */
-    this.clearAcquiringPricing = function(){
+    this.clearAcquiringPricing = function() {
       $window.sessionStorage.removeItem(acquiring_pricing);
     };
 
     /**
      * Get acquiring pricing from session
+     * @method getAcquiringPricingStorage
      * @return {Array}
      */
-    this.getAcquiringPricingStorage = function(){
+    this.getAcquiringPricingStorage = function() {
       var data = $window.sessionStorage.getItem(acquiring_pricing);
       if (data) {
         return JSON.parse(data);
@@ -5291,24 +10853,27 @@ app.filter('orderByObj', function() {
 
     /**
      * Store global pricing in session
+     * @method storeGlobalPricing
      * @param data
      */
-    this.storeGlobalPricing = function(data){
+    this.storeGlobalPricing = function(data) {
       $window.sessionStorage.setItem(global_pricing, JSON.stringify(data));
     };
 
     /**
      * Clear global pricing from session
+     * @method clearGlobalPricing
      */
-    this.clearGlobalPricing = function(){
+    this.clearGlobalPricing = function() {
       $window.sessionStorage.removeItem(global_pricing);
     };
 
     /**
      * Get global pricing from session
+     * @method getGlobalPricingStorage
      * @return {Array}
      */
-    this.getGlobalPricingStorage = function(){
+    this.getGlobalPricingStorage = function() {
       var data = $window.sessionStorage.getItem(global_pricing);
       if (data) {
         return JSON.parse(data);
@@ -5318,19 +10883,26 @@ app.filter('orderByObj', function() {
 
     /**
      * Recalculate cart
+     * @method recalculateCart
      * @param cart
      * @param taxAmt
-     * @return {Object}
+     * @return cart
      */
     this.recalculateCart = function(cart, taxAmt) {
 
+      var prev_num_locations = cart.num_locations;
+
       cart.amount = 0;
+      cart.cardNotPresent = 0;
+      cart.num_locations = 0;
+      cart.num_locations_selected = cart.num_locations_selected || 0;
       cart.lease_amount = 0;
       cart.total_qty = 0;
       cart.total_lease_qty = 0;
       cart.total_purchase_qty = 0;
       cart.product_fees = {};
       cart.total_product_fee_amount = 0;
+      //var shippingMethods = this.getSessionShippingMethods();
 
       var total_product_fee_amount = 0;
       var product_fees = {};
@@ -5342,10 +10914,15 @@ app.filter('orderByObj', function() {
         cart.total_product_fee_amount = total_product_fee_amount;
         cart.product_fees = product_fees;
 
+        if ('Terminal' == cart.data[i].productType || 'Gateway' == cart.data[i].productType || 'VAR' == cart.data[i].productType || 'TERM' == cart.data[i].productType) {
+          cart.num_locations = cart.num_locations + cart.data[i].qty;
+        }
+
         cart.data[i].min_lease_amount = 0;
 
         cart.total_qty += parseInt(cart.data[i].qty);
 
+        cart.cardNotPresent |= (cart.data[i].cardNotPresent ? 2 : 1);
 
         if (CONST.PURCHASE_CODE == cart.data[i].term || CONST.OWNED_CODE == cart.data[i].term) {
           if (cart.data[i].pricingModel) {
@@ -5358,7 +10935,9 @@ app.filter('orderByObj', function() {
               }
             }
           }
-          cart.amount += cart.data[i].qty * cart.data[i].price;
+          if (cart.data[i].price) {
+            cart.amount += cart.data[i].qty * cart.data[i].price;
+          }
           cart.total_purchase_qty += parseInt(cart.data[i].qty);
           cart.data[i].pmodel = null;
         } else {
@@ -5381,7 +10960,6 @@ app.filter('orderByObj', function() {
         }
       }
 
-
       if (taxAmt) {
         cart.tax = taxAmt;
       } else {
@@ -5389,30 +10967,74 @@ app.filter('orderByObj', function() {
           cart.tax = 0;
         } else {
           cart.tax = cart.amount * cart.taxPercent;
+          cart.leaseTax = cart.lease_amount * cart.taxPercent;
         }
       }
 
-      cart.shipping_amount = CONST.SHIPPING_METHODS[cart.shipping_option_id].price;
+      if (cart.amount > 0 || cart.lease_amount > 0)
+        cart.shipping_amount = CONST.SHIPPING_METHODS[cart.shipping_option_id].price;
+      else
+        cart.shipping_amount = 0;
 
       cart.total = cart.amount + cart.shipping_amount + cart.tax;
+
+      // reset locations
+      if (prev_num_locations !== cart.num_locations) {
+        cart.num_locations_selected = 0;
+      }
+
+      if (1 === cart.num_locations) {
+        cart.num_locations_selected = 1;
+      }
 
       return cart;
     };
 
     /**
+     * Reset Cart Pricing, if TransactionInfo available
+     * @method resetCartOverridePricing
+     * @param {} cart
+     */
+    this.resetCartOverridePricing = function(cart) {
+      var ti = this.getTransactionInfo();
+      if (!ti) {
+        return;
+      }
+      for (var i in cart.data) {
+        var p = cart.data[i];
+        var isLeased = (p.term != CONST.PURCHASE_CODE && p.term != CONST.OWNED_CODE) ? true : false;
+        if (!isLeased) {
+          if (cart.data[i].defaultPrice)
+            cart.data[i].price = cart.data[i].defaultPrice;
+          }
+          else{
+              var idx = p.pricingModel_default.map(function(priceModel){ return priceModel.id; }).indexOf(p.pmodel.id);
+          p.price = p.pricingModel_default[idx].defaultAmt;
+          p.pricingModel[idx].defaultAmt = p.pricingModel_default[idx].defaultAmt;
+        }
+      }
+    }
+
+    /**
      * Lease product
+     * @method leaseProduct
      * @param bundle product
      * @param cart
-     * @param pid
-     * @return {Object} cart
+     * @param {} category
+     * @return cart
      */
-    this.leaseProduct = function(bundle, cart, pid){
+    this.leaseProduct = function(bundle, cart, category) {
 
       if (!bundle) {
         return;
       }
 
-      pid = pid || bundle.productId;
+      var pid = bundle.productId || bundle.id;
+      var name = bundle.productName || bundle.name;
+
+      var qty = bundle.qty || 1;
+
+      category = category || this.getCategoryFromSession().name;
 
       if (!Object.keys(bundle).length) {
         return;
@@ -5421,20 +11043,46 @@ app.filter('orderByObj', function() {
       if (!bundle.pricingModel || !bundle.pricingModel.length) {
         return;
       }
-      var term = bundle.pricingModel[0].purchaseType;
+      var term;
+      for (var i = 0; i < bundle.pricingModel.length; i++) {
+        if (bundle.pricingModel[i].purchaseType == "LT36") {
+          term = bundle.pricingModel[i].purchaseType;
+          termPaymentType = bundle.pricingModel[i].paymentType;
+          break;
+        } else {
+          term = bundle.pricingModel[0].purchaseType;
+          termPaymentType = bundle.pricingModel[0].paymentType;
+        }
+      };
 
-      if (cart.data[pid]){
-        cart.data[pid].term = term;
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+      var pr = {
+        id: pid,
+        name: name,
+        price: bundle.price,
+        pricingModel: bundle.pricingModel,
+        pricingModel_default: angular.copy(bundle.pricingModel),
+        term: term,
+        termPaymentType: termPaymentType,
+        pmodel: null,
+        category: category,
+        cardNotPresent: cardNotPresent,
+        productType: bundle.productType,
+        qty: qty
+      };
+
+      var index = this.getCartProductIndex(cart, pr);
+
+      if (-1 !== index) {
+        pr = cart.data[index];
+        pr.term = term;
+        pr.termPaymentType = termPaymentType;
+        pr.pricingModel = bundle.pricingModel;
+        pr.pricingModel_default = angular.copy(bundle.pricingModel);
+        cart.data[index] = pr;
       } else {
-        cart.data[pid] = {
-          id: pid,
-          name: bundle.productName,
-          price: bundle.price,
-          pricingModel: bundle.pricingModel,
-          term: term,
-          pmodel: null,
-          qty: "1"
-        };
+        cart.data.push(pr);
       }
 
       cart = this.cartChanged(cart);
@@ -5444,10 +11092,11 @@ app.filter('orderByObj', function() {
 
     /**
      * Recalculate cart and store it in session
+     * @method cartChanged
      * @param cart
-     * @return {Object}
+     * @return cart
      */
-    this.cartChanged = function(cart){
+    this.cartChanged = function(cart) {
       cart = this.recalculateCart(cart);
       this.storeCart(cart);
       return cart;
@@ -5455,11 +11104,12 @@ app.filter('orderByObj', function() {
 
     /**
      * Recalculate ordered cart and store it in session
+     * @method orderedCartChanged
      * @param orderId
      * @param cart
-     * @return {Object}
+     * @return cart
      */
-    this.orderedCartChanged = function(orderId, cart){
+    this.orderedCartChanged = function(orderId, cart) {
       cart = this.recalculateCart(cart);
       this.storeOrderedCart(orderId, cart);
       return cart;
@@ -5467,16 +11117,23 @@ app.filter('orderByObj', function() {
 
     /**
      * Lookup city and state using Google Map API
+     * @method lookupByZip
      * @param zip
      * @param callback function
      */
-    this.lookupByZip = function(zip, callback){
-      if (zip.length < 5) return;
+    this.lookupByZip = function(zip, callback) {
+
+      if (zip.length < 5) {
+        callback.apply(this, [null, null]);
+        return;
+      }
+
       var geocoder = new google.maps.Geocoder();
-      geocoder.geocode( { "address": zip + ' USA' }, function(result, status) {
+      geocoder.geocode( { "address": zip }, function(result, status) {
         var city = '';
         var state = '';
         var neighborhood = '';
+        var sublocality = '';
         if (status == google.maps.GeocoderStatus.OK && result.length > 0) {
           for (var component in result[0]['address_components']) {
             for (var i in result[0]['address_components'][component]['types']) {
@@ -5484,10 +11141,13 @@ app.filter('orderByObj', function() {
                 state = result[0]['address_components'][component]['short_name'];
               }
               if (result[0]['address_components'][component]['types'][i] == "locality") {
-                city = result[0]['address_components'][component]['long_name'];
+                city = result[0]['address_components'][component]['long_name'].replace(/(St.|'|ñ)/g, function(match){return CONST.citySpecialChar[match];});
               }
               if (result[0]['address_components'][component]['types'][i] == "neighborhood") {
                 neighborhood = result[0]['address_components'][component]['long_name'];
+              }
+              if (result[0]['address_components'][component]['types'][i] == "sublocality") {
+                sublocality = result[0]['address_components'][component]['long_name'];
               }
               if (result[0]['address_components'][component]['types'][i] == "country") {
                 country = result[0]['address_components'][component]['short_name'];
@@ -5498,6 +11158,9 @@ app.filter('orderByObj', function() {
           if (!city.length && neighborhood.length) {
             city = neighborhood;
           }
+          if (!city.length && sublocality.length) {
+            city = sublocality;
+          }
         }
 
         if ('US' == country) {
@@ -5505,32 +11168,37 @@ app.filter('orderByObj', function() {
         } else {
           callback.apply(this, [null, null]);
         }
-
       });
     };
 
     /**
+     * Description
+     * @method getInvalidSsn
+     * @return {HTTPPromise}
+     */
+    this.getInvalidSsn = function() {
+      return $http.get('../../invalidSsn.json');
+    };
+
+    /**
      * Set pricing data to cart
+     * @method setPricingToCart
      * @param cart
      * @param dt
      * @param addData {Boolean} if true add one time payments to cart
      * @return {Object} cart
      */
-    this.setPricingToCart = function(cart, dt, addData){
-      var data = angular.copy(dt);
+    this.setPricingToCart = function(cart, dt, addData) {
 
+      var data = angular.copy(dt);
       var paymentProducts = {
         products: {}
       };
 
       addData = addData || false;
-
-      var productAttributes = {};
-
-
-      for (var i = 0; i < data.length; i++){
+      var productAttributes = {}, pid;
+      for (var i = 0; i < data.length; i++) {
         if (data[i].productAttribute && data[i].showoncart) {
-
           var tmpId = data[i].productAttribute.name + data[i].productAttribute.value;
           if (productAttributes[tmpId]) {
             data[i].showoncart = false;
@@ -5546,51 +11214,86 @@ app.filter('orderByObj', function() {
         }
       }
 
-      for (var i = 0; i < data.length; i++){
+      for (var i = 0; i < data.length; i++) {
 
         if ('Transaction' == data[i].occurrence.type) {
-          if (2 == data[i].productId || 80382 == data[i].productId){
-            cart.transaction_fee = {
-              fee: data[i].defaultAmt,
-              rate: data[i].rateDefault,
-            };
-          }
+          // if (2 == data[i].productId || 80382 == data[i].productId){
+          //   cart.transaction_fee = {
+          //     fee: data[i].defaultAmt,
+          //     rate: data[i].rateDefault,
+          //   };
+          // }
         } else {
 
           if (data[i].showoncart) {
+            if ('Recurring' == data[i].occurrence.type) {
+              if (data[i].paymentType == 'Installment' || data[i].paymentType == 'Lease' || data[i].paymentType == 'Rent') {
+                var pricingModel = [];
+                pricingModel[0] = {
+                  defaultAmt: data[i].defaultAmt,
+                  fkProdId: data[i].productId,
+                  id: '',
+                  occurrence: data[i].occurrence.type,
+                  paymentTerm: data[i].paymentTerm,
+                  paymentType: data[i].paymentType,
+                  purchaseType: data[i].purchaseType,
+                  purchaseTypeLabel: ''
+                }
 
-            if('Recurring' == data[i].occurrence.type) {
-              cart.mFees[data[i].productId] = {
-                name: data[i].productName,
-                amount: data[i].defaultAmt,
-              };
-              cart.mfeeAmount +=  cart.mFees[data[i].productId].amount;
-            } else if ('Onetime_Fee' == data[i].occurrence.type){
+                cart.data.push({
+                  id: data[i].productId,
+                  name: data[i].productName,
+                  price: data[i].defaultAmt,
+                  defaultPrice: data[i].defaultAmt,
+                  productType: data[i].productType,
+                  term: data[i].purchaseType,
+                  qty: data[i].quantity,
+                  category: data[i].category ? data[i].category : transactionFormData.category,
+                  cardNotPresent: data[i].cardNotPresent,
+                  pricingModel: pricingModel
+                });
+              } else {
+                cart.mFees[data[i].productId] = {
+                  name: data[i].productName,
+                  amount: data[i].defaultAmt,
+                  disclosure: data[i].disclosure,
+                };
+                cart.mfeeAmount += cart.mFees[data[i].productId].amount;
+              }
+
+            } else if ('Onetime_Fee' == data[i].occurrence.type) {
+
               cart.onetimeFees[data[i].productId] = {
                 name: data[i].productName,
                 amount: data[i].defaultAmt,
               };
+
               cart.onetimeAmount += cart.onetimeFees[data[i].productId].amount;
             } else if ('Onetime_Product' == data[i].occurrence.type) {
               if (addData) {
-                cart.data[data[i].productId] = {
+                cart.data.push({
                   id: data[i].productId,
                   name: data[i].productName,
                   price: data[i].defaultAmt,
+                  defaultPrice: data[i].defaultAmt,
                   productType: data[i].productType,
                   term: data[i].purchaseType,
+                  category: data[i].category,
+                  cardNotPresent: data[i].cardNotPresent,
                   qty: data[i].quantity,
-                };
+                });
               }
             } else if ('Acquiring' == data[i].occurrence.type) {
-              paymentProducts.id = data[i].parentProduct.id;
-              paymentProducts.name = data[i].parentProduct.name;
+              paymentProducts.id = data[i].parentProduct ? data[i].parentProduct.id : null;
+              paymentProducts.name = data[i].parentProduct ? data[i].parentProduct.name : null;
               paymentProducts.products[data[i].productId] = {
                 id: data[i].productId,
                 name: data[i].productName,
                 price: data[i].defaultAmt,
                 productType: data[i].productType,
                 term: data[i].purchaseType,
+                category: data[i].category,
+                cardNotPresent: data[i].cardNotPresent,
                 qty: data[i].quantity,
               };
 
@@ -5601,23 +11304,58 @@ app.filter('orderByObj', function() {
 
       if (addData) {
         cart.payment_types = paymentProducts;
+
+        for (var i = 0; i < cart.cartTransactionRates.length; i++) {
+          pid = cart.cartTransactionRates[i].parentProduct ? cart.cartTransactionRates[i].parentProduct.id : cart.cartTransactionRates[i].productId;
+
+          if ('ACQUIRING' == cart.cartTransactionRates[i].productType) {
+            if (!cart.payment_types) {
+              cart.payment_types = {};
+            }
+
+            if (!cart.payment_types.groups) {
+              cart.payment_types.groups = [];
+            }
+
+            if (-1 == cart.payment_types.groups.map(function(e) {return e.name;}).indexOf(cart.cartTransactionRates[i].groupName)) {
+              cart.payment_types.groups.push({
+                pid: cart.cartTransactionRates[i].groupName,
+                name: cart.cartTransactionRates[i].groupName,
+                fee: cart.cartTransactionRates[i].parentProduct.fee,
+                rate: cart.cartTransactionRates[i].parentProduct.rate,
+              })
+
+            }
+
+          } else {
+
+            index = cart.transaction_products.map(function(e) {return e.id;}).indexOf(pid);
+
+            if (-1 !== index) {
+              cart.transaction_products[index].parentProduct = cart.cartTransactionRates[i].parentProduct;
+            }
+          }
+        }
+
       }
       return cart;
     };
 
     /**
      * Initialize pricing data
+     * @method initPricingData
      * @param callback function
      * @param ap Acquiring pricing
      * @param ep Equipment Pricing
      * @param gp Global Pricing
      */
-    this.initPricingData = function(callback, ap, ep, gp){
-
-      var cbf = function(){
+    this.initPricingData = function(callback, ap, ep, gp) {
+      var cbf = function() {
         if (ap && ep && gp) {
           fdService.cartChanged(cart);
-          callback.apply(this, [1]);
+          if (ap && ep && gp) {
+            callback.apply(this, [1]);
+          }
         }
       };
 
@@ -5642,10 +11380,48 @@ app.filter('orderByObj', function() {
         fdService.getAcquiringPricing(cart, ti)
           .success(function(data, status, headers, config) {
             fdService.storeAcquiringPricing(data);
-            cart = fdService.setPricingToCart(cart, data);
 
+            var index, pid;
+            var newData = [];
+            for (var i in data) {
+              if ('cartTransactionRates' == i) {
+                cart.cartTransactionRates = data[i];
+              } else {
+                newData = newData.concat(data[i]);
+              }
+            }
+
+            for (i in data.cartTransactionRates) {
+              pid = data.cartTransactionRates[i].parentProduct ? data.cartTransactionRates[i].parentProduct.id : data.cartTransactionRates[i].productId;
+              if ('ACQUIRING' == data.cartTransactionRates[i].productType) {
+                if (!cart.payment_types) {
+                  cart.payment_types = {};
+                }
+                if (!cart.payment_types.groups) {
+                  cart.payment_types.groups = [];
+                }
+
+                  if (-1 == cart.payment_types.groups.map(function(e) {return e.name;}).indexOf(data.cartTransactionRates[i].groupName)) {
+                  cart.payment_types.groups.push({
+                    pid: data.cartTransactionRates[i].groupName,
+                    name: data.cartTransactionRates[i].groupName,
+                    fee: data.cartTransactionRates[i].parentProduct.fee,
+                    rate: data.cartTransactionRates[i].parentProduct.rate,
+                  })
+
+                }
+              } else {
+
+                index = cart.transaction_products.map(function(e) {return e.id;}).indexOf(pid);
+
+                if (-1 !== index) {
+                  cart.transaction_products[index].parentProduct = data.cartTransactionRates[i].parentProduct;
+                }
+              }
+            }
+
+            cart = fdService.setPricingToCart(cart, newData);
             ap = data;
-
             cbf();
 
           })
@@ -5670,6 +11446,11 @@ app.filter('orderByObj', function() {
             callback.apply(this, [0]);
             console.log('error')
           });
+      } else {
+        //restore Equipment Pricing details into session
+        fdService.storeEquipmentPricing(ep);
+        cart = fdService.setPricingToCart(cart, ep);
+        cbf();
       }
 
       if (!gp) {
@@ -5687,35 +11468,286 @@ app.filter('orderByObj', function() {
             callback.apply(this, [0]);
             console.log('error')
           });
-      }
-      else{
+      } else {
+        //restore Global Pricing details into session
         fdService.storeGlobalPricing(gp);
+        cart = fdService.setPricingToCart(cart, gp);
+        cbf();
       }
     };
 
     /**
-     * Update pricing if transaction info exists
+     * Description
+     * @method updatePricing
+     * @param {} callback
      */
-    this.updatePricing = function(){
+    this.updatePricing = function(callback) {
       var ti = this.getTransactionInfo();
       var gp = this.getGlobalPricingStorage();
 
       if (!ti) {
         return;
       }
-
-      $timeout(function(){
-        this.initPricingData(function(status){
+      $timeout(function() {
+        this.initPricingData(function(status) {
           if (status) {
+            if ('function' === typeof callback) {
+              callback();
+            }
             console.log('updated');
           } else {
             console.log('error');
           }
         }, null, null, gp);
       }.bind(this));
+    };
+
+    /**
+     * Description get FSP company flag to enable Multiple DDA
+     * @method getFspCompany
+     * @param {} orderId
+     * @return {HTTPPromise}
+     */
+    this.getFspCompany = function(orderId) {
+        return $http.get(urlPrefix + '/marketplace/v2/signup/fspcompany/' + orderId);
+    }
+
+    /**
+     * Description get MCC Code Details
+     * @method getMCCDetails
+     * @param {} categoryName
+     * @param {} mccNumber
+     * @return {HTTPPromise}
+     */
+    this.getMCCDetails = function(categoryName, mccNumber) {
+      return $http.get(urlPrefix + '/marketplace/v1/companies/category/' + categoryName + '/merchantcategorycodes/' + mccNumber + '/industries');
+    };
+
+    /**
+     * Post Signup Merchant Owner Information
+     * @method postBusinessinformation
+     * @param data
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.postBusinessinformation = function(data, orderId) {
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/businessinformation', data);
+    };
+
+
+    /**
+     * get products list for order
+     * @method getOrderProducts
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getOrderProducts = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/cart/' + orderId + '/products/');
+    };
+
+    /**
+     * get list of products for order
+     * @method getCartOrderProducts
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getCartOrderProducts = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/cart/products');
+    };
+
+    /**
+     * get cart details for order
+     * @method getCartDetails
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getCartDetails = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/cart/details');
+    };
+
+    /**
+     * get product attributes
+     * @method getProductAttributes
+     * @param {} orderId
+     * @param {} lineItemId
+     * @return {HTTPPromise}
+     */
+    this.getProductAttributes = function(orderId, lineItemId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/orderLineItems/' + lineItemId + '/attributes/');
+    };
+
+    /**
+     * post order locations
+     * @method postOrderLocations
+     * @param data
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.postOrderLocations = function(data, orderId) {
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/locations', data);
+    };
+
+    /**
+     * post account preferences
+     * @method postAccountPreferences
+     * @param data
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.postAccountPreferences = function(data, orderId) {
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/accountpreferences', data);
+    };
+
+    /**
+     * Description Get All Shipping Methods
+     * @method getShippingMethods
+     * @return {HTTPPromise}
+     */
+    this.getShippingMethods = function() {
+      return $http.get(urlPrefix + '/marketplace/v1/companies/products/shipping');
+    };
+
+    /**
+     * Get order locations
+     * @method getOrderLocations
+     * @param {} orderId
+     * @return {HTTPPromise}
+     */
+    this.getOrderLocations = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/locations');
+    };
+
+    /**
+     * get order business information
+     * @method getOrderBusinessinformation
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getOrderBusinessinformation = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/businessinformation');
+    };
+
+    /**
+     * Get account preferences
+     * @method getAccountPreferences
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getAccountPreferences = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/accountpreferences');
+    };
+
+    /**
+     * get merchant order agreement
+     * @method getOrderAgreementInformation
+     * @param orderId
+     * @param {} ownerId
+     * @return {HTTPPromise}
+     */
+    this.getOrderAgreementInformation = function(orderId, ownerId) {
+      var appendURL = ownerId ? '/' + ownerId : '';
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/agreement' + appendURL);
+    };
+
+    /**
+     * Store Shipping Methods into Session storage
+     * @method storeShippingMethods
+     * @param {} data
+     */
+    this.storeShippingMethods = function(data) {
+      if (undefined == data) return;
+      $window.sessionStorage.setItem(shipping_options, JSON.stringify(data));
+    };
+
+    /**
+     * Get Shipping Methods from Session storage
+     * @method getSessionShippingMethods
+     * @return Literal
+     */
+    this.getSessionShippingMethods = function() {
+      var data = $window.sessionStorage.getItem(shipping_options);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return false;
+    };
+
+    /**
+     * Clear Shipping Methods from Session storage
+     * @method clearSessionShippingMethods
+     */
+    this.clearSessionShippingMethods = function() {
+      $window.sessionStorage.removeItem(shipping_options);
+    };
+
+    /**
+     * Get Products By Option Type
+     * @method getProductsByOptionType
+     * @param type
+     * @return {HTTPPromise}
+     */
+    this.getProductsByOptionType = function(type) {
+      return $http.get(urlPrefix + '/marketplace/v1/companies/products/' + type + '/types/');
+    };
+
+
+    /**
+     * get index of product in the cart.data array
+     * @method getCartProductIndex
+     * @param cart
+     * @param pr
+     * @return number
+     */
+    this.getCartProductIndex = function(cart, pr) {
+
+      for (var i in cart.data) {
+        if (pr.id == cart.data[i].id && pr.term == cart.data[i].term && pr.category == cart.data[i].category) {
+          return i;
+        }
+      }
+      return -1;
+    };
+
+    /**
+     * Description
+     * @return
+     * @method validateBusiness
+     * @param {} element
+     * @param {} model
+     */
+    this.validateBusiness = function(element, model) {
+      if (!model) {
+        return;
+      }
+
+      var dataToValidate = {};
+      dataToValidate.merInfo = {};
+      dataToValidate.merInfo.contacts = {};
+      dataToValidate.merInfo.contacts.contactInfo = [];
+      dataToValidate.merInfo.contacts.contactInfo.push({
+        "email": model
+      });
+      this.validateContact(dataToValidate)
+        .success(function(response, status, headers, config) {
+          if (response.length != 0) {
+            for (var i = 0; i < response.length; i++) {
+              if (response[i].errorCode = 8104) {
+                element.$setValidity("emailnotValid", false);
+                return;
+              }
+            }
+          } else {
+            element.$setValidity("emailnotValid", true);
+          }
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
     };
-  }]);;/**
+
+  }
+]);;/**
  * Detect.js: User-Agent Parser
  * https://github.com/darcyclarke/Detect.js
  * Dual licensed under the MIT and GPL licenses.

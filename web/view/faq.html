@@ -1,0 +1,27 @@
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+  <div class="breadcrumb-inner container">
+    <div class="breadcrumb-mobile">
+      <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>{{bundle_info.productName}}</span></a>
+    </div>
+    <ul>
+      <li><a class="link" href="#/">Shop</a></li>
+      <li><a class="link" href="#/products/c">Products</a></li>
+      <li><a class="link" href="#/product/{{bundle_info.productId}}">{{bundle_info.productName}}</a></li>
+      <li><a>FAQ</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main-content">
+    <section id="faq">
+        <div class="container">
+            <h1>Commonly Asked Questions</h1>
+            <h2>{{bundle_info.productName}}</h2>
+            <div class="faq-question" ng-repeat="f in faqs">
+                <h4>{{f.header}}</h4>
+                <p>{{f.shortAnswer}}</p>
+            </div>
+        </div>
+    </section>
+</div><!-- end .content -->
+

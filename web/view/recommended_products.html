@@ -1,0 +1,32 @@
+<div id="breadcrumb-anchor"></div>
+<div id="breadcrumb" breadcrumb>
+  <div class="breadcrumb-inner container">
+    <div class="breadcrumb-mobile">
+      <a id="mobile-breadcrumb-toggle"><i class="fa fa-chevron-down"></i> <span>Recommended Products</span></a>
+    </div>
+    <ul>
+      <li><a class="link" href="#/">Shop</a></li>
+      <li><a class="link" href="#/products/c">Products</a></li>
+      <li><a class="link" href="#/product/{{pid}}">{{recommendedProductName}}</a></li>
+      <li><a>Recommended Products</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main-content">
+  <section id="products-main">
+    <div class="container">
+      <div class="column-12">
+        <h1>Recommended Products</h1>
+        <h2>{{recommendedProductName}}</h2>
+        <p class="subhead" ng-show="!isRecommendedCallDone">Loading....</p>
+        <div class="shop-product featured column-3" ng-repeat="p in recommendedBundles track by $index ">
+          <a ng-href="#/product/{{p.productId}}">
+            <img ng-src="{{ProductThumbImg(p.imageUrls)}}">
+          </a>
+          <p>{{p.productName}}</p>
+          <a class="link-blue" ng-href="#/product/{{p.productId}}">View Details</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- end .content -->

@@ -1,5 +1,8 @@
-app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST', '$timeout',
-  function ($http, $filter, $window, $cacheFactory, CONST, $timeout) {
+/**
+ * FD App Services
+ */
+app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST', '$timeout', '$rootScope',
+  function($http, $filter, $window, $cacheFactory, CONST, $timeout, $rootScope) {
 
 
     // Prefix for urls. Empty for now
@@ -13,6 +16,9 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     // Order Id name in session storage
     var order_id = 'order_id';
+
+    // Temp Order Id name in session storage
+    var tmp_order_id = 'tmp_order_id';
 
     // Category Id name session storage
     var category_id = 'category_id';
@@ -38,16 +44,19 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     // Geo Data name in session storage
     var geo_data = 'geo_data';
 
+    // Shipping options in session storage
+    var shipping_options = 'shipping_options';
 
     /**
      * recursively change to upper object data
+     * @method changeToUpper
      * @param data
-     * @return {Object}
+     * @return {Object} data
      */
     function changeToUpper(data) {
       for (var key in data) {
         if (!data.hasOwnProperty(key)) continue;
-        if(typeof data[key] == "string") {
+        if (typeof data[key] == "string") {
           data[key] = data[key].toUpperCase();
         } else if (typeof data[key] != "object" || typeof data[key] != "array") {
           data[key] = changeToUpper(data[key]);
@@ -56,70 +65,133 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
       return data;
     }
 
-
     /**
      * Get Categories list
-     * @return {HttpPromise}
+     * @method getCategories
+     * @return {HTTPPromise}
      */
-    this.getCategories = function(){
+    this.getCategories = function() {
       return $http.get(urlPrefix + '/marketplace/v1/categories');
     };
 
     /**
-     * Get category codes
-     * @return {HttpPromise}
+     * Get Product Line Items
+     * @method getProductLineItems
+     * @param {} id
+     * @return {HTTPPromise}
      */
-    this.getMccCodes = function(category){
-      return $http.get(urlPrefix + '/marketplace/v1/categories/'+ category +'/industries/');
+    this.getProductLineItems = function(id) {
+      return $http.get(urlPrefix + '/marketplace/v1/application/' + id + '/lineItems/');
+    };
+
+    /**
+     * Get category codes
+     * @method getMccCodes
+     * @param {} category
+     * @return {HTTPPromise}
+     */
+    this.getMccCodes = function(category) {
+      return $http.get(urlPrefix + '/marketplace/v1/categories/' + category + '/industries/');
     };
 
     /**
      * Get MCC codes by type
-     * @return {HttpPromise}
+     * @method getMccTypes
+     * @param {} category
+     * @param {} type
+     * @return {HTTPPromise}
      */
-    this.getMccTypes = function(category, type){
-      return $http.get(urlPrefix + '/marketplace/v1/categories/'+ category +'/industries/'+ type +'/merchantcategorycodes/' );
+    this.getMccTypes = function(category, type) {
+      return $http.get(urlPrefix + '/marketplace/v1/categories/' + category + '/industries/' + type + '/merchantcategorycodes/');
     };
 
-    //changed
-    this.getProduct = function(pid){
+    /**
+     * Get Product
+     * @method getProduct
+     * @param {} pid
+     * @return {HTTPPromise}
+     */
+    this.getProduct = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/details/');
     };
 
     /**
      * Get Recommended products
-     * @return {HttpPromise}
+     * @method getRecommendedBundles
+     * @param {number} id
+     * @return {HTTPPromise}
      */
-    this.getRecommendedBundles = function(id){
+    this.getRecommendedBundles = function(id) {
       return $http.get(urlPrefix + '/marketplace/v1/products/'+ id + '/recommended/');
     };
 
     /**
-     * Get all products
-     * @return {HttpPromise}
+     * Check Tin
+     * @method checkTin
+     * @param {} data
+     * @return {HTTPPromise}
      */
-    this.getAllProducts = function(){
+    this.checkTin = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/tin/validate', data);
+    };
+
+    /**
+     * Get Bank Name
+     * @method getBankName
+     * @param {} data
+     * @return {HTTPPromise}
+     */
+    this.getBankName = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/banks/validate', data, {timeout : 3000});
+    };
+
+    /**
+     * Description
+     * @method getTitles
+     * @param {} data
+     * @return {HTTPPromise}
+     */
+    this.getTitles = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/signup/titles', data);
+    };
+
+    /**
+     * Description
+     * @method validateContact
+     * @param {} data
+     * @return {HTTPPromise}
+     */
+    this.validateContact = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v1/validate/contact', data);
+    };
+
+    /**
+     * Get all products
+     * @method getAllProducts
+     * @return {HTTPPromise}
+     */
+    this.getAllProducts = function() {
       var self = this;
       var ret = {
-        success: function(){
+        success: function() {
           return this;
         },
-        error: function(callback){
+        error: function(callback) {
           return this;
         },
       };
       var data = this.getProductListFromSession();
 
       if (data) {
-        ret.success = function(callback){
+        ret.success = function(callback) {
           callback.apply(this, [data, 200]);
           return this;
         };
 
       } else {
-        var res = $http({method: 'GET', cache: true, url: urlPrefix + '/marketplace/v1/products'});
+        var res = $http({method: 'GET', cache: true, url: urlPrefix + '/marketplace/v1/products/'});
         ret.error = res.error;
-        ret.success = function(callback){
+        ret.success = function(callback) {
           res.success(function(data, status, headers, config) {
             self.storeProductListSession(data);
             callback.apply(this, [data, status, headers, config]);
@@ -132,64 +204,98 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Get Product Features
-     * @return {HttpPromise}
+     * @method getFeatures
+     * @param {} id
+     * @return {HTTPPromise}
      */
-    this.getFeatures = function(id){
+    this.getFeatures = function(id) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + id + '/features/');
     };
 
     /**
      * Get Product specifications
-     * @return {HttpPromise}
+     * @method getSpecs
+     * @param {} id
+     * @return {HTTPPromise}
      */
-    this.getSpecs = function(id){
+    this.getSpecs = function(id) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + id + '/specs/');
     };
 
     /**
      * Get Included Products
-     * @return {HttpPromise}
+     * @method getProductsList
+     * @param {} pid
+     * @return {HTTPPromise}
      */
-    this.getProductsList = function(pid){
+    this.getProductsList = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/includes/');
     };
 
     /**
      * Get Product FAQ list
-     * @return {HttpPromise}
+     * @method getFaqs
+     * @param {} pid
+     * @return {HTTPPromise}
      */
-    this.getFaqs = function(pid){
+    this.getFaqs = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/faq/');
     };
 
     /**
      * Get Product Options
-     * @return {HttpPromise}
+     * @method getProductOptions
+     * @param {} pid
+     * @return {HTTPPromise}
      */
-    this.getProductOptions = function(pid){
+    this.getProductOptions = function(pid) {
       return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/options/');
     };
 
     /**
-     * Service to validate a cart
-     * @return {HttpPromise}
+     * Get Data By Ip
+     * @method getDataByIp
+     * @return {HTTPPromise}
      */
-    this.validateCart = function(cart, ti){
+    this.getDataByIp = function() {
+      return $http.get(urlPrefix + '/marketplace/v1/zipcode/');
+    };
 
+    /**
+     * Get Taxes
+     * @method getTaxes
+     * @param {} zip
+     * @param {} city
+     * @return {HTTPPromise}
+     */
+    this.getTaxes = function(zip, city) {
+      return $http.get(urlPrefix + '/marketplace/v1/salestax/' + zip + '/' + city);
+    };
+
+    /**
+     * Service to validate a cart
+     * @method validateCart
+     * @param {} cart
+     * @param {} ti
+     * @return {HTTPPromise}
+     */
+    this.validateCart = function(cart, ti) {
       ti = ti || this.getTransactionInfo();
+      var category = this.getCategoryFromSession();
 
-
+      var categoryName = category ? category.name : ti.category;
       var data = {
-        merchant : "",
-        cartdetails : [],
+        merchant: "",
+        cartdetails: [],
         transactionInfo: {
           mccTypes: ti.mccTypes || '',
           mcc: ti.mcc || null,
           annualVolume: ti.annualVolume || null,
           averageTicket: ti.averageTicket || null,
           amexVolume: ti.amexVolume || null,
+          amexMemberId: ti.amexMemberId || null,
           highestTicket: ti.highestTicket || null,
-          category: ti.category || null
+          category: categoryName || null
         }
       };
 
@@ -197,7 +303,8 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         for (var i in cart.data) {
           data.cartdetails.push(
             {
-              "productId": cart.data[i].id,
+            "productId": cart.data[i].id,
+            "category": cart.data[i].category,
             }
           );
         }
@@ -207,113 +314,184 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         for (var i in cart.payment_types.products) {
           data.cartdetails.push(
             {
-              "productId": cart.payment_types.products[i].id,
+            "productId": cart.payment_types.products[i].id,
+            "category": cart.payment_types.products[i].category,
             }
           );
         }
 
       }
-      return $http.post(urlPrefix + 'marketplace/v1/cart/validate', data);
+
+      if (cart.transaction_products && cart.transaction_products.length) {
+        for (var i in cart.transaction_products) {
+          data.cartdetails.push(
+              {
+            "productId": cart.transaction_products[i].id,
+            "category": cart.transaction_products[i].category,
+              }
+          );
+        }
+
+      }
+
+      return $http.post(urlPrefix + '/marketplace/v2/cart/validate', data);
     };
 
     /**
      * Get signed order information
-     * @return {HttpPromise}
+     * @method getMerchantInfo
+     * @param {} orderId
+     * @return {HTTPPromise}
      */
-    this.getMerchantInfo = function(orderId){
+    this.getMerchantInfo = function(orderId) {
       return $http.get(urlPrefix + '/marketplace/v1/contracts/' + orderId + '/agreement/');
     };
 
     /**
      * Get signed order signatures
-     * @return {HttpPromise}
+     * @method getMerchantSignatures
+     * @param {} orderId
+     * @return {HTTPPromise}
      */
-    this.getMerchantSignatures = function(orderId){
+    this.getMerchantSignatures = function(orderId) {
       return $http.get(urlPrefix + '/marketplace/v1/contracts/' + orderId + '/signatures/');
     };
 
     /**
      * Get equipment pricing list
-     * @return {HttpPromise}
+     * @method getEquipmentPricing
+     * @param {} cart
+     * @param {} ti
+     * @return {HTTPPromise}
      */
-    this.getEquipmentPricing = function(cart, ti){
+    this.getEquipmentPricing = function(cart, ti) {
 
       ti = ti || this.getTransactionInfo();
-
       data = {
         "transactionInfo": ti,
-        "products": []
+        "cardNotPresent": cart.cardNotPresent,
+        "cartDetails": []
       };
-      for (var i in cart.data) {
-        data.products.push(
-          {
-            "id": cart.data[i].id,
+
+      if (cart.data && cart.data.length) {
+        for (var i in cart.data) {
+          data.cartDetails.push({
+            "productId": cart.data[i].id,
             "name": cart.data[i].name,
             "price": cart.data[i].price,
-            "type": cart.data[i].name,
+            "type": cart.data[i].productType,
             "term": cart.data[i].term,
-            "qty": cart.data[i].qty,
-          }
-        );
+            "category": cart.data[i].category,
+            "qty": cart.data[i].qty
+          });
+        }
       }
-      return $http.post(urlPrefix + '/marketplace/v1/pricing/equipment', data);
+
+      return $http.post(urlPrefix + '/marketplace/v2/pricing/equipment', data);
     };
 
     /**
      * Get global pricing list
-     * @return {HttpPromise}
+     * @method getGlobalPricing
+     * @return {HTTPPromise}
      */
-    this.getGlobalPricing = function(){
-      return $http.post(urlPrefix + '/marketplace/v1/pricing/global', {});
+    this.getGlobalPricing = function() {
+      data = {};
+      return $http.post(urlPrefix + '/marketplace/v1/pricing/global', data);
     };
 
     /**
      * Get acquiring pricing list
-     * @return {HttpPromise}
+     * @method getAcquiringPricing
+     * @param {} cart
+     * @param {} ti
+     * @return {HTTPPromise}
      */
-    this.getAcquiringPricing = function(cart, ti){
-
+    this.getAcquiringPricing = function(cart, ti) {
       ti = ti || this.getTransactionInfo();
 
       data = {
         "transactionInfo": ti,
-        "products": []
+        "cardNotPresent": cart.cardNotPresent,
+        "cartDetails": []
       };
+
+      if (cart.data && cart.data.length) {
+        for (var i in cart.data) {
+              data.cartDetails.push(
+                  {
+            "productId": cart.data[i].id,
+            "category": cart.data[i].category,
+            // "cardNotPresent": false,
+            "productType": cart.data[i].productType
+                  }
+              );
+        }
+      }
+
       if (cart.payment_types && Object.keys(cart.payment_types.products).length) {
         for (var i in cart.payment_types.products) {
-          data.products.push(
+          data.cartDetails.push(
             {
-              "id": cart.payment_types.products[i].id,
-              "name": cart.payment_types.products[i].name,
-              "price": cart.payment_types.products[i].price,
-              "type": 'Acquiring', // Hardcoded
-              "term": cart.payment_types.products[i].term,
-              "qty": cart.payment_types.products[i].qty,
+            "productId": cart.payment_types.products[i].id,
+            "category": cart.payment_types.products[i].category,
+            // "cardNotPresent": false,
+            "productType": cart.payment_types.products[i].type
             }
           );
         }
 
       }
 
-      return $http.post(urlPrefix + '/marketplace/v1/pricing/acquiring', data);
+      if (cart.transaction_products && cart.transaction_products.length) {
+        for (var i in cart.transaction_products) {
+          data.cartDetails.push(
+              {
+            "productId": cart.transaction_products[i].id,
+            "category": cart.transaction_products[i].category,
+            // "cardNotPresent": false,
+            "productType": cart.transaction_products[i].type
+              }
+          );
+        }
+
+      }
+
+      return $http.post(urlPrefix + '/marketplace/v2/pricing/acquiring', data);
     };
 
     /**
-     * Checkout order
-     * @return {HttpPromise}
+     * Review Order
+     * @method reviewOrder
+     * @param orderId
+     * @param cd
+     * @param cart
+     * @param user
+     * @param ti
+     * @param ap
+     * @param ep
+     * @param gp
+     * @return {HTTPPromise}
      */
-    this.placeOrder = function(orderId, cart, ti, ap, ep, gp){
+    this.reviewOrder = function(orderId, cd, cart, user, ti, ap, ep, gp) {
 
-      cart = cart || this.getCart();
+      cart = cart || orderId ? this.getOrderedCart(orderId) : this.getCart();
       ti = ti || this.getTransactionInfo();
       ap = ap || this.getAcquiringPricingStorage();
       ep = ep || this.getEquipmentPricingStorage();
       gp = gp || this.getGlobalPricingStorage();
 
       var pricingDetails = [];
-      pricingDetails = pricingDetails.concat(ap);
+      var discountRates = ap.discountRates !== undefined ? ap.discountRates : [];
+      ep = ep !== undefined ? ep : [];
+      gp = gp !== undefined ? gp : [];
+
+      pricingDetails = pricingDetails.concat(discountRates);
       pricingDetails = pricingDetails.concat(ep);
       pricingDetails = pricingDetails.concat(gp);
+
+      var cardPresentDiscountRates = ap.cardPresentDiscountRates !== undefined ? ap.cardPresentDiscountRates : [];
+      var cardNotPresentDiscountRates = ap.cardNotPresentDiscountRates !== undefined ? ap.cardNotPresentDiscountRates : [];
 
       var cartDetails = {
         data: [],
@@ -323,20 +501,39 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         taxPercent: cart.taxPercent,
         total: cart.total,
         status: 0,
+        monthly: [],
         shipping_option_id: cart.shipping_option_id,
+        numberofLocations: cart.num_locations_selected,
         purchaseEnabled: true,
         total_qty: cart.total_qty,
       };
-
 
       for (var i in cart.data) {
         cartDetails.data.push({
           id: cart.data[i].id,
           name: cart.data[i].name,
           price: cart.data[i].price,
+          monthly: [],
           term: cart.data[i].term,
+          category: cart.data[i].category,
           qty: cart.data[i].qty,
           productType: cart.data[i].productType,
+        });
+      }
+
+      //send Shipping details
+      //var shippingMethods = this.getSessionShippingMethods();
+      var shipProduct = CONST.SHIPPING_METHODS[cart.shipping_option_id];
+      if (shipProduct !== undefined && (cart.amount > 0 || cart.lease_amount > 0)) {
+        cartDetails.data.push({
+          id: shipProduct.productId,
+          name: shipProduct.productName,
+          price: shipProduct.price,
+          monthly: [],
+          term: 'P',
+          qty: 1,
+          category: cart.data[0].category,
+          productType: shipProduct.productType
         });
       }
 
@@ -345,66 +542,264 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
           id: cart.payment_types.products[i].id,
           name: cart.payment_types.products[i].name,
           price: cart.payment_types.products[i].price,
+          monthly: [],
           term: cart.payment_types.products[i].term,
+          category: cart.payment_types.products[i].category,
           qty: cart.payment_types.products[i].qty,
           productType: cart.payment_types.products[i].type,
         });
       }
 
+      for (var i in cart.transaction_products) {
+        cartDetails.data.push({
+          id: cart.transaction_products[i].id,
+          name: cart.transaction_products[i].name,
+          price: cart.transaction_products[i].price,
+          monthly: [],
+          term: cart.transaction_products[i].term,
+          category: cart.transaction_products[i].category,
+          qty: cart.transaction_products[i].qty,
+          productType: cart.transaction_products[i].type,
+        });
+      }
+
+      var transactionInfo = {
+        mccTypes: ti.mccTypes,
+        mcc: ti.mcc,
+        annualVolume: ti.annualVolume,
+        creditCardVolume: ti.annualcardVolume,
+        telecheckVolume: ti.telecheckVolume,
+        averageTicket: ti.averageTicket,
+        highestTicket: ti.highestTicket,
+        category: ti.category,
+        amexMemberId: ti.amexMemberId,
+        amexVolume: ti.amexVolume,
+      };
+
       var data = {
-        first_name: cart.shippingAddress.firstname,
-        last_name: cart.shippingAddress.lastname,
-        email: cart.shippingAddress.email,
-        company: cart.shippingAddress.company_name,
+        company: cart.shippingAddress[0].company_name,
+        first_name: cart.shippingAddress[0].firstname,
+        last_name: cart.shippingAddress[0].lastname,
+        email: cart.shippingAddress[0].email,
+        phone: cart.shippingAddress[0].phone,
+        address1: cart.shippingAddress[0].address1,
+        city: cart.shippingAddress[0].city,
+        state: cart.shippingAddress[0].state,
+        zip: cart.shippingAddress[0].zip,
+        recordType: 'Lead',
+        pricingDetails: pricingDetails,
+        cardPresentDiscountRates: cardPresentDiscountRates,
+        cardNotPresentDiscountRates: cardNotPresentDiscountRates,
         pricingOptions: {
-          transactionInfo: ti,
+          transactionInfo: transactionInfo,
         },
         shippingAddress: cart.shippingAddress,
-        pricingDetails: pricingDetails,
+        cardNotPresent: cart.cardNotPresent,
         cartDetails: cartDetails
       };
 
-      return $http.post(urlPrefix + '/marketplace/v1/application/checkout', data);
+      var oid = orderId || this.getTmpOrderId();
+      if (oid) {
+        return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + oid + '/updateorder', data);
+      } else {
+        return $http.post(urlPrefix + '/marketplace/v1/merchantorders', data);
+      }
     };
 
     /**
      * Submit signature
-     * @return {HttpPromise}
+     * @method submitSignature
+     * @param {} data
+     * @return {HTTPPromise}
      */
-    this.submitSignature = function(data){
-      return $http.post(urlPrefix + '/marketplace/v1/application/submit/', data);
+    this.submitSignature = function(data) {
+      return $http.post(urlPrefix + '/marketplace/v2/application/submit', data);
     };
 
     /**
-     * Sipnup order
-     * @return {HttpPromise}
+     * Submit Merchant Application
+     * @method submitMerchantApplication
+     * @param {} data
+     * @return {HTTPPromise}
      */
-    this.submitMerchantApplication = function(data){
+    this.submitMerchantApplication = function(data) {
       data = changeToUpper(data);
       return $http.post(urlPrefix + '/marketplace/v1/application/update', data);
     };
 
     /**
+     * submit / place empty order
+     * @method submitOrderEmpty
+     * @return {HTTPPromise}
+     */
+    this.submitOrderEmpty = function() {
+      var orderId = this.getOrderId();
+      var data = {orderId: orderId};
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/updateorder', data);
+    }
+
+    /**
+     * submit / place order
+     * @method submitOrder
+     * @param cartDetails
+     * @return {HTTPPromise}
+     */
+    this.submitOrder = function(cartDetails) {
+
+      var orderId = this.getOrderId();
+      var cart = orderId ? this.getOrderedCart(orderId) : this.getCart();
+      var ti = this.getTransactionInfo();
+      var ap = this.getAcquiringPricingStorage();
+      var ep = this.getEquipmentPricingStorage();
+      var gp = this.getGlobalPricingStorage();
+
+      var pricingDetails = [];
+      var discountRates = ap.discountRates !== undefined ? ap.discountRates : [];
+      ep = ep !== undefined ? ep : [];
+      gp = gp !== undefined ? gp : [];
+
+      pricingDetails = pricingDetails.concat(discountRates);
+      pricingDetails = pricingDetails.concat(ep);
+      pricingDetails = pricingDetails.concat(gp);
+
+      var cardPresentDiscountRates = ap.cardPresentDiscountRates !== undefined ? ap.cardPresentDiscountRates : [];
+      var cardNotPresentDiscountRates = ap.cardNotPresentDiscountRates !== undefined ? ap.cardNotPresentDiscountRates : [];
+
+      if (!cartDetails) {
+        var cartDetails = {
+          data: [],
+          amount: cart.amount,
+          shipping_amount: cart.shipping_amount,
+          tax: cart.tax,
+          taxPercent: cart.taxPercent,
+          total: cart.total,
+          status: 0,
+          monthly: [],
+          shipping_option_id: cart.shipping_option_id,
+          numberofLocations: cart.num_locations_selected,
+          purchaseEnabled: true,
+          total_qty: cart.total_qty,
+        };
+
+        for (var i in cart.data) {
+          cartDetails.data.push({
+            id: cart.data[i].id,
+            name: cart.data[i].name,
+            price: cart.data[i].price,
+            monthly: [],
+            term: cart.data[i].term,
+            qty: cart.data[i].qty,
+            category: cart.data[i].category,
+            productType: cart.data[i].productType,
+          });
+        }
+
+        //send Shipping details
+        //var shippingMethods = this.getSessionShippingMethods();
+        var shipProduct = CONST.SHIPPING_METHODS[cart.shipping_option_id];
+        if (shipProduct !== undefined && (cart.amount > 0 || cart.lease_amount > 0)) {
+          cartDetails.data.push({
+            id: shipProduct.productId,
+            name: shipProduct.productName,
+            price: shipProduct.price,
+            monthly: [],
+            term: 'P',
+            qty: 1,
+            category: ti.category,
+            productType: shipProduct.productType
+          });
+        }
+
+        for (var i in cart.payment_types.products) {
+          cartDetails.data.push({
+            id: cart.payment_types.products[i].id,
+            name: cart.payment_types.products[i].name,
+            price: cart.payment_types.products[i].price,
+            monthly: [],
+            term: cart.payment_types.products[i].term,
+            qty: cart.payment_types.products[i].qty,
+            category: cart.payment_types.products[i].category,
+            productType: cart.payment_types.products[i].type,
+          });
+        }
+
+        for (var i in cart.transaction_products) {
+          cartDetails.data.push({
+            id: cart.transaction_products[i].id,
+            name: cart.transaction_products[i].name,
+            price: cart.transaction_products[i].price,
+            monthly: [],
+            term: cart.transaction_products[i].term,
+            category: cart.transaction_products[i].category,
+            qty: cart.transaction_products[i].qty,
+            productType: cart.transaction_products[i].type,
+          });
+        }
+      }
+
+      var transactionInfo = {
+        mccTypes: ti.mccTypes,
+        mcc: ti.mcc,
+        annualVolume: ti.annualVolume,
+        creditCardVolume: ti.annualcardVolume,
+        telecheckVolume: ti.telecheckVolume,
+        averageTicket: ti.averageTicket,
+        highestTicket: ti.highestTicket,
+        category: ti.category,
+        amexMemberId: ti.amexMemberId,
+        amexVolume: ti.amexVolume,
+      };
+
+      var data = {
+        orderId: orderId,
+        company: cart.shippingAddress[0].company_name,
+        first_name: cart.shippingAddress[0].firstname,
+        last_name: cart.shippingAddress[0].lastname,
+        email: cart.shippingAddress[0].email,
+        phone: cart.shippingAddress[0].phone,
+        address1: cart.shippingAddress[0].address1,
+        city: cart.shippingAddress[0].city,
+        state: cart.shippingAddress[0].state,
+        zip: cart.shippingAddress[0].zip,
+        recordType: 'Lead',
+        pricingDetails: pricingDetails,
+        cardPresentDiscountRates: cardPresentDiscountRates,
+        cardNotPresentDiscountRates: cardNotPresentDiscountRates,
+        pricingOptions: {
+          transactionInfo: transactionInfo,
+        },
+        shippingAddress: cart.shippingAddress,
+        cardNotPresent: cart.cardNotPresent,
+        cartDetails: cartDetails
+      };
+
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/updateorder', data);
+    };
+
+    /**
      * Store Order Id into session
+     * @method storeOrderId
      * @param data
      */
-    this.storeOrderId = function(data){
+    this.storeOrderId = function(data) {
       if (undefined == data) return;
       $window.sessionStorage.setItem(order_id, JSON.stringify(data));
     };
 
     /**
      * Clear Order Id From session
+     * @method clearOrderId
      */
-    this.clearOrderId = function(){
+    this.clearOrderId = function() {
       $window.sessionStorage.removeItem(order_id);
     };
 
     /**
      * Get Order Id from session
+     * @method getOrderId
      * @return {number} Order Id or false
      */
-    this.getOrderId = function(){
+    this.getOrderId = function() {
       var data = $window.sessionStorage.getItem(order_id);
       if (data) {
         return JSON.parse(data);
@@ -413,25 +808,59 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     };
 
     /**
+     * Description
+     * @method storeTmpOrderId
+     * @param {} data
+     */
+    this.storeTmpOrderId = function(data) {
+      if (undefined == data) return;
+      $window.sessionStorage.setItem(tmp_order_id, JSON.stringify(data));
+    };
+
+    /**
+     * Description
+     * @method clearTmpOrderId
+     */
+    this.clearTmpOrderId = function() {
+      $window.sessionStorage.removeItem(tmp_order_id);
+    };
+
+    /**
+     * Description
+     * @method getTmpOrderId
+     * @return OrderId or false
+     */
+    this.getTmpOrderId = function() {
+      var data = $window.sessionStorage.getItem(tmp_order_id);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return false;
+    };
+
+    /**
      * Store category information into session
+     * @method storeCategoryInSession
      * @param data
      */
-    this.storeCategoryInSession = function(data){
+    this.storeCategoryInSession = function(data) {
       $window.sessionStorage.setItem(category_id, JSON.stringify(data));
     };
 
     /**
      * Clear category from session
+     * @method clearCategoryFromSession
      */
-    this.clearCategoryFromSession = function(){
+    this.clearCategoryFromSession = function() {
       $window.sessionStorage.removeItem(category_id);
     };
 
     /**
      * Get category from session
+     * @method getCategoryFromSession
      * @return {Object} Category or false
      */
-    this.getCategoryFromSession = function(){
+    this.getCategoryFromSession = function() {
       var data = $window.sessionStorage.getItem(category_id);
       if (data) {
         return JSON.parse(data);
@@ -441,64 +870,77 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Store products list in session
+     * @method storeProductListSession
      * @param {Array} data
      */
-    this.storeProductListSession = function(data){
-      cache.put(products_list, data);
+    this.storeProductListSession = function(data) {
+      $window.sessionStorage.setItem(products_list, JSON.stringify(data));
     };
 
     /**
      * Clear products list from session
+     * @method clearProductListSession
      */
-    this.clearProductListSession = function(){
-      cache.put(products_list, null);
+    this.clearProductListSession = function() {
+      $window.sessionStorage.removeItem(products_list);
     };
 
     /**
      * get product list from session
+     * @method getProductListFromSession
      * @return {Array} product list or false
      */
-    this.getProductListFromSession = function(){
-      return cache.get(products_list);
+    this.getProductListFromSession = function() {
+      var data = $window.sessionStorage.getItem(products_list);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return false;
     };
 
     /**
      * Store Geo Data in cache
+     * @method storeGeoData
      * @param data
      */
-    this.storeGeoData = function(data){
+    this.storeGeoData = function(data) {
       cache.put(geo_data, data);
     };
 
     /**
      * Clear Geo Data from cache
+     * @method clearGeoData
      */
-    this.clearGeoData = function(){
+    this.clearGeoData = function() {
       cache.put(geo_data, null);
     };
 
     /**
      * Get Geo Data from cache
-     * @return {Object}
+     * @method getGeoData
+     * @return GeoData
      */
-    this.getGeoData = function(){
+    this.getGeoData = function() {
       return cache.get(geo_data);
     };
 
     /**
      * Store Cart in session
+     * @method storeCart
      * @param cart
      */
-    this.storeCart = function(cart){
+    this.storeCart = function(cart) {
       window.sessionStorage.setItem(storage_cart, JSON.stringify(cart));
+      $rootScope.$emit('cart-changed', cart);
     };
 
     /**
      * Store ordered cart in session
+     * @method storeOrderedCart
      * @param order_id
      * @param cart
      */
-    this.storeOrderedCart = function(order_id, cart){
+    this.storeOrderedCart = function(order_id, cart) {
       var s = {};
       s[order_id] = cart
       window.sessionStorage.setItem(ordered_cart, JSON.stringify(s));
@@ -506,34 +948,38 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Clear Cart from session
+     * @method clearCart
      */
-    this.clearCart = function(){
+    this.clearCart = function() {
       window.sessionStorage.removeItem(storage_cart);
     };
 
     /**
      * Clear ordered cart from session
+     * @method clearOrderedCart
      */
-    this.clearOrderedCart = function(){
+    this.clearOrderedCart = function() {
       window.sessionStorage.removeItem(ordered_cart);
     };
 
     /**
      * Get Cart From session or if empty create cart object
-     * @return {Object}
+     * @method getCart
+     * @return {Object} Cart
      */
-    this.getCart = function(){
+    this.getCart = function() {
       var cart = window.sessionStorage.getItem(storage_cart);
-      if (cart){
+      if (cart) {
         return JSON.parse(cart);
       }
       return {
-        data: {},
+        data: [],
         payment_types: null,
         amount: 0,
         lease_amount: 0,
         shipping_amount: 0,
         tax: 0,
+        leaseTax: 0,
         taxPercent: -1,
         total: 0,
         status: 0,
@@ -543,54 +989,58 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         mFees: {},
         onetimeFees: {},
         shipping_option_id: 1,
-        shippingAddress: {},
+        shippingAddress: [{}],
         validation: {},
         total_lease_qty: 0,
         total_product_fee_amount: 0,
         product_fees: {},
-        transaction_fee: null,
+        transaction_products: [],
+        // transaction_fee: null,
         total_qty: 0
       };
     };
 
     /**
      * Get ordered cart from session
+     * @method getOrderedCart
      * @param order_id
-     * @return {*}
+     * @return Literal
      */
-    this.getOrderedCart = function(order_id){
+    this.getOrderedCart = function(order_id) {
       var carts = window.sessionStorage.getItem(ordered_cart);
       var cs, c;
-      if (carts){
+      if (carts) {
         cs = JSON.parse(carts);
       }
       if (carts) {
         return cs[order_id];
       }
       return null;
-
     };
 
     /**
      * Store transaction info in session
+     * @method storeTransactionInfo
      * @param data
      */
-    this.storeTransactionInfo = function(data){
+    this.storeTransactionInfo = function(data) {
       $window.sessionStorage.setItem(transaction_info, JSON.stringify(data));
     };
 
     /**
      * Clear transaction info from session
+     * @method clearTransactionInfo
      */
-    this.clearTransactionInfo = function(){
+    this.clearTransactionInfo = function() {
       $window.sessionStorage.removeItem(transaction_info);
     };
 
     /**
      * Get transaction info from session
+     * @method getTransactionInfo
      * @return {boolean}
      */
-    this.getTransactionInfo = function(){
+    this.getTransactionInfo = function() {
       var data = $window.sessionStorage.getItem(transaction_info);
       if (data) {
         return JSON.parse(data);
@@ -600,24 +1050,27 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Store equipment pricing in session
+     * @method storeEquipmentPricing
      * @param data
      */
-    this.storeEquipmentPricing = function(data){
+    this.storeEquipmentPricing = function(data) {
       $window.sessionStorage.setItem(equipment_pricing, JSON.stringify(data));
     };
 
     /**
      * Clear equipment pricing from session
+     * @method clearEquipmentPricing
      */
-    this.clearEquipmentPricing = function(){
+    this.clearEquipmentPricing = function() {
       $window.sessionStorage.removeItem(equipment_pricing);
     };
 
     /**
      * Get equipment pricing from session
+     * @method getEquipmentPricingStorage
      * @return {Array}
      */
-    this.getEquipmentPricingStorage = function(){
+    this.getEquipmentPricingStorage = function() {
       var data = $window.sessionStorage.getItem(equipment_pricing);
       if (data) {
         return JSON.parse(data);
@@ -627,24 +1080,27 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Store acquiring pricing in session
+     * @method storeAcquiringPricing
      * @param data
      */
-    this.storeAcquiringPricing = function(data){
+    this.storeAcquiringPricing = function(data) {
       $window.sessionStorage.setItem(acquiring_pricing, JSON.stringify(data));
     };
 
     /**
      * Clear acquiring pricing from session
+     * @method clearAcquiringPricing
      */
-    this.clearAcquiringPricing = function(){
+    this.clearAcquiringPricing = function() {
       $window.sessionStorage.removeItem(acquiring_pricing);
     };
 
     /**
      * Get acquiring pricing from session
+     * @method getAcquiringPricingStorage
      * @return {Array}
      */
-    this.getAcquiringPricingStorage = function(){
+    this.getAcquiringPricingStorage = function() {
       var data = $window.sessionStorage.getItem(acquiring_pricing);
       if (data) {
         return JSON.parse(data);
@@ -654,24 +1110,27 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Store global pricing in session
+     * @method storeGlobalPricing
      * @param data
      */
-    this.storeGlobalPricing = function(data){
+    this.storeGlobalPricing = function(data) {
       $window.sessionStorage.setItem(global_pricing, JSON.stringify(data));
     };
 
     /**
      * Clear global pricing from session
+     * @method clearGlobalPricing
      */
-    this.clearGlobalPricing = function(){
+    this.clearGlobalPricing = function() {
       $window.sessionStorage.removeItem(global_pricing);
     };
 
     /**
      * Get global pricing from session
+     * @method getGlobalPricingStorage
      * @return {Array}
      */
-    this.getGlobalPricingStorage = function(){
+    this.getGlobalPricingStorage = function() {
       var data = $window.sessionStorage.getItem(global_pricing);
       if (data) {
         return JSON.parse(data);
@@ -681,19 +1140,26 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Recalculate cart
+     * @method recalculateCart
      * @param cart
      * @param taxAmt
-     * @return {Object}
+     * @return cart
      */
     this.recalculateCart = function(cart, taxAmt) {
 
+      var prev_num_locations = cart.num_locations;
+
       cart.amount = 0;
+      cart.cardNotPresent = 0;
+      cart.num_locations = 0;
+      cart.num_locations_selected = cart.num_locations_selected || 0;
       cart.lease_amount = 0;
       cart.total_qty = 0;
       cart.total_lease_qty = 0;
       cart.total_purchase_qty = 0;
       cart.product_fees = {};
       cart.total_product_fee_amount = 0;
+      //var shippingMethods = this.getSessionShippingMethods();
 
       var total_product_fee_amount = 0;
       var product_fees = {};
@@ -705,10 +1171,15 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         cart.total_product_fee_amount = total_product_fee_amount;
         cart.product_fees = product_fees;
 
+        if ('Terminal' == cart.data[i].productType || 'Gateway' == cart.data[i].productType || 'VAR' == cart.data[i].productType || 'TERM' == cart.data[i].productType) {
+          cart.num_locations = cart.num_locations + cart.data[i].qty;
+        }
+
         cart.data[i].min_lease_amount = 0;
 
         cart.total_qty += parseInt(cart.data[i].qty);
 
+        cart.cardNotPresent |= (cart.data[i].cardNotPresent ? 2 : 1);
 
         if (CONST.PURCHASE_CODE == cart.data[i].term || CONST.OWNED_CODE == cart.data[i].term) {
           if (cart.data[i].pricingModel) {
@@ -721,7 +1192,9 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
               }
             }
           }
-          cart.amount += cart.data[i].qty * cart.data[i].price;
+          if (cart.data[i].price) {
+            cart.amount += cart.data[i].qty * cart.data[i].price;
+          }
           cart.total_purchase_qty += parseInt(cart.data[i].qty);
           cart.data[i].pmodel = null;
         } else {
@@ -744,7 +1217,6 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         }
       }
 
-
       if (taxAmt) {
         cart.tax = taxAmt;
       } else {
@@ -752,30 +1224,74 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
           cart.tax = 0;
         } else {
           cart.tax = cart.amount * cart.taxPercent;
+          cart.leaseTax = cart.lease_amount * cart.taxPercent;
         }
       }
 
-      cart.shipping_amount = CONST.SHIPPING_METHODS[cart.shipping_option_id].price;
+      if (cart.amount > 0 || cart.lease_amount > 0)
+        cart.shipping_amount = CONST.SHIPPING_METHODS[cart.shipping_option_id].price;
+      else
+        cart.shipping_amount = 0;
 
       cart.total = cart.amount + cart.shipping_amount + cart.tax;
+
+      // reset locations
+      if (prev_num_locations !== cart.num_locations) {
+        cart.num_locations_selected = 0;
+      }
+
+      if (1 === cart.num_locations) {
+        cart.num_locations_selected = 1;
+      }
 
       return cart;
     };
 
     /**
+     * Reset Cart Pricing, if TransactionInfo available
+     * @method resetCartOverridePricing
+     * @param {} cart
+     */
+    this.resetCartOverridePricing = function(cart) {
+      var ti = this.getTransactionInfo();
+      if (!ti) {
+        return;
+      }
+      for (var i in cart.data) {
+        var p = cart.data[i];
+        var isLeased = (p.term != CONST.PURCHASE_CODE && p.term != CONST.OWNED_CODE) ? true : false;
+        if (!isLeased) {
+          if (cart.data[i].defaultPrice)
+            cart.data[i].price = cart.data[i].defaultPrice;
+          }
+          else{
+              var idx = p.pricingModel_default.map(function(priceModel){ return priceModel.id; }).indexOf(p.pmodel.id);
+          p.price = p.pricingModel_default[idx].defaultAmt;
+          p.pricingModel[idx].defaultAmt = p.pricingModel_default[idx].defaultAmt;
+        }
+      }
+    }
+
+    /**
      * Lease product
+     * @method leaseProduct
      * @param bundle product
      * @param cart
-     * @param pid
-     * @return {Object} cart
+     * @param {} category
+     * @return cart
      */
-    this.leaseProduct = function(bundle, cart, pid){
+    this.leaseProduct = function(bundle, cart, category) {
 
       if (!bundle) {
         return;
       }
 
-      pid = pid || bundle.productId;
+      var pid = bundle.productId || bundle.id;
+      var name = bundle.productName || bundle.name;
+
+      var qty = bundle.qty || 1;
+
+      category = category || this.getCategoryFromSession().name;
 
       if (!Object.keys(bundle).length) {
         return;
@@ -784,20 +1300,46 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
       if (!bundle.pricingModel || !bundle.pricingModel.length) {
         return;
       }
-      var term = bundle.pricingModel[0].purchaseType;
+      var term;
+      for (var i = 0; i < bundle.pricingModel.length; i++) {
+        if (bundle.pricingModel[i].purchaseType == "LT36") {
+          term = bundle.pricingModel[i].purchaseType;
+          termPaymentType = bundle.pricingModel[i].paymentType;
+          break;
+        } else {
+          term = bundle.pricingModel[0].purchaseType;
+          termPaymentType = bundle.pricingModel[0].paymentType;
+        }
+      };
 
-      if (cart.data[pid]){
-        cart.data[pid].term = term;
+      var cardNotPresent = bundle.cardNotPresent ? true : false;
+
+      var pr = {
+        id: pid,
+        name: name,
+        price: bundle.price,
+        pricingModel: bundle.pricingModel,
+        pricingModel_default: angular.copy(bundle.pricingModel),
+        term: term,
+        termPaymentType: termPaymentType,
+        pmodel: null,
+        category: category,
+        cardNotPresent: cardNotPresent,
+        productType: bundle.productType,
+        qty: qty
+      };
+
+      var index = this.getCartProductIndex(cart, pr);
+
+      if (-1 !== index) {
+        pr = cart.data[index];
+        pr.term = term;
+        pr.termPaymentType = termPaymentType;
+        pr.pricingModel = bundle.pricingModel;
+        pr.pricingModel_default = angular.copy(bundle.pricingModel);
+        cart.data[index] = pr;
       } else {
-        cart.data[pid] = {
-          id: pid,
-          name: bundle.productName,
-          price: bundle.price,
-          pricingModel: bundle.pricingModel,
-          term: term,
-          pmodel: null,
-          qty: "1"
-        };
+        cart.data.push(pr);
       }
 
       cart = this.cartChanged(cart);
@@ -807,10 +1349,11 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Recalculate cart and store it in session
+     * @method cartChanged
      * @param cart
-     * @return {Object}
+     * @return cart
      */
-    this.cartChanged = function(cart){
+    this.cartChanged = function(cart) {
       cart = this.recalculateCart(cart);
       this.storeCart(cart);
       return cart;
@@ -818,11 +1361,12 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Recalculate ordered cart and store it in session
+     * @method orderedCartChanged
      * @param orderId
      * @param cart
-     * @return {Object}
+     * @return cart
      */
-    this.orderedCartChanged = function(orderId, cart){
+    this.orderedCartChanged = function(orderId, cart) {
       cart = this.recalculateCart(cart);
       this.storeOrderedCart(orderId, cart);
       return cart;
@@ -830,16 +1374,23 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
     /**
      * Lookup city and state using Google Map API
+     * @method lookupByZip
      * @param zip
      * @param callback function
      */
-    this.lookupByZip = function(zip, callback){
-      if (zip.length < 5) return;
+    this.lookupByZip = function(zip, callback) {
+
+      if (zip.length < 5) {
+        callback.apply(this, [null, null]);
+        return;
+      }
+
       var geocoder = new google.maps.Geocoder();
-      geocoder.geocode( { "address": zip + ' USA' }, function(result, status) {
+      geocoder.geocode( { "address": zip }, function(result, status) {
         var city = '';
         var state = '';
         var neighborhood = '';
+        var sublocality = '';
         if (status == google.maps.GeocoderStatus.OK && result.length > 0) {
           for (var component in result[0]['address_components']) {
             for (var i in result[0]['address_components'][component]['types']) {
@@ -847,10 +1398,13 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
                 state = result[0]['address_components'][component]['short_name'];
               }
               if (result[0]['address_components'][component]['types'][i] == "locality") {
-                city = result[0]['address_components'][component]['long_name'];
+                city = result[0]['address_components'][component]['long_name'].replace(/(St.|'|ñ)/g, function(match){return CONST.citySpecialChar[match];});
               }
               if (result[0]['address_components'][component]['types'][i] == "neighborhood") {
                 neighborhood = result[0]['address_components'][component]['long_name'];
+              }
+              if (result[0]['address_components'][component]['types'][i] == "sublocality") {
+                sublocality = result[0]['address_components'][component]['long_name'];
               }
               if (result[0]['address_components'][component]['types'][i] == "country") {
                 country = result[0]['address_components'][component]['short_name'];
@@ -861,6 +1415,9 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
           if (!city.length && neighborhood.length) {
             city = neighborhood;
           }
+          if (!city.length && sublocality.length) {
+            city = sublocality;
+          }
         }
 
         if ('US' == country) {
@@ -868,32 +1425,37 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         } else {
           callback.apply(this, [null, null]);
         }
-
       });
     };
 
     /**
+     * Description
+     * @method getInvalidSsn
+     * @return {HTTPPromise}
+     */
+    this.getInvalidSsn = function() {
+      return $http.get('../../invalidSsn.json');
+    };
+
+    /**
      * Set pricing data to cart
+     * @method setPricingToCart
      * @param cart
      * @param dt
      * @param addData {Boolean} if true add one time payments to cart
      * @return {Object} cart
      */
-    this.setPricingToCart = function(cart, dt, addData){
-      var data = angular.copy(dt);
+    this.setPricingToCart = function(cart, dt, addData) {
 
+      var data = angular.copy(dt);
       var paymentProducts = {
         products: {}
       };
 
       addData = addData || false;
-
-      var productAttributes = {};
-
-
-      for (var i = 0; i < data.length; i++){
+      var productAttributes = {}, pid;
+      for (var i = 0; i < data.length; i++) {
         if (data[i].productAttribute && data[i].showoncart) {
-
           var tmpId = data[i].productAttribute.name + data[i].productAttribute.value;
           if (productAttributes[tmpId]) {
             data[i].showoncart = false;
@@ -909,51 +1471,86 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         }
       }
 
-      for (var i = 0; i < data.length; i++){
+      for (var i = 0; i < data.length; i++) {
 
         if ('Transaction' == data[i].occurrence.type) {
-          if (2 == data[i].productId || 80382 == data[i].productId){
-            cart.transaction_fee = {
-              fee: data[i].defaultAmt,
-              rate: data[i].rateDefault,
-            };
-          }
+          // if (2 == data[i].productId || 80382 == data[i].productId){
+          //   cart.transaction_fee = {
+          //     fee: data[i].defaultAmt,
+          //     rate: data[i].rateDefault,
+          //   };
+          // }
         } else {
 
           if (data[i].showoncart) {
+            if ('Recurring' == data[i].occurrence.type) {
+              if (data[i].paymentType == 'Installment' || data[i].paymentType == 'Lease' || data[i].paymentType == 'Rent') {
+                var pricingModel = [];
+                pricingModel[0] = {
+                  defaultAmt: data[i].defaultAmt,
+                  fkProdId: data[i].productId,
+                  id: '',
+                  occurrence: data[i].occurrence.type,
+                  paymentTerm: data[i].paymentTerm,
+                  paymentType: data[i].paymentType,
+                  purchaseType: data[i].purchaseType,
+                  purchaseTypeLabel: ''
+                }
 
-            if('Recurring' == data[i].occurrence.type) {
-              cart.mFees[data[i].productId] = {
-                name: data[i].productName,
-                amount: data[i].defaultAmt,
-              };
-              cart.mfeeAmount +=  cart.mFees[data[i].productId].amount;
-            } else if ('Onetime_Fee' == data[i].occurrence.type){
+                cart.data.push({
+                  id: data[i].productId,
+                  name: data[i].productName,
+                  price: data[i].defaultAmt,
+                  defaultPrice: data[i].defaultAmt,
+                  productType: data[i].productType,
+                  term: data[i].purchaseType,
+                  qty: data[i].quantity,
+                  category: data[i].category ? data[i].category : transactionFormData.category,
+                  cardNotPresent: data[i].cardNotPresent,
+                  pricingModel: pricingModel
+                });
+              } else {
+                cart.mFees[data[i].productId] = {
+                  name: data[i].productName,
+                  amount: data[i].defaultAmt,
+                  disclosure: data[i].disclosure,
+                };
+                cart.mfeeAmount += cart.mFees[data[i].productId].amount;
+              }
+
+            } else if ('Onetime_Fee' == data[i].occurrence.type) {
+
               cart.onetimeFees[data[i].productId] = {
                 name: data[i].productName,
                 amount: data[i].defaultAmt,
               };
+
               cart.onetimeAmount += cart.onetimeFees[data[i].productId].amount;
             } else if ('Onetime_Product' == data[i].occurrence.type) {
               if (addData) {
-                cart.data[data[i].productId] = {
+                cart.data.push({
                   id: data[i].productId,
                   name: data[i].productName,
                   price: data[i].defaultAmt,
+                  defaultPrice: data[i].defaultAmt,
                   productType: data[i].productType,
                   term: data[i].purchaseType,
+                  category: data[i].category,
+                  cardNotPresent: data[i].cardNotPresent,
                   qty: data[i].quantity,
-                };
+                });
               }
             } else if ('Acquiring' == data[i].occurrence.type) {
-              paymentProducts.id = data[i].parentProduct.id;
-              paymentProducts.name = data[i].parentProduct.name;
+              paymentProducts.id = data[i].parentProduct ? data[i].parentProduct.id : null;
+              paymentProducts.name = data[i].parentProduct ? data[i].parentProduct.name : null;
               paymentProducts.products[data[i].productId] = {
                 id: data[i].productId,
                 name: data[i].productName,
                 price: data[i].defaultAmt,
                 productType: data[i].productType,
                 term: data[i].purchaseType,
+                category: data[i].category,
+                cardNotPresent: data[i].cardNotPresent,
                 qty: data[i].quantity,
               };
 
@@ -964,23 +1561,58 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       if (addData) {
         cart.payment_types = paymentProducts;
+
+        for (var i = 0; i < cart.cartTransactionRates.length; i++) {
+          pid = cart.cartTransactionRates[i].parentProduct ? cart.cartTransactionRates[i].parentProduct.id : cart.cartTransactionRates[i].productId;
+
+          if ('ACQUIRING' == cart.cartTransactionRates[i].productType) {
+            if (!cart.payment_types) {
+              cart.payment_types = {};
+            }
+
+            if (!cart.payment_types.groups) {
+              cart.payment_types.groups = [];
+            }
+
+            if (-1 == cart.payment_types.groups.map(function(e) {return e.name;}).indexOf(cart.cartTransactionRates[i].groupName)) {
+              cart.payment_types.groups.push({
+                pid: cart.cartTransactionRates[i].groupName,
+                name: cart.cartTransactionRates[i].groupName,
+                fee: cart.cartTransactionRates[i].parentProduct.fee,
+                rate: cart.cartTransactionRates[i].parentProduct.rate,
+              })
+
+            }
+
+          } else {
+
+            index = cart.transaction_products.map(function(e) {return e.id;}).indexOf(pid);
+
+            if (-1 !== index) {
+              cart.transaction_products[index].parentProduct = cart.cartTransactionRates[i].parentProduct;
+            }
+          }
+        }
+
       }
       return cart;
     };
 
     /**
      * Initialize pricing data
+     * @method initPricingData
      * @param callback function
      * @param ap Acquiring pricing
      * @param ep Equipment Pricing
      * @param gp Global Pricing
      */
-    this.initPricingData = function(callback, ap, ep, gp){
-
-      var cbf = function(){
+    this.initPricingData = function(callback, ap, ep, gp) {
+      var cbf = function() {
         if (ap && ep && gp) {
           fdService.cartChanged(cart);
-          callback.apply(this, [1]);
+          if (ap && ep && gp) {
+            callback.apply(this, [1]);
+          }
         }
       };
 
@@ -1005,10 +1637,48 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         fdService.getAcquiringPricing(cart, ti)
           .success(function(data, status, headers, config) {
             fdService.storeAcquiringPricing(data);
-            cart = fdService.setPricingToCart(cart, data);
 
+            var index, pid;
+            var newData = [];
+            for (var i in data) {
+              if ('cartTransactionRates' == i) {
+                cart.cartTransactionRates = data[i];
+              } else {
+                newData = newData.concat(data[i]);
+              }
+            }
+
+            for (i in data.cartTransactionRates) {
+              pid = data.cartTransactionRates[i].parentProduct ? data.cartTransactionRates[i].parentProduct.id : data.cartTransactionRates[i].productId;
+              if ('ACQUIRING' == data.cartTransactionRates[i].productType) {
+                if (!cart.payment_types) {
+                  cart.payment_types = {};
+                }
+                if (!cart.payment_types.groups) {
+                  cart.payment_types.groups = [];
+                }
+
+                  if (-1 == cart.payment_types.groups.map(function(e) {return e.name;}).indexOf(data.cartTransactionRates[i].groupName)) {
+                  cart.payment_types.groups.push({
+                    pid: data.cartTransactionRates[i].groupName,
+                    name: data.cartTransactionRates[i].groupName,
+                    fee: data.cartTransactionRates[i].parentProduct.fee,
+                    rate: data.cartTransactionRates[i].parentProduct.rate,
+                  })
+
+                }
+              } else {
+
+                index = cart.transaction_products.map(function(e) {return e.id;}).indexOf(pid);
+
+                if (-1 !== index) {
+                  cart.transaction_products[index].parentProduct = data.cartTransactionRates[i].parentProduct;
+                }
+              }
+            }
+
+            cart = fdService.setPricingToCart(cart, newData);
             ap = data;
-
             cbf();
 
           })
@@ -1033,6 +1703,11 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
             callback.apply(this, [0]);
             console.log('error')
           });
+      } else {
+        //restore Equipment Pricing details into session
+        fdService.storeEquipmentPricing(ep);
+        cart = fdService.setPricingToCart(cart, ep);
+        cbf();
       }
 
       if (!gp) {
@@ -1050,32 +1725,283 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
             callback.apply(this, [0]);
             console.log('error')
           });
-      }
-      else{
+      } else {
+        //restore Global Pricing details into session
         fdService.storeGlobalPricing(gp);
+        cart = fdService.setPricingToCart(cart, gp);
+        cbf();
       }
     };
 
     /**
-     * Update pricing if transaction info exists
+     * Description
+     * @method updatePricing
+     * @param {} callback
      */
-    this.updatePricing = function(){
+    this.updatePricing = function(callback) {
       var ti = this.getTransactionInfo();
       var gp = this.getGlobalPricingStorage();
 
       if (!ti) {
         return;
       }
-
-      $timeout(function(){
-        this.initPricingData(function(status){
+      $timeout(function() {
+        this.initPricingData(function(status) {
           if (status) {
+            if ('function' === typeof callback) {
+              callback();
+            }
             console.log('updated');
           } else {
             console.log('error');
           }
         }, null, null, gp);
       }.bind(this));
+    };
+
+    /**
+     * Description get FSP company flag to enable Multiple DDA
+     * @method getFspCompany
+     * @param {} orderId
+     * @return {HTTPPromise}
+     */
+    this.getFspCompany = function(orderId) {
+        return $http.get(urlPrefix + '/marketplace/v2/signup/fspcompany/' + orderId);
+    }
+
+    /**
+     * Description get MCC Code Details
+     * @method getMCCDetails
+     * @param {} categoryName
+     * @param {} mccNumber
+     * @return {HTTPPromise}
+     */
+    this.getMCCDetails = function(categoryName, mccNumber) {
+      return $http.get(urlPrefix + '/marketplace/v1/companies/category/' + categoryName + '/merchantcategorycodes/' + mccNumber + '/industries');
+    };
+
+    /**
+     * Post Signup Merchant Owner Information
+     * @method postBusinessinformation
+     * @param data
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.postBusinessinformation = function(data, orderId) {
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/businessinformation', data);
+    };
+
+
+    /**
+     * get products list for order
+     * @method getOrderProducts
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getOrderProducts = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/cart/' + orderId + '/products/');
+    };
+
+    /**
+     * get list of products for order
+     * @method getCartOrderProducts
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getCartOrderProducts = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/cart/products');
+    };
+
+    /**
+     * get cart details for order
+     * @method getCartDetails
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getCartDetails = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/cart/details');
+    };
+
+    /**
+     * get product attributes
+     * @method getProductAttributes
+     * @param {} orderId
+     * @param {} lineItemId
+     * @return {HTTPPromise}
+     */
+    this.getProductAttributes = function(orderId, lineItemId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/orderLineItems/' + lineItemId + '/attributes/');
+    };
+
+    /**
+     * post order locations
+     * @method postOrderLocations
+     * @param data
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.postOrderLocations = function(data, orderId) {
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/locations', data);
+    };
+
+    /**
+     * post account preferences
+     * @method postAccountPreferences
+     * @param data
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.postAccountPreferences = function(data, orderId) {
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/accountpreferences', data);
+    };
+
+    /**
+     * Description Get All Shipping Methods
+     * @method getShippingMethods
+     * @return {HTTPPromise}
+     */
+    this.getShippingMethods = function() {
+      return $http.get(urlPrefix + '/marketplace/v1/companies/products/shipping');
+    };
+
+    /**
+     * Get order locations
+     * @method getOrderLocations
+     * @param {} orderId
+     * @return {HTTPPromise}
+     */
+    this.getOrderLocations = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/locations');
+    };
+
+    /**
+     * get order business information
+     * @method getOrderBusinessinformation
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getOrderBusinessinformation = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/businessinformation');
+    };
+
+    /**
+     * Get account preferences
+     * @method getAccountPreferences
+     * @param orderId
+     * @return {HTTPPromise}
+     */
+    this.getAccountPreferences = function(orderId) {
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/accountpreferences');
+    };
+
+    /**
+     * get merchant order agreement
+     * @method getOrderAgreementInformation
+     * @param orderId
+     * @param {} ownerId
+     * @return {HTTPPromise}
+     */
+    this.getOrderAgreementInformation = function(orderId, ownerId) {
+      var appendURL = ownerId ? '/' + ownerId : '';
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/agreement' + appendURL);
+    };
+
+    /**
+     * Store Shipping Methods into Session storage
+     * @method storeShippingMethods
+     * @param {} data
+     */
+    this.storeShippingMethods = function(data) {
+      if (undefined == data) return;
+      $window.sessionStorage.setItem(shipping_options, JSON.stringify(data));
+    };
+
+    /**
+     * Get Shipping Methods from Session storage
+     * @method getSessionShippingMethods
+     * @return Literal
+     */
+    this.getSessionShippingMethods = function() {
+      var data = $window.sessionStorage.getItem(shipping_options);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return false;
+    };
+
+    /**
+     * Clear Shipping Methods from Session storage
+     * @method clearSessionShippingMethods
+     */
+    this.clearSessionShippingMethods = function() {
+      $window.sessionStorage.removeItem(shipping_options);
+    };
+
+    /**
+     * Get Products By Option Type
+     * @method getProductsByOptionType
+     * @param type
+     * @return {HTTPPromise}
+     */
+    this.getProductsByOptionType = function(type) {
+      return $http.get(urlPrefix + '/marketplace/v1/companies/products/' + type + '/types/');
+    };
+
+
+    /**
+     * get index of product in the cart.data array
+     * @method getCartProductIndex
+     * @param cart
+     * @param pr
+     * @return number
+     */
+    this.getCartProductIndex = function(cart, pr) {
+
+      for (var i in cart.data) {
+        if (pr.id == cart.data[i].id && pr.term == cart.data[i].term && pr.category == cart.data[i].category) {
+          return i;
+        }
+      }
+      return -1;
+    };
+
+    /**
+     * Description
+     * @return
+     * @method validateBusiness
+     * @param {} element
+     * @param {} model
+     */
+    this.validateBusiness = function(element, model) {
+      if (!model) {
+        return;
+      }
+
+      var dataToValidate = {};
+      dataToValidate.merInfo = {};
+      dataToValidate.merInfo.contacts = {};
+      dataToValidate.merInfo.contacts.contactInfo = [];
+      dataToValidate.merInfo.contacts.contactInfo.push({
+        "email": model
+      });
+      this.validateContact(dataToValidate)
+        .success(function(response, status, headers, config) {
+          if (response.length != 0) {
+            for (var i = 0; i < response.length; i++) {
+              if (response[i].errorCode = 8104) {
+                element.$setValidity("emailnotValid", false);
+                return;
+              }
+            }
+          } else {
+            element.$setValidity("emailnotValid", true);
+          }
+        })
+        .error(function(data, status, headers, config) {
+          console.log('error');
+        });
 
     };
-  }]);
+
+  }
+]);
