@@ -71,7 +71,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getCategories = function() {
-      return $http.get(urlPrefix + '/v1/categories');
+      return $http.get(urlPrefix + '/marketplace/v1/categories');
     };
 
     /**
@@ -81,7 +81,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductLineItems = function(id) {
-      return $http.get(urlPrefix + '/v1/application/' + id + '/lineItems/');
+      return $http.get(urlPrefix + '/marketplace/v1/application/' + id + '/lineItems/');
     };
 
     /**
@@ -91,7 +91,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getMccCodes = function(category) {
-      return $http.get(urlPrefix + '/v1/categories/' + category + '/industries/');
+      return $http.get(urlPrefix + '/marketplace/v1/categories/' + category + '/industries/');
     };
 
     /**
@@ -102,7 +102,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getMccTypes = function(category, type) {
-      return $http.get(urlPrefix + '/v1/categories/' + category + '/industries/' + type + '/merchantcategorycodes/');
+      return $http.get(urlPrefix + '/marketplace/v1/categories/' + category + '/industries/' + type + '/merchantcategorycodes/');
     };
 
     /**
@@ -112,7 +112,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProduct = function(pid) {
-      return $http.get(urlPrefix + '/v1/products/' + pid + '/details/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/details/');
     };
 
     /**
@@ -122,7 +122,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getRecommendedBundles = function(id) {
-      return $http.get(urlPrefix + '/v1/products/'+ id + '/recommended/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/'+ id + '/recommended/');
     };
 
     /**
@@ -132,7 +132,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.checkTin = function(data) {
-      return $http.post(urlPrefix + '/v1/tin/validate', data);
+      return $http.post(urlPrefix + '/marketplace/v1/tin/validate', data);
     };
 
     /**
@@ -142,7 +142,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getBankName = function(data) {
-      return $http.post(urlPrefix + '/v1/banks/validate', data, {timeout : 3000});
+      return $http.post(urlPrefix + '/marketplace/v1/banks/validate', data, {timeout : 3000});
     };
 
     /**
@@ -152,7 +152,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getTitles = function(data) {
-      return $http.post(urlPrefix + '/v1/signup/titles', data);
+      return $http.post(urlPrefix + '/marketplace/v1/signup/titles', data);
     };
 
     /**
@@ -162,7 +162,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.validateContact = function(data) {
-      return $http.post(urlPrefix + '/v1/validate/contact', data);
+      return $http.post(urlPrefix + '/marketplace/v1/validate/contact', data);
     };
 
     /**
@@ -189,7 +189,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         };
 
       } else {
-        var res = $http({method: 'GET', cache: true, url: urlPrefix + 'v1/products/'});
+        var res = $http({method: 'GET', cache: true, url: urlPrefix + '/marketplace/v1/products/'});
         ret.error = res.error;
         ret.success = function(callback) {
           res.success(function(data, status, headers, config) {
@@ -209,7 +209,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getFeatures = function(id) {
-      return $http.get(urlPrefix + '/v1/products/' + id + '/features/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + id + '/features/');
     };
 
     /**
@@ -219,7 +219,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getSpecs = function(id) {
-      return $http.get(urlPrefix + '/v1/products/' + id + '/specs/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + id + '/specs/');
     };
 
     /**
@@ -229,7 +229,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductsList = function(pid) {
-      return $http.get(urlPrefix + '/v1/products/' + pid + '/includes/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/includes/');
     };
 
     /**
@@ -239,7 +239,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getFaqs = function(pid) {
-      return $http.get(urlPrefix + '/v1/products/' + pid + '/faq/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/faq/');
     };
 
     /**
@@ -249,7 +249,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductOptions = function(pid) {
-      return $http.get(urlPrefix + '/v1/products/' + pid + '/options/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + pid + '/options/');
     };
 
     /**
@@ -258,7 +258,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getDataByIp = function() {
-      return $http.get(urlPrefix + '/v1/zipcode/');
+      return $http.get(urlPrefix + '/marketplace/v1/zipcode/');
     };
 
     /**
@@ -269,7 +269,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getTaxes = function(zip, city) {
-      return $http.get(urlPrefix + '/v1/salestax/' + zip + '/' + city);
+      return $http.get(urlPrefix + '/marketplace/v1/salestax/' + zip + '/' + city);
     };
 
     /**
@@ -334,7 +334,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       }
 
-      return $http.post(urlPrefix + '/v2/cart/validate', data);
+      return $http.post(urlPrefix + '/marketplace/v2/cart/validate', data);
     };
 
     /**
@@ -387,7 +387,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         }
       }
 
-      return $http.post(urlPrefix + '/v2/pricing/equipment', data);
+      return $http.post(urlPrefix + '/marketplace/v2/pricing/equipment', data);
     };
 
     /**
@@ -397,7 +397,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.getGlobalPricing = function() {
       data = {};
-      return $http.post(urlPrefix + '/v1/pricing/global', data);
+      return $http.post(urlPrefix + '/marketplace/v1/pricing/global', data);
     };
 
     /**
@@ -457,7 +457,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       }
 
-      return $http.post(urlPrefix + '/v2/pricing/acquiring', data);
+      return $http.post(urlPrefix + '/marketplace/v2/pricing/acquiring', data);
     };
 
     /**
@@ -600,9 +600,9 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
 
       var oid = orderId || this.getTmpOrderId();
       if (oid) {
-        return $http.post(urlPrefix + ' /v1/merchantorders/' + oid + '/updateorder', data);
+        return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + oid + '/updateorder', data);
       } else {
-        return $http.post(urlPrefix + '/v1/merchantorders', data);
+        return $http.post(urlPrefix + '/marketplace/v1/merchantorders', data);
       }
     };
 
@@ -613,7 +613,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.submitSignature = function(data) {
-      return $http.post(urlPrefix + '/v2/application/submit', data);
+      return $http.post(urlPrefix + '/marketplace/v2/application/submit', data);
     };
 
     /**
@@ -624,7 +624,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.submitMerchantApplication = function(data) {
       data = changeToUpper(data);
-      return $http.post(urlPrefix + '/v1/application/update', data);
+      return $http.post(urlPrefix + '/marketplace/v1/application/update', data);
     };
 
     /**
@@ -635,7 +635,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
     this.submitOrderEmpty = function() {
       var orderId = this.getOrderId();
       var data = {orderId: orderId};
-      return $http.post(urlPrefix + '/v1/merchantorders/' + orderId + '/updateorder', data);
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/updateorder', data);
     }
 
     /**
@@ -773,7 +773,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
         cartDetails: cartDetails
       };
 
-      return $http.post(urlPrefix + '/v1/merchantorders/' + orderId + '/updateorder', data);
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/updateorder', data);
     };
 
     /**
@@ -1766,7 +1766,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getFspCompany = function(orderId) {
-        return $http.get(urlPrefix + 'v2/signup/fspcompany/' + orderId);
+        return $http.get(urlPrefix + '/marketplace/v2/signup/fspcompany/' + orderId);
     }
 
     /**
@@ -1777,7 +1777,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getMCCDetails = function(categoryName, mccNumber) {
-      return $http.get(urlPrefix + '/v1/companies/category/' + categoryName + '/merchantcategorycodes/' + mccNumber + '/industries');
+      return $http.get(urlPrefix + '/marketplace/v1/companies/category/' + categoryName + '/merchantcategorycodes/' + mccNumber + '/industries');
     };
 
     /**
@@ -1788,7 +1788,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.postBusinessinformation = function(data, orderId) {
-      return $http.post(urlPrefix + '/v1/merchantorders/' + orderId + '/businessinformation', data);
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/businessinformation', data);
     };
 
 
@@ -1799,7 +1799,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getOrderProducts = function(orderId) {
-      return $http.get(urlPrefix + '/v1/cart/' + orderId + '/products/');
+      return $http.get(urlPrefix + '/marketplace/v1/cart/' + orderId + '/products/');
     };
 
     /**
@@ -1809,7 +1809,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getCartOrderProducts = function(orderId) {
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/cart/products');
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/cart/products');
     };
 
     /**
@@ -1819,7 +1819,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getCartDetails = function(orderId) {
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/cart/details');
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/cart/details');
     };
 
     /**
@@ -1830,7 +1830,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductAttributes = function(orderId, lineItemId) {
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/orderLineItems/' + lineItemId + '/attributes/');
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/orderLineItems/' + lineItemId + '/attributes/');
     };
 
     /**
@@ -1841,7 +1841,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.postOrderLocations = function(data, orderId) {
-      return $http.post(urlPrefix + '/v1/merchantorders/' + orderId + '/locations', data);
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/locations', data);
     };
 
     /**
@@ -1852,7 +1852,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.postAccountPreferences = function(data, orderId) {
-      return $http.post(urlPrefix + '/v1/merchantorders/' + orderId + '/accountpreferences', data);
+      return $http.post(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/accountpreferences', data);
     };
 
     /**
@@ -1861,7 +1861,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getShippingMethods = function() {
-      return $http.get(urlPrefix + '/v1/companies/products/shipping');
+      return $http.get(urlPrefix + '/marketplace/v1/companies/products/shipping');
     };
 
     /**
@@ -1871,7 +1871,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getOrderLocations = function(orderId) {
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/locations');
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/locations');
     };
 
     /**
@@ -1881,7 +1881,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getOrderBusinessinformation = function(orderId) {
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/businessinformation');
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/businessinformation');
     };
 
     /**
@@ -1891,7 +1891,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getAccountPreferences = function(orderId) {
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/accountpreferences');
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/accountpreferences');
     };
 
     /**
@@ -1903,7 +1903,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      */
     this.getOrderAgreementInformation = function(orderId, ownerId) {
       var appendURL = ownerId ? '/' + ownerId : '';
-      return $http.get(urlPrefix + '/v1/merchantorders/' + orderId + '/agreement' + appendURL);
+      return $http.get(urlPrefix + '/marketplace/v1/merchantorders/' + orderId + '/agreement' + appendURL);
     };
 
     /**
@@ -1944,7 +1944,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductsByOptionType = function(type) {
-      return $http.get(urlPrefix + '/v1/companies/products/' + type + '/types/');
+      return $http.get(urlPrefix + '/marketplace/v1/companies/products/' + type + '/types/');
     };
 
 

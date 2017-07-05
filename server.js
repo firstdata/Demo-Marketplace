@@ -47,10 +47,10 @@ var getAuthenticationHeaders = function () {
 /**
  * POST and GET service end-point proxy
  */
-app.all('*', function(req, res) {
+app.all('/marketplace/*', function(req, res) {
   var options = {
     method: req.method,
-    url: kongUrl + '/marketplace' + req.originalUrl,
+    url: kongUrl + req.originalUrl,
     headers: getAuthenticationHeaders()
   };
   if (req.method == 'POST') {

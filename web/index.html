@@ -34,6 +34,7 @@
 <body ng-attr-id="{{body_id}}" ng-class="{bodyClass: bodyClass, 'noscroll': isOverlay()}">
 
 <div id="full_body">
+    <ng-include ng-if="showEsignature" src="'templates/e-signature.tpl'"></ng-include>
     <header>
         <div id="top">
             <nav class="container">

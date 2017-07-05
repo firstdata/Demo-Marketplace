@@ -267,18 +267,6 @@ app.config(['$routeProvider', function ($routeProvider) {
             }
         }
     })
-    .when('/signup/terms/:orderID', {
-        controller: 'SignupTermsCtrl',
-        templateUrl: 'view/signup/terms.html',
-        title: 'Terms & Conditions | First Data Marketplace',
-        resolve: {
-            page: function($route) {
-                $route.current.params.eSignature = true;
-                $route.current.params.nologin = true;
-                $route.current.params.page = 'merchant-agreement';
-            }
-        }
-    })
     .when('/terms',{
        controller: 'TCCtrl',
        templateUrl: 'view/signup/tc-rsa.html',

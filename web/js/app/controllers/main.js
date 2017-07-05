@@ -62,7 +62,14 @@ app.controller('MainCtrl', ['$scope', '$rootScope', '$filter', '$location', 'fdS
       $rootScope.CONST = CONST;
       $rootScope.headerTpl = 'templates/header.tpl';
       $rootScope.cart = fdService.getCart();
-      //$scope.getShippingMethods();
+
+      $scope.$on('$routeChangeSuccess', function() {
+         if ($routeParams.eSignature) {
+           $scope.showEsignature = true;
+         } else {
+           $scope.showEsignature = false;
+         }
+      });
 
       $scope.$watch(function() {
         return fdService.getOrderId();
