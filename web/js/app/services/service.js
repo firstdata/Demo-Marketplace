@@ -1944,7 +1944,7 @@ app.service('fdService', ['$http', '$filter', '$window', '$cacheFactory', 'CONST
      * @return {HTTPPromise}
      */
     this.getProductsByOptionType = function(type) {
-      return $http.get(urlPrefix + '/marketplace/v1/companies/products/' + type + '/types/');
+      return $http.get(urlPrefix + '/marketplace/v1/products/' + type + '/types/');
     };
 
 

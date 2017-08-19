@@ -16,15 +16,21 @@
         <div class="container">
             <div id="product-info" ng-class="{'column-8': cart.total_qty || cart.payment_types || cart.transaction_products.length, 'column-12': !(cart.total_qty || cart.payment_types || cart.transaction_products.length)}">
                 <div class="clearfix multiple" id="product-configuration-options" style="max-width: 800px;">
-                    <h3>{{productDisplayName}} Types</h3>
-                    <h4>Please add all {{productDisplayName}} Types you want to accept.</h4>
+                    <div ng-if="productType != 'Tiers'">
+                        <h3>{{productDisplayName}} Types</h3>
+                        <h4>Please add all {{productDisplayName}} Types you want to accept.</h4>
+                    </div>
+                    <div ng-if="productType == 'Tiers'">
+                        <h3>Acquiring Products</h3>
+                    </div>
                     <div class="product-configuration-options">
                         <div class="product-configuration-option column-3" ng-class="{'selected': p.productId == productId}" ng-repeat="p in products track by $index">
                             <a class="link" data-toggle="modal" data-target="#include-{{p.productId}}">
                                 <img ng-src="{{p.imageUrls[0] ? p.imageUrls[0] : placeholderImageUrl}}">
                             </a>
                             <p>{{p.productName}}</p>
-                            <a class="link-blue add-to-cart" ng-click="addToCart(p)">Add to Cart</a>
+                            <a ng-if="productType != 'Tiers'" class="link-blue add-to-cart" ng-click="addToCart(p)">Add to Cart</a>
+                            <a ng-if="productType == 'Tiers'" class="link-blue"  ng-href="#/processing/{{p.productId}}">View Details</a>
                         </div>
                     </div>
                 </div>
