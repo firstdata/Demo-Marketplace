@@ -5287,8 +5287,8 @@ app.controller('SignupOwnerCtrl', ['$scope', '$rootScope', '$filter', '$location
           $scope.formData.owners[i].name = ownerInfo.firstName + ' ' + ownerInfo.lastName;
           $scope.formData.owners[i].SocialSecurityNumber = ownerInfo.ssn;
 
-          if (ownerInfo.dateOfBirth) {
-            var date = new Date(ownerInfo.dateOfBirth);
+          if (ownerInfo.dateofBirth) {
+            var date = new Date(ownerInfo.dateofBirth);
             $scope.formData.owners[i].dob_day = ("0" + date.getDate()).slice(-2);
             $scope.formData.owners[i].dob_month = ("0" + (date.getMonth() + 1)).slice(-2);
             $scope.formData.owners[i].dob_year = date.getFullYear().toString();
@@ -5296,16 +5296,16 @@ app.controller('SignupOwnerCtrl', ['$scope', '$rootScope', '$filter', '$location
 
           $scope.formData.owners[i].title1 = ownerInfo.title;
           $scope.formData.owners[i].percent_owned = ownerInfo.percentOwned;
-          $scope.formData.owners[i].Address1 = ownerInfo.address1;
-          $scope.formData.owners[i].Address2 = ownerInfo.address2;
-          $scope.formData.owners[i].city = ownerInfo.city;
-          $scope.formData.owners[i].state = ownerInfo.state;
-          $scope.formData.owners[i].zip = ownerInfo.zip;
+          $scope.formData.owners[i].Address1 = ownerInfo.contactInformation.address1;
+          $scope.formData.owners[i].Address2 = ownerInfo.contactInformation.address2;
+          $scope.formData.owners[i].city = ownerInfo.contactInformation.city;
+          $scope.formData.owners[i].state = ownerInfo.contactInformation.state;
+          $scope.formData.owners[i].zip = ownerInfo.contactInformation.postalCode;
           if ($scope.formData.owners[i].zip) {
             $scope.lookupZip();
           }
-          $scope.formData.owners[i].phone = ownerInfo.phone;
-          $scope.formData.owners[i].email = ownerInfo.email;
+          $scope.formData.owners[i].phone = ownerInfo.contactInformation.phone;
+          $scope.formData.owners[i].email = ownerInfo.contactInformation.email;
           $scope.formData.owners[i].employeeId = ownerInfo.employeeId;
           $scope.validateBusiness(i);
         }
@@ -5903,26 +5903,28 @@ app.controller('SignupOwnerCtrl', ['$scope', '$rootScope', '$filter', '$location
 
         dataToSend.ownerInformation.push({
           sequenceNo: secuenceNo,
-          contactType: "OWNER",
           firstName: $scope.formData.owners[i].name.split(" ")[0],
           lastName: $scope.formData.owners[i].name.split(" ")[1],
           ssn: $scope.formData.owners[i].SocialSecurityNumber,
-          dateOfBirth: $scope.formData.owners[i].dob,
+          dateofBirth: $scope.formData.owners[i].dob,
           title: $scope.formData.owners[i].title1,
           percentOwned: $scope.formData.owners[i].percent_owned,
-          address1: $scope.formData.owners[i].Address1,
-          address2: $scope.formData.owners[i].Address2,
-          city: $scope.formData.owners[i].city,
-          state: $scope.formData.owners[i].state,
-          zip: $scope.formData.owners[i].zip,
-          country: "US",
-          phone: $scope.formData.owners[i].phone,
-          email: $scope.formData.owners[i].email,
-          employeeId: $scope.formData.owners[i].employeeId,
+          employeeId : $scope.formData.owners[i].employeeId,
           driverLicenceNo: $scope.formData.owners[i].DriverLicenseNo,
           dlStateIssued: $scope.formData.owners[i].DriverLicenseState,
           dlExpirationMonth: $scope.formData.owners[i].DriverLicenseMonth,
-          dlExpirationYear: $scope.formData.owners[i].DriverLicenseYear
+          dlExpirationYear: $scope.formData.owners[i].DriverLicenseYear,
+          contactInformation: {
+              contactType: "OWNER",
+              address1: $scope.formData.owners[i].Address1,
+              address2: $scope.formData.owners[i].Address2,
+              city: $scope.formData.owners[i].city,
+              state: $scope.formData.owners[i].state,
+              postalCode: $scope.formData.owners[i].zip,
+              country: "US",
+              phone: $scope.formData.owners[i].phone,
+              email: $scope.formData.owners[i].email,
+          }
         });
         secuenceNo++;
       }
