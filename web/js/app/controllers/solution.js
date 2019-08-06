@@ -125,24 +125,11 @@ app.controller('SolutionCtrl', ['$scope', '$rootScope', '$filter', '$location', 
           $scope.faqs = [];
         });
 
-
-      if (!$rootScope.cart.shippingAddress[0].zip) {
-        fdService.getDataByIp()
-            .success(function(data, status, headers, config) {
-                $scope.getTaxes(data.zipCode, data.city ? data.city : -1);
-            })
-            .error(function(data, status, headers, config) {
-
-            });
-
-      }
-
       $rootScope.$on('Category_Change', function() {
         $scope.category = fdService.getCategoryFromSession();
       });
 
     };
-
 
     /**
      * Get taxes by city and state
